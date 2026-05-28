@@ -763,6 +763,31 @@
     border-radius: 20px;
     cursor: pointer;
   }
+  .edit-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  .edit-btn:active { background: var(--surface2); }
+  .editing-badge {
+    background: var(--yellow-dim);
+    border: 1px solid var(--yellow);
+    color: var(--yellow);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    display: none;
+    text-align: center;
+  }
+  .editing-badge.visible { display: block; }
 </style>
 </head>
 <body>
@@ -1186,7 +1211,9 @@
       <label class="form-label">Notes</label>
       <textarea id="log-notes" placeholder="How'd it feel? Any PRs? Pain? Energy?"></textarea>
     </div>
-    <button class="btn btn-primary" onclick="saveLog()">SAVE WORKOUT</button>
+    <div class="editing-badge" id="editing-badge">✏️ Editing Previous Workout</div>
+    <button class="btn btn-primary" id="save-btn" onclick="saveLog()">SAVE WORKOUT</button>
+    <button class="btn" id="cancel-edit-btn" onclick="cancelEdit()" style="display:none; background:var(--surface2); color:var(--muted); border:1px solid var(--border); margin-top:8px; font-size:15px; padding:12px">CANCEL EDIT</button>
   </div>
 
   <div class="section-label">Workout History</div>
@@ -1623,6 +1650,7 @@ function getLocalLogs() {
 }
 
 // ===== LOG FORM =====
+let editingLogId = null; // null = new log, number = editing existing
 function updateExerciseFields() {
   const session = document.getElementById('log-session').value;
   const section = document.getElementById('exercise-log-section');
@@ -1685,10 +1713,23 @@ async function saveLog() {
     return { name: ex, sets, weight, repsPerSet };
   }).filter(e => e.sets || e.weight);
 
-  const log = { id: Date.now(), date, session, effort, notes, exercises };
+  // Build log object — keep existing id if editing
+  const log = { 
+    id: editingLogId || Date.now(), 
+    date, session, effort, notes, exercises 
+  };
 
-  // Optimistic UI — add to cache immediately
-  logsCache.unshift(log);
+  // Optimistic UI — update or add to cache
+  if (editingLogId) {
+    const idx = logsCache.findIndex(l => l.id === editingLogId);
+    if (idx !== -1) logsCache[idx] = log;
+    editingLogId = null;
+    document.getElementById('editing-badge').classList.remove('visible');
+    document.getElementById('cancel-edit-btn').style.display = 'none';
+    document.getElementById('save-btn').textContent = 'SAVE WORKOUT';
+  } else {
+    logsCache.unshift(log);
+  }
   renderHistory();
   renderProgress();
 
@@ -1730,7 +1771,7 @@ function renderHistory() {
     return;
   }
   el.innerHTML = logs.map(log => `
-    <div class="log-entry">
+    <div class="log-entry" id="entry-${log.id}">
       <div class="log-entry-header">
         <div>
           <div class="log-entry-date">${formatDate(log.date)}</div>
@@ -1738,6 +1779,7 @@ function renderHistory() {
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           ${log.effort ? `<div class="log-entry-phase">Effort: ${log.effort}/10</div>` : ''}
+          <button class="edit-btn" onclick="editLog(${log.id})">Edit</button>
           <button class="delete-btn" onclick="deleteLog(${log.id})">✕</button>
         </div>
       </div>
@@ -1752,6 +1794,67 @@ function renderHistory() {
       ${log.notes ? `<div class="log-notes">"${log.notes}"</div>` : ''}
     </div>
   `).join('');
+}
+
+function editLog(id) {
+  const log = logsCache.find(l => l.id === id);
+  if (!log) return;
+
+  // Switch to Log tab
+  showView('log');
+
+  // Mark as editing
+  editingLogId = id;
+  document.getElementById('editing-badge').classList.add('visible');
+  document.getElementById('cancel-edit-btn').style.display = 'block';
+  document.getElementById('save-btn').textContent = 'UPDATE WORKOUT';
+
+  // Fill in the form fields
+  document.getElementById('log-date').value = log.date;
+  document.getElementById('log-session').value = log.session;
+  document.getElementById('log-effort').value = log.effort || '';
+  document.getElementById('log-notes').value = log.notes || '';
+
+  // Populate exercise fields
+  updateExerciseFields();
+
+  // Wait a tick for exercise fields to render, then fill in the values
+  setTimeout(() => {
+    const exercises = WORKOUT_EXERCISES[log.session] || [];
+    exercises.forEach((ex, i) => {
+      const saved = log.exercises?.find(e => e.name === ex);
+      if (!saved) return;
+      const setsEl = document.getElementById(`ex-${i}-sets`);
+      const weightEl = document.getElementById(`ex-${i}-weight`);
+      if (setsEl) {
+        setsEl.value = saved.sets || '';
+        // Trigger the per-set rep inputs to render
+        updateSetRepInputs(i, saved.sets);
+        // Fill in reps per set
+        setTimeout(() => {
+          (saved.repsPerSet || []).forEach((r, s) => {
+            const repEl = document.getElementById(`ex-${i}-rep-${s}`);
+            if (repEl) repEl.value = r;
+          });
+        }, 50);
+      }
+      if (weightEl) weightEl.value = saved.weight || '';
+    });
+    // Scroll to top of log form
+    document.querySelector('#view-log').scrollTo(0, 0);
+  }, 100);
+}
+
+function cancelEdit() {
+  editingLogId = null;
+  document.getElementById('editing-badge').classList.remove('visible');
+  document.getElementById('cancel-edit-btn').style.display = 'none';
+  document.getElementById('save-btn').textContent = 'SAVE WORKOUT';
+  document.getElementById('log-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('log-session').value = '';
+  document.getElementById('exercise-log-section').style.display = 'none';
+  document.getElementById('log-notes').value = '';
+  document.getElementById('log-effort').value = '';
 }
 
 async function deleteLog(id) {
