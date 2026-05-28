@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Summer Strength — Tennis Training</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f0e;
+    --surface: #161a18;
+    --surface2: #1e2421;
+    --border: #2a3230;
+    --green: #4ade80;
+    --green-dim: #22c55e44;
+    --yellow: #facc15;
+    --yellow-dim: #facc1533;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --text: #e8ede9;
+    --muted: #7a9080;
+    --accent: #4ade80;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .app-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .app-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--green);
+    line-height: 1;
+  }
+  .app-subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .phase-badge {
+    background: var(--green-dim);
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: 12px;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 3px;
+  }
+  .nav-tab {
+    flex: 1;
+    text-align: center;
+    padding: 7px 4px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    background: transparent;
+  }
+  .nav-tab.active {
+    background: var(--surface2);
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  /* VIEWS */
+  .view { display: none; padding: 16px 16px 80px; }
+  .view.active { display: block; }
+
+  /* SECTION HEADINGS */
+  .section-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    margin-top: 20px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  /* PHASE CARDS */
+  .phase-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .phase-card:active { transform: scale(0.98); }
+  .phase-card.current-phase {
+    border-color: var(--green);
+    background: linear-gradient(135deg, var(--surface) 60%, #0d1f14);
+  }
+  .phase-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .phase-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    line-height: 1;
+    color: var(--border);
+    min-width: 40px;
+  }
+  .phase-card.current-phase .phase-num { color: var(--green-dim); }
+  .phase-info { flex: 1; }
+  .phase-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--text);
+    line-height: 1;
+  }
+  .phase-dates {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    font-family: 'DM Mono', monospace;
+  }
+  .phase-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+  .tag-recovery { background: var(--yellow-dim); color: var(--yellow); border: 1px solid var(--yellow); }
+  .tag-build { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+  .tag-peak { background: #f97316; background: linear-gradient(90deg,#f97316,#ef4444); color: white; }
+  
+  .phase-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 10px;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+  }
+  .phase-goals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .goal-chip {
+    font-size: 11px;
+    background: var(--surface2);
+    color: var(--text);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  /* WEEKLY SCHEDULE */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .day-cell {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 3px;
+    text-align: center;
+  }
+  .day-cell.lift { border-color: var(--green); background: var(--green-dim); }
+  .day-cell.tennis { border-color: var(--yellow); background: var(--yellow-dim); }
+  .day-cell.match { border-color: var(--blue); background: #60a5fa22; }
+  .day-cell.rest { opacity: 0.4; }
+  .day-name {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .day-cell.lift .day-name { color: var(--green); }
+  .day-cell.tennis .day-name { color: var(--yellow); }
+  .day-cell.match .day-name { color: var(--blue); }
+  .day-icon { font-size: 16px; margin-top: 2px; }
+  .day-label { font-size: 9px; color: var(--muted); margin-top: 1px; }
+  .day-cell.lift .day-label { color: var(--green); }
+  .day-cell.tennis .day-label { color: var(--yellow); }
+
+  .legend {
+    display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .ld-green { background: var(--green); }
+  .ld-yellow { background: var(--yellow); }
+  .ld-blue { background: var(--blue); }
+  .ld-gray { background: var(--border); }
+
+  /* WORKOUT DAY CARDS */
+  .workout-day {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .workout-day-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+  }
+  .workout-day-title {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .day-badge {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--green-dim);
+    border: 1px solid var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: var(--green);
+  }
+  .day-badge.tuesday { background: #60a5fa22; border-color: var(--blue); color: var(--blue); }
+  .day-badge.thursday { background: #a78bfa22; border-color: #a78bfa; color: #a78bfa; }
+  .day-badge.friday { background: #fb923c22; border-color: #fb923c; color: #fb923c; }
+  .workout-day-name { font-weight: 600; font-size: 15px; }
+  .workout-day-focus { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .chevron { color: var(--muted); font-size: 18px; transition: transform 0.25s; }
+  .workout-day.open .chevron { transform: rotate(90deg); }
+
+  .exercise-list { 
+    border-top: 1px solid var(--border);
+    display: none; 
+  }
+  .workout-day.open .exercise-list { display: block; }
+
+  .exercise-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .exercise-item:last-child { border-bottom: none; }
+  .ex-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 20px;
+  }
+  .ex-info { flex: 1; }
+  .ex-name { font-weight: 500; font-size: 14px; }
+  .ex-note { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .ex-sets {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* SUPERSET label */
+  .superset-tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: #a78bfa22;
+    color: #a78bfa;
+    border: 1px solid #a78bfa55;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* LOG VIEW */
+  .log-form {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .log-form h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .form-row {
+    margin-bottom: 12px;
+  }
+  .form-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: block;
+  }
+  select, input, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  select:focus, input:focus, textarea:focus { border-color: var(--green); }
+  textarea { resize: none; height: 80px; }
+
+  .exercise-log-rows { margin-top: 8px; }
+  .ex-log-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .ex-log-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    padding: 0;
+    margin-bottom: 8px;
+  }
+  input[type="number"] { text-align: center; }
+  .ex-top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .per-set-reps {
+    margin-top: 6px;
+  }
+  .per-set-reps-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .set-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .set-input-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  .set-input-wrap span {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .set-input-wrap input {
+    width: 48px;
+    padding: 7px 4px;
+    font-size: 14px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--green); color: #0d0f0e; }
+  .btn-primary:active { transform: scale(0.97); background: #22c55e; }
+  .btn-danger { background: var(--red); color: white; margin-top: 8px; }
+
+  /* LOG HISTORY */
+  .log-entry {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 8px;
+  }
+  .log-entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .log-entry-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .log-entry-day {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .log-entry-phase {
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .log-exercises {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .log-ex-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .log-ex-row span:last-child { 
+    font-family: 'DM Mono', monospace;
+    color: var(--green);
+  }
+  .log-notes {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-style: italic;
+  }
+  .delete-btn {
+    background: none;
+    border: none;
+    color: var(--red);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+
+  /* PROGRESS VIEW */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--green);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .progress-bar-wrap {
+    background: var(--surface2);
+    border-radius: 6px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), #22c55e);
+    border-radius: 6px;
+    transition: width 0.6s ease;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .tip-card {
+    background: linear-gradient(135deg, #0d1f14, var(--surface));
+    border: 1px solid var(--green);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .tip-card h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    color: var(--green);
+    margin-bottom: 6px;
+  }
+  .tip-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+  }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state h3 { font-size: 16px; color: var(--text); margin-bottom: 6px; }
+  .empty-state p { font-size: 13px; }
+
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--green);
+    color: #0d0f0e;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 200;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Phase select buttons */
+  .phase-select-row {
+    display: flex; gap: 6px; margin-bottom: 14px;
+  }
+  .phase-btn {
+    flex: 1; padding: 8px 4px; border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted); font-size: 12px; font-weight: 600;
+    cursor: pointer; text-align: center;
+    transition: all 0.2s;
+  }
+  .phase-btn.active { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+
+  .rehab-note {
+    background: var(--yellow-dim);
+    border: 1px solid var(--yellow);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--yellow);
+    margin-bottom: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  /* MOBILITY */
+  .mobility-toggle {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .mob-toggle-btn {
+    flex: 1;
+    padding: 9px 4px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .mob-toggle-btn.active {
+    border-color: #a78bfa;
+    background: #a78bfa22;
+    color: #a78bfa;
+  }
+  .mob-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mob-item.done {
+    border-color: #a78bfa55;
+    background: #a78bfa11;
+  }
+  .mob-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.2s;
+    margin-top: 1px;
+  }
+  .mob-item.done .mob-check {
+    background: #a78bfa;
+    border-color: #a78bfa;
+  }
+  .mob-info { flex: 1; }
+  .mob-name {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+  .mob-item.done .mob-name {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+  .mob-detail {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+  .mob-duration {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #a78bfa;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .mob-section-tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+  }
+  .tag-hip { background: #f9731622; color: #fb923c; border: 1px solid #fb923c55; }
+  .tag-full { background: #60a5fa22; color: #60a5fa; border: 1px solid #60a5fa55; }
+  .tag-tennis { background: #4ade8022; color: #4ade80; border: 1px solid #4ade8055; }
+
+  .mob-completion {
+    background: linear-gradient(135deg, #1a0f2e, #0d1020);
+    border: 1px solid #a78bfa;
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 14px;
+    display: none;
+  }
+  .mob-completion.visible { display: block; }
+  .mob-completion-icon { font-size: 40px; margin-bottom: 8px; }
+  .mob-completion h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: #a78bfa;
+    margin-bottom: 4px;
+  }
+  .mob-completion p { font-size: 12px; color: var(--muted); }
+
+  .mob-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .mob-progress-bar-wrap {
+    flex: 1;
+    background: var(--surface2);
+    border-radius: 6px;
+    height: 6px;
+    overflow: hidden;
+  }
+  .mob-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #a78bfa, #7c3aed);
+    border-radius: 6px;
+    transition: width 0.4s ease;
+  }
+  .mob-progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: #a78bfa;
+    white-space: nowrap;
+  }
+  .mob-reset-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-top">
+    <div>
+      <div class="app-title">SUMMER STRENGTH</div>
+      <div class="app-subtitle">Tennis Performance Program · 2026</div>
+    </div>
+    <div class="phase-badge" id="current-phase-badge">Phase 1</div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showView('program')">Program</button>
+    <button class="nav-tab" onclick="showView('workouts')">Workouts</button>
+    <button class="nav-tab" onclick="showView('mobility')">Mobility</button>
+    <button class="nav-tab" onclick="showView('log')">Log</button>
+    <button class="nav-tab" onclick="showView('progress')">Progress</button>
+  </div>
+</div>
+
+<div id="view-program" class="view active">
+
+  <div class="section-label">Weekly Schedule</div>
+  <div class="week-grid">
+    <div class="day-cell tennis"><div class="day-name">Mon</div><div class="day-icon">🎾</div><div class="day-label">Tennis</div></div>
+    <div class="day-cell lift tuesday"><div class="day-name">Tue</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
+    <div class="day-cell tennis"><div class="day-name">Wed</div><div class="day-icon">🎾</div><div class="day-label">Tennis</div></div>
+    <div class="day-cell lift thursday"><div class="day-name">Thu</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
+    <div class="day-cell lift friday"><div class="day-name">Fri</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
+    <div class="day-cell match"><div class="day-name">Sat</div><div class="day-icon">🏆</div><div class="day-label">Match?</div></div>
+    <div class="day-cell rest"><div class="day-name">Sun</div><div class="day-icon">😴</div><div class="day-label">Rest</div></div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot ld-green"></div> Lift</div>
+    <div class="legend-item"><div class="legend-dot ld-yellow"></div> Tennis</div>
+    <div class="legend-item"><div class="legend-dot ld-blue"></div> Match (optional)</div>
+    <div class="legend-item"><div class="legend-dot ld-gray"></div> Rest</div>
+  </div>
+
+  <div class="section-label">Training Phases</div>
+
+  <div class="phase-card current-phase" onclick="this.classList.toggle('open')">
+    <div class="phase-header">
+      <div class="phase-num">1</div>
+      <div class="phase-info">
+        <div class="phase-name">Recovery &amp; Foundation</div>
+        <div class="phase-dates">May 10 – May 24 · Weeks 1–2</div>
+      </div>
+      <span class="phase-tag tag-recovery">Current</span>
+    </div>
+    <div class="phase-desc">Hip flexor is still healing — lower body and all core work are off the table until the doctor clears it. Focus is purely upper body: chest, back, shoulders, and arms. Keep it simple, build the habit, and let the hip recover properly.</div>
+    <div class="phase-goals">
+      <span class="goal-chip">🔼 Upper body only</span>
+      <span class="goal-chip">🚫 No core until cleared</span>
+      <span class="goal-chip">🚫 No lower body</span>
+      <span class="goal-chip">💪 Build the habit</span>
+    </div>
+  </div>
+
+  <div class="phase-card" onclick="this.classList.toggle('open')">
+    <div class="phase-header">
+      <div class="phase-num">2</div>
+      <div class="phase-info">
+        <div class="phase-name">Build &amp; Hypertrophy</div>
+        <div class="phase-dates">May 25 – Jun 28 · Weeks 3–8</div>
+      </div>
+      <span class="phase-tag tag-build">Build</span>
+    </div>
+    <div class="phase-desc">Full body loading returns as hip flexor clears. Progressive overload each week — add weight when you hit the top rep range. This is where most muscle mass gets built. Big compound moves: squats, rows, bench, deadlifts.</div>
+    <div class="phase-goals">
+      <span class="goal-chip">📈 Progressive overload</span>
+      <span class="goal-chip">🦵 Legs return</span>
+      <span class="goal-chip">💪 Hypertrophy</span>
+      <span class="goal-chip">🎾 Rotational power</span>
+    </div>
+  </div>
+
+  <div class="phase-card" onclick="this.classList.toggle('open')">
+    <div class="phase-header">
+      <div class="phase-num">3</div>
+      <div class="phase-info">
+        <div class="phase-name">Power &amp; Performance</div>
+        <div class="phase-dates">Jun 29 – Aug 10 · Weeks 9–13</div>
+      </div>
+      <span class="phase-tag tag-peak">Peak</span>
+    </div>
+    <div class="phase-desc">Shift from pure strength to explosive power — the kind that translates to faster serve speed and quicker court movement. Med ball throws, jump training, and sport-specific conditioning added. Volume drops slightly, intensity stays high.</div>
+    <div class="phase-goals">
+      <span class="goal-chip">⚡ Explosive power</span>
+      <span class="goal-chip">🏃 Court speed</span>
+      <span class="goal-chip">🎯 Tennis-specific</span>
+      <span class="goal-chip">🔁 Med ball work</span>
+    </div>
+  </div>
+
+  <div class="section-label">Program Rules</div>
+  <div class="tip-card">
+    <h4>Progressive Overload</h4>
+    <p>When you hit the TOP of the rep range on ALL sets, add 5 lbs next session. Log every weight so you can track this.</p>
+  </div>
+  <div class="tip-card">
+    <h4>Rest Between Sets</h4>
+    <p>Big lifts (squat, bench, deadlift): 2–3 min. Accessory work: 60–90 sec. Supersets: move directly to the next exercise, then rest 90 sec.</p>
+  </div>
+  <div class="tip-card">
+    <h4>Nutrition Basics</h4>
+    <p>Hit ~0.7–1g protein per pound of bodyweight daily. Eat a meal or shake within 30 min after lifting. Don't train fasted — eat something beforehand.</p>
+  </div>
+</div>
+
+<!-- WORKOUTS VIEW -->
+<div id="view-workouts" class="view">
+
+  <!-- Location toggle -->
+  <div style="display:flex; gap:6px; margin-bottom:12px">
+    <button class="mob-toggle-btn active" id="loc-gym" onclick="setLocation('gym', this)" style="font-size:13px; padding:10px 8px">🏋️ HOA Gym</button>
+    <button class="mob-toggle-btn" id="loc-home" onclick="setLocation('home', this)" style="font-size:13px; padding:10px 8px">🏠 At Home</button>
+  </div>
+  <div id="location-note" class="rehab-note" style="border-color:var(--blue); background:#60a5fa11; color:var(--blue); margin-bottom:12px">
+    🏋️ <div id="location-note-text">Gym mode: full cable, machine, and barbell access.</div>
+  </div>
+
+  <div class="phase-select-row">
+    <button class="phase-btn active" onclick="selectWorkoutPhase(1, this)">Phase 1</button>
+    <button class="phase-btn" onclick="selectWorkoutPhase(2, this)">Phase 2</button>
+    <button class="phase-btn" onclick="selectWorkoutPhase(3, this)">Phase 3</button>
+  </div>
+
+  <div id="workout-render"></div>
+</div>
+
+<!-- MOBILITY VIEW -->
+<div id="view-mobility" class="view">
+
+  <div class="mob-completion" id="mob-completion-banner">
+    <div class="mob-completion-icon">🙌</div>
+    <h3>Daily Routine Complete!</h3>
+    <p>Hip flexors happy. Body ready. Come back tomorrow.</p>
+  </div>
+
+  <div class="mob-progress-row">
+    <div class="mob-progress-bar-wrap">
+      <div class="mob-progress-bar" id="mob-progress-bar" style="width:0%"></div>
+    </div>
+    <div class="mob-progress-label" id="mob-progress-label">0 / 0</div>
+    <button class="mob-reset-btn" onclick="resetMobility()">Reset</button>
+  </div>
+
+  <div class="mobility-toggle">
+    <button class="mob-toggle-btn active" onclick="showMobSection('daily', this)">Daily (10 min)</button>
+    <button class="mob-toggle-btn" onclick="showMobSection('full', this)">Full Session (20 min)</button>
+  </div>
+
+  <!-- DAILY ROUTINE -->
+  <div id="mob-daily">
+    <div class="section-label">🦴 Hip Flexor Priority</div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m1">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-hip">Hip</div>
+        <div class="mob-name">90/90 Hip Flexor Stretch</div>
+        <div class="mob-detail">Sit with front leg at 90° and rear leg at 90° to the side. Tall spine, lean gently forward over front shin. Don't force it — breathe into the stretch.</div>
+      </div>
+      <div class="mob-duration">2 min/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m2">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-hip">Hip</div>
+        <div class="mob-name">Kneeling Hip Flexor Stretch</div>
+        <div class="mob-detail">Low lunge, rear knee on ground. Squeeze the glute of the rear leg — this is key. Shift forward until you feel the front of the hip. Hold still, don't rock.</div>
+      </div>
+      <div class="mob-duration">90 sec/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m3">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-hip">Hip</div>
+        <div class="mob-name">Supine Hip Flexor Activation</div>
+        <div class="mob-detail">Lie flat on back. Slowly raise one knee toward chest, pause at top, lower under control. No pain — this is gentle re-loading, not a workout. Stop if it pulls.</div>
+      </div>
+      <div class="mob-duration">10 reps/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m4">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-hip">Hip</div>
+        <div class="mob-name">Hip Circle / CARs</div>
+        <div class="mob-detail">Standing, hold something for balance. Draw the biggest circle possible with your knee — forward, out, back, in. Slow and controlled. This keeps the joint healthy and mobile.</div>
+      </div>
+      <div class="mob-duration">5 circles/side</div>
+    </div>
+
+    <div class="section-label">🎾 Tennis Mobility</div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m5">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-tennis">Tennis</div>
+        <div class="mob-name">Thoracic Rotation (T-Spine)</div>
+        <div class="mob-detail">Sit cross-legged or kneel. Place hand behind head, rotate elbow toward the ceiling as far as possible. T-spine rotation = serve power and forehand snap. Critical for tennis.</div>
+      </div>
+      <div class="mob-duration">10 reps/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m6">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-tennis">Tennis</div>
+        <div class="mob-name">Shoulder Sleeper Stretch</div>
+        <div class="mob-detail">Lie on your side (dominant arm down). Arm at 90°, use other hand to gently press wrist toward the floor. Protects the rotator cuff from overuse injury — especially important for heavy serving.</div>
+      </div>
+      <div class="mob-duration">2 min/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m7">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-tennis">Tennis</div>
+        <div class="mob-name">Ankle Circles + Calf Stretch</div>
+        <div class="mob-detail">10 slow ankle circles each direction, then calf stretch against a wall — straight leg and bent knee. Ankles take a beating with all the lateral movement in tennis.</div>
+      </div>
+      <div class="mob-duration">1 min/side</div>
+    </div>
+  </div>
+
+  <!-- FULL ROUTINE (daily + extras) -->
+  <div id="mob-full" style="display:none">
+    <div class="section-label">🦴 Hip Flexor Priority</div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m1">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-hip">Hip</div>
+        <div class="mob-name">90/90 Hip Flexor Stretch</div>
+        <div class="mob-detail">Sit with front leg at 90° and rear leg at 90° to the side. Tall spine, lean gently forward over front shin. Breathe into the stretch.</div>
+      </div>
+      <div class="mob-duration">2 min/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m2">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-hip">Hip</div>
+        <div class="mob-name">Kneeling Hip Flexor Stretch</div>
+        <div class="mob-detail">Low lunge, rear knee on ground. Squeeze the rear glute, shift forward until you feel the front of the hip. Hold still.</div>
+      </div>
+      <div class="mob-duration">90 sec/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m3">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-hip">Hip</div>
+        <div class="mob-name">Supine Hip Flexor Activation</div>
+        <div class="mob-detail">Lie flat, slowly raise one knee toward chest, pause, lower with control. No pain — gentle re-loading only.</div>
+      </div>
+      <div class="mob-duration">10 reps/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m4">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-hip">Hip</div>
+        <div class="mob-name">Hip Circle / CARs</div>
+        <div class="mob-detail">Standing, draw the biggest circle possible with your knee — slow and controlled through full range of motion.</div>
+      </div>
+      <div class="mob-duration">5 circles/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m8">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-hip">Hip</div>
+        <div class="mob-name">Pigeon Pose</div>
+        <div class="mob-detail">From downward dog, bring one shin forward parallel to your hands and lower hips toward the floor. Deep hip opener — targets glute med and external rotators. Breathe and relax into it, don't push.</div>
+      </div>
+      <div class="mob-duration">2 min/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m9">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-hip">Hip</div>
+        <div class="mob-name">Frog Stretch</div>
+        <div class="mob-detail">On hands and knees, slide knees wide apart, toes out. Lower hips toward the floor. Deep inner hip/groin stretch — great for hip flexor recovery and squat depth.</div>
+      </div>
+      <div class="mob-duration">90 sec</div>
+    </div>
+
+    <div class="section-label">🎾 Tennis Mobility</div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m5">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-tennis">Tennis</div>
+        <div class="mob-name">Thoracic Rotation (T-Spine)</div>
+        <div class="mob-detail">Hand behind head, rotate elbow toward ceiling as far as possible. T-spine rotation = serve power and forehand snap.</div>
+      </div>
+      <div class="mob-duration">10 reps/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m6">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-tennis">Tennis</div>
+        <div class="mob-name">Shoulder Sleeper Stretch</div>
+        <div class="mob-detail">Lie on dominant arm side. Arm at 90°, press wrist gently toward floor. Protects the rotator cuff from serving overuse.</div>
+      </div>
+      <div class="mob-duration">2 min/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m7">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-tennis">Tennis</div>
+        <div class="mob-name">Ankle Circles + Calf Stretch</div>
+        <div class="mob-detail">10 slow ankle circles each direction, then calf stretch — straight and bent knee versions.</div>
+      </div>
+      <div class="mob-duration">1 min/side</div>
+    </div>
+
+    <div class="section-label">💪 Full Body</div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m10">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-full">Full Body</div>
+        <div class="mob-name">World's Greatest Stretch</div>
+        <div class="mob-detail">From lunge, place same-side hand inside foot on the floor. Rotate other arm to the sky, eyes following. Then drop elbow to the floor inside foot. Hits hips, thoracic spine, hamstrings, and shoulders all in one movement.</div>
+      </div>
+      <div class="mob-duration">5 reps/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m11">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-full">Full Body</div>
+        <div class="mob-name">Hamstring Stretch (Standing or Lying)</div>
+        <div class="mob-detail">Standing: hinge forward with soft knees and reach toward the floor, hold. Or lie on back and pull one leg toward you with a band or towel. Tennis players notoriously tight here.</div>
+      </div>
+      <div class="mob-duration">90 sec/side</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m12">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-full">Full Body</div>
+        <div class="mob-name">Cat-Cow</div>
+        <div class="mob-detail">On hands and knees. Inhale — drop belly, lift head and tailbone (cow). Exhale — round spine to ceiling, tuck chin and pelvis (cat). Slow and deliberate. Keeps the spine loose and healthy.</div>
+      </div>
+      <div class="mob-duration">10 slow reps</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m13">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-full">Full Body</div>
+        <div class="mob-name">Doorway Chest Stretch</div>
+        <div class="mob-detail">Stand in a doorway, arms at 90° on the frame, step forward until you feel a stretch across the chest and front of shoulders. Counters all the forward posture from being hunched over a phone and serves.</div>
+      </div>
+      <div class="mob-duration">2 × 45 sec</div>
+    </div>
+
+    <div class="mob-item" onclick="toggleMob(this)" data-id="m14">
+      <div class="mob-check">✓</div>
+      <div class="mob-info">
+        <div class="mob-section-tag tag-full">Full Body</div>
+        <div class="mob-name">Child's Pose</div>
+        <div class="mob-detail">Kneel and sit back on heels, arms stretched forward on the floor. Breathe deeply. Decompresses the lower back, opens lats, and is a great way to end any session. Just relax.</div>
+      </div>
+      <div class="mob-duration">90 sec</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LOG VIEW -->
+<div id="view-log" class="view">
+  <div class="log-form">
+    <h3>Log a Workout</h3>
+    <div class="form-row">
+      <label class="form-label">Date</label>
+      <input type="date" id="log-date">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Phase & Day</label>
+      <select id="log-session" onchange="updateExerciseFields()">
+        <option value="">Select workout...</option>
+        <optgroup label="Phase 1 — Recovery">
+          <option value="P1-TUE">Phase 1 · Tuesday — Upper Push</option>
+          <option value="P1-THU">Phase 1 · Thursday — Upper Pull</option>
+          <option value="P1-FRI">Phase 1 · Friday — Full Upper + Rehab</option>
+        </optgroup>
+        <optgroup label="Phase 2 — Build">
+          <option value="P2-TUE">Phase 2 · Tuesday — Lower Body</option>
+          <option value="P2-THU">Phase 2 · Thursday — Upper Push</option>
+          <option value="P2-FRI">Phase 2 · Friday — Upper Pull + Core</option>
+        </optgroup>
+        <optgroup label="Phase 3 — Power">
+          <option value="P3-TUE">Phase 3 · Tuesday — Explosive Lower</option>
+          <option value="P3-THU">Phase 3 · Thursday — Explosive Upper</option>
+          <option value="P3-FRI">Phase 3 · Friday — Full Body + Conditioning</option>
+        </optgroup>
+      </select>
+    </div>
+    <div id="exercise-log-section" style="display:none">
+      <div class="form-label" style="margin-bottom:10px">Exercise Log</div>
+      <div id="exercise-log-rows" class="exercise-log-rows"></div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Overall Effort (1–10)</label>
+      <input type="number" id="log-effort" min="1" max="10" placeholder="8">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Notes</label>
+      <textarea id="log-notes" placeholder="How'd it feel? Any PRs? Pain? Energy?"></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="saveLog()">SAVE WORKOUT</button>
+  </div>
+
+  <div class="section-label">Workout History</div>
+  <div id="log-history"></div>
+</div>
+
+<!-- PROGRESS VIEW -->
+<div id="view-progress" class="view">
+  <div class="section-label">Summer Overview</div>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-val" id="stat-workouts">0</div>
+      <div class="stat-label">Workouts Done</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-streak">0</div>
+      <div class="stat-label">Week Streak</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-days-left">74</div>
+      <div class="stat-label">Days Left</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-avg-effort">—</div>
+      <div class="stat-label">Avg Effort</div>
+    </div>
+  </div>
+
+  <div class="section-label">Summer Progress</div>
+  <div class="stat-card" style="margin-bottom:10px; text-align:left; padding:16px">
+    <div style="font-size:13px; color:var(--muted); margin-bottom:8px">Program completion</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="program-progress" style="width:0%"></div>
+    </div>
+    <div class="progress-label">
+      <span id="prog-start">May 10</span>
+      <span id="prog-pct">0%</span>
+      <span>Aug 10</span>
+    </div>
+  </div>
+
+  <div class="section-label">Phase Progress</div>
+  <div class="stat-card" style="margin-bottom:10px; text-align:left; padding:16px">
+    <div style="display:flex; justify-content:space-between; margin-bottom:8px">
+      <div style="font-size:13px; color:var(--text); font-weight:600" id="current-phase-name">Phase 1 — Recovery</div>
+      <div style="font-size:11px; color:var(--muted)" id="current-phase-dates">May 27 – Jun 10</div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="phase-progress" style="width:0%; background: linear-gradient(90deg, #facc15, #f59e0b)"></div>
+    </div>
+    <div class="progress-label">
+      <span id="phase-prog-label">Phase 1</span>
+      <span id="phase-prog-pct">0%</span>
+      <span>Next phase</span>
+    </div>
+  </div>
+
+  <div class="section-label">Data Storage</div>
+  <div class="stat-card" style="margin-bottom:10px; text-align:left; padding:16px">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
+      <div style="font-size:13px; font-weight:600; color:var(--text)">Google Sheets Cloud Storage</div>
+      <div style="font-size:10px; font-weight:700; letter-spacing:1px; background:var(--green-dim); color:var(--green); border:1px solid var(--green); padding:2px 8px; border-radius:20px">ACTIVE</div>
+    </div>
+    <div style="font-size:12px; color:var(--muted); margin-bottom:14px; line-height:1.5">Every workout is saved automatically to a Google Sheet. Logs are safe even if the browser is cleared or the app is updated.</div>
+    <button class="btn btn-primary" style="font-size:14px; padding:11px 8px; margin-bottom:8px" onclick="exportLogs()">⬇ Download Backup</button>
+    <div style="font-size:11px; color:var(--muted); margin-top:4px; line-height:1.5">
+      💡 Your primary data is safely in Google Sheets. The backup download is just an extra copy you can keep anywhere.
+    </div>
+  </div>
+
+  <div class="section-label">Tips for Success</div>
+  <div class="tip-card">
+    <h4>Sleep Is the Gains</h4>
+    <p>At 14, you're getting a growth hormone surge during sleep. 8–9 hours isn't optional — it's when you actually build muscle from your training. Prioritize this above everything.</p>
+  </div>
+  <div class="tip-card">
+    <h4>Tennis + Lifting = Smart Scheduling</h4>
+    <p>You're lifting Tu/Th/Fri so that Mon and Wed tennis days have fresh legs. If you have a match Saturday, keep Friday lifting moderate — don't go to failure on leg exercises.</p>
+  </div>
+  <div class="tip-card">
+    <h4>Tracking = Progress</h4>
+    <p>Log every weight you use. If you hit the top rep range on all sets, bump the weight 5 lbs next session. That's how strength is built — systematically, not randomly.</p>
+  </div>
+
+  <div class="section-label">Nutrition</div>
+  <div class="tip-card">
+    <h4>Protein Is the Priority</h4>
+    <p>Aim for 0.7–1g of protein per pound of bodyweight daily — so around 100–140g if you're 140 lbs. Best sources: chicken, eggs, Greek yogurt, cottage cheese, ground beef, tuna, and milk. A protein shake after lifting is an easy way to hit your numbers without overthinking it.</p>
+  </div>
+  <div class="tip-card">
+    <h4>The Post-Workout Window</h4>
+    <p>Eat within 30–45 minutes of finishing a lift. Your muscles are primed to absorb nutrients right after training. A shake + banana, or chocolate milk + some chicken, works great. Don't wait until you're starving — that window matters.</p>
+  </div>
+  <div class="tip-card">
+    <h4>Carbs Are Not the Enemy</h4>
+    <p>At your age and activity level, carbs are fuel — for lifting, for tennis, and for recovery. Rice, oats, potatoes, fruit, and bread are all fine. Eat more carbs on training days, especially before and after workouts. Don't try to cut carbs while also trying to build muscle — it doesn't work.</p>
+  </div>
+  <div class="tip-card">
+    <h4>Eat Before You Train</h4>
+    <p>Never lift or play tennis on an empty stomach. A meal 1.5–2 hours before, or a light snack 30–45 min before, gives you the energy to actually push hard. Banana + peanut butter, a bowl of oatmeal, or toast with eggs all work well.</p>
+  </div>
+  <div class="tip-card">
+    <h4>Hydration on Tennis Days</h4>
+    <p>You're training outside in Florida summer heat — dehydration will tank your performance fast. Drink water consistently all day, not just during training. On tennis days, aim for at least 16–20 oz in the hour before you start, and sip every changeover. Add electrolytes (Liquid IV, Gatorade, etc.) if you're sweating heavily.</p>
+  </div>
+  <div class="tip-card">
+    <h4>Calories: Eat Enough</h4>
+    <p>Building muscle requires a caloric surplus — you need to eat slightly more than you burn. At 14 with this activity level, that means eating big, consistent meals. If you're not gaining any weight over several weeks, you're not eating enough. Don't be afraid of food — this is the one time in your life where eating more is part of the program.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Workout saved!</div>
+
+<script>
+// ===== DATA =====
+const WORKOUT_EXERCISES = {
+  'P1-TUE': ['Incline DB Press','DB Shoulder Press','Cable/Band Chest Fly','Lateral Raises','Tricep Pushdowns','Dead Bug','Pallof Press'],
+  'P1-THU': ['Lat Pulldowns','Seated Cable Row','Face Pulls','Rear Delt DB Raise','Dumbbell Curl','Band Pull-Aparts','Plank'],
+  'P1-FRI': ['Push-Up Variations','Single-Arm DB Row','Arnold Press','Hip Flexor Stretch','Supine Hip Flex Activation','Bird Dog','Side Plank'],
+  'P2-TUE': ['Barbell Back Squat','Romanian Deadlift','Bulgarian Split Squat','Leg Curl','Calf Raise','Pallof Press'],
+  'P2-THU': ['Barbell Bench Press','DB Shoulder Press','Incline DB Fly','Lateral Raises','Skull Crushers','Ab Wheel Rollout'],
+  'P2-FRI': ['Barbell Row','Pull-Ups','Face Pulls','Band Pull-Aparts','Hammer Curl','Med Ball Rotational Throw','Hanging Knee Raise'],
+  'P3-TUE': ['Box Jump','Trap Bar Deadlift','Lateral Bounds','Single-Leg RDL','Calf Raise Explosive'],
+  'P3-THU': ['Med Ball Chest Pass','Bench Press Speed Sets','DB Shoulder Press','Med Ball Rotational Throw','Tricep Dips/Pushdown','Face Pulls'],
+  'P3-FRI': ['Barbell Row','Pull-Ups','Farmers Carry','Sprint Intervals','Plank Complex'],
+};
+
+function getLogs() { try { return JSON.parse(localStorage.getItem('tennis-logs') || '[]'); } catch(e) { return []; } }
+function saveLogs(logs) { localStorage.setItem('tennis-logs', JSON.stringify(logs)); }
+
+// ===== NAVIGATION =====
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  const tabs = document.querySelectorAll('.nav-tab');
+  const idx = ['program','workouts','mobility','log','progress'].indexOf(name);
+  if (tabs[idx]) tabs[idx].classList.add('active');
+  if (name === 'log') renderHistory();
+  if (name === 'progress') renderProgress();
+  if (name === 'mobility') updateMobProgress();
+}
+
+// ===== WORKOUT DATA & RENDERER =====
+let currentLocation = 'gym';
+let currentPhaseIdx = 0;
+
+const PHASES = [
+  { // PHASE 1 — Recovery
+    alert: '⚠️ No core or hip work until cleared by doctor. Upper body only — arms, chest, shoulders, and back only. If anything causes hip or abdominal discomfort, stop immediately.',
+    days: [
+      { badge:'TUE', badgeClass:'tuesday', name:'Upper Push', focus:'Chest · Shoulders · Triceps',
+        gym:[
+          ['Seated Chest Press Machine','Adjust seat so handles are at mid-chest. Full extension, controlled return.','3 × 8–10'],
+          ['Shoulder Press Machine','Adjust seat so arms start at 90°. Press to full extension overhead.','3 × 10–12'],
+          ['Cable Chest Fly (dual cable)','With Lateral Raises (SS). Set cables to chest height, slight elbow bend.','3 × 12','SS'],
+          ['Lateral Raises (DB)','With Cable Fly (SS). Light weight, slow up, squeeze at top.','3 × 15','SS'],
+          ['Cable Tricep Pushdown','Rope or bar attachment. Full extension, elbows stay pinned.','3 × 12–15'],
+          ['DB Incline Curl','Seated on incline bench, arms hang back. Full stretch at bottom.','3 × 10–12'],
+        ],
+        home:[
+          ['Incline Push-Up','Feet on couch, hands on floor — mimics incline press angle.','3 × max'],
+          ['DB Shoulder Press','Seated on chair. Both arms together. Go heavy with the SelectTechs.','3 × 10–12'],
+          ['DB Chest Fly on Swiss Ball','With Lateral Raises (SS). Lie back on ball, slight elbow bend.','3 × 12','SS'],
+          ['Lateral Raises (DB)','With Fly (SS). Light weight, slow up, squeeze at top.','3 × 15','SS'],
+          ['Band Tricep Pushdown','Anchor band in door at top. Full extension each rep.','3 × 15'],
+          ['DB Curl','Seated on chair. Alternate arms. Full range of motion.','3 × 10–12'],
+        ]
+      },
+      { badge:'THU', badgeClass:'thursday', name:'Upper Pull', focus:'Back · Biceps · Rear Delts',
+        gym:[
+          ['Lat Pulldown Machine','Wide grip. Pull bar to upper chest. No swinging or leaning back.','3 × 8–10'],
+          ['SportsArt Seated Row','Neutral grip. Drive elbows back, squeeze shoulder blades hard at finish.','3 × 10–12'],
+          ['Cable Face Pull (dual cable)','With Rear Delt DB Raise (SS). Set cable at face height, pull to ears.','3 × 15','SS'],
+          ['Rear Delt DB Raise','With Face Pulls (SS). Bent over 45°, light DBs, controlled arc.','3 × 15','SS'],
+          ['Bicep/Tricep Machine — curl side','Full range of motion. Slow controlled negative.','3 × 10–12'],
+          ['Band Pull-Aparts (own band)','Shoulder health and posture. Do not rush these.','3 × 20'],
+        ],
+        home:[
+          ['Pull-Ups (or band-assisted)','Use resistance band over bar for assist. Full hang, chin clears bar.','3 × max'],
+          ['Single-Arm DB Row','Brace on chair or couch. Pull elbow to hip. Squeeze at top.','3 × 10/side'],
+          ['Band Face Pull','With Band Pull-Aparts (SS). Band at face height in door.','3 × 15','SS'],
+          ['Band Pull-Aparts','Straight arms, pull band to chest. Squeeze shoulder blades fully.','3 × 20','SS'],
+          ['DB Hammer Curl','Neutral grip. Builds bicep and forearm — great for racket grip.','3 × 10–12'],
+          ['Inverted Row (under table)','Lie under sturdy table, grip edge, pull chest up to it.','3 × max'],
+        ]
+      },
+      { badge:'FRI', badgeClass:'friday', name:'Upper Total', focus:'Chest · Back · Shoulders · Arms',
+        gym:[
+          ['Seated Chest Press Machine','Go slightly heavier than Tuesday. Track the weight.','3 × 8–10'],
+          ['Lat Pulldown Machine','Alternate grip — try neutral/close grip today.','3 × 8–10'],
+          ['DB Shoulder Press','Seated on bench. Both arms. Heavy and controlled.','3 × 10'],
+          ['SportsArt Seated Row','Lighter than Thursday — focus on the squeeze, not the weight.','3 × 12'],
+          ['Cable Tricep Pushdown','Finish the triceps from Tuesday.','3 × 12'],
+          ['DB Hammer Curl','Neutral grip. Forearm + bicep together.','3 × 10–12'],
+        ],
+        home:[
+          ['Push-Up Variations','Standard → wide → close. Chest to floor. Quality over quantity.','3 × max'],
+          ['Single-Arm DB Row','Brace on chair. Heavy as you can manage.','3 × 10/side'],
+          ['DB Arnold Press','Seated on chair. Rotate palms through full movement.','3 × 10'],
+          ['DB Chest Fly on Swiss Ball','Stretch at bottom, squeeze at top. Full range.','3 × 12'],
+          ['Band Tricep Pushdown','Full extension each rep. Elbows stay still.','3 × 15'],
+          ['DB Hammer Curl','Neutral grip. Slow and controlled.','3 × 10–12'],
+        ]
+      },
+    ]
+  },
+  { // PHASE 2 — Build
+    days: [
+      { badge:'TUE', badgeClass:'tuesday', name:'Lower Body', focus:'Quads · Hamstrings · Glutes · Calves',
+        gym:[
+          ['Leg Press / Hip Sled','★ Main lower lift. Feet shoulder-width, mid-plate. Full range.','4 × 8–10'],
+          ['Leg Curl Machine','Hamstring isolation. Full range, slow on the way down.','3 × 10–12'],
+          ['Leg Extension Machine','Quad isolation. Pause and squeeze at the top each rep.','3 × 10–12'],
+          ['Bulgarian Split Squat (DB)','Rear foot on step-up box. Hold DBs at sides. Tennis lateral balance.','3 × 8/leg'],
+          ['DB Step-Up (step-up box)','Drive through heel. Alternate legs, controlled step down.','3 × 10/leg'],
+          ['Calf Raise on Step-Up Box (DB)','Stand on edge of box holding DBs. Pause at top and bottom.','4 × 15'],
+          ['Pallof Press (cable)','Anti-rotation core. Every lower body session, no exceptions.','3 × 10/side'],
+        ],
+        home:[
+          ['Goblet Squat (DB)','Hold one heavy DB at chest. Deep squat, chest tall.','4 × 10–12'],
+          ['DB Romanian Deadlift','Both DBs, hinge at hips. Feel the hamstring load at bottom.','3 × 10–12'],
+          ['Bulgarian Split Squat (DB)','Rear foot on couch. Hold DBs at sides. Go heavy.','3 × 8/leg'],
+          ['Nordic Hamstring Curl','Kneel, tuck feet under couch, lower body very slowly. Do what you can.','3 × 5–8'],
+          ['DB Step-Up (onto sturdy chair/step)','Drive through heel. Control the step down.','3 × 10/leg'],
+          ['Single-Leg Calf Raise (stair edge)','Full stretch at bottom, pause at top. Slow down.','4 × 15/side'],
+          ['Pallof Press (band)','Band in door handle. Step out, brace, press and hold.','3 × 10/side'],
+        ]
+      },
+      { badge:'THU', badgeClass:'thursday', name:'Upper Push', focus:'Chest · Shoulders · Triceps',
+        gym:[
+          ['Seated Chest Press Machine','★ Main push lift. Increase weight each week — this is progressive overload.','4 × 6–8'],
+          ['Shoulder Press Machine','Heavy working sets. Track the weight every session.','3 × 8–10'],
+          ['Cable Incline Fly (low cable angle)','With Lateral Raises (SS). Set cable low, fly up and in toward chin.','3 × 12','SS'],
+          ['Lateral Raises (DB)','With Cable Fly (SS). Slight elbow bend, control the negative.','3 × 15','SS'],
+          ['Cable Tricep Pushdown — rope','Full extension. Flare the rope apart at the bottom.','3 × 10–12'],
+          ['Dips (pull-up/dip unit)','Bodyweight. Lean slightly forward for chest emphasis.','3 × max'],
+          ['Ab Machine','Control the crunch. Slow and deliberate — no momentum.','3 × 15'],
+        ],
+        home:[
+          ['DB Floor Press','Lie on floor, press DBs up. Solid heavy chest option at home.','4 × 8–10'],
+          ['DB Shoulder Press on Swiss Ball','Sitting on Swiss ball adds core stability challenge.','3 × 8–10'],
+          ['DB Chest Fly on Swiss Ball','With Lateral Raises (SS). Stretch at bottom, squeeze at top.','3 × 12','SS'],
+          ['Lateral Raises (DB)','With Fly (SS). Control the negative. No swinging.','3 × 15','SS'],
+          ['DB Skull Crushers','Lie on floor. Lower DBs slowly to forehead, press back up.','3 × 12'],
+          ['Push-Up to Failure','After skull crushers — burnout set. Go until form breaks.','1 × max'],
+          ['Swiss Ball Rollout','Forearms on Swiss ball, roll forward slowly. Core stays tight.','3 × 10'],
+        ]
+      },
+      { badge:'FRI', badgeClass:'friday', name:'Upper Pull + Core', focus:'Back · Biceps · Rear Delts · Core',
+        gym:[
+          ['Pull-Ups (pull-up/dip unit)','★ Main pull lift. Add a DB between feet once you can do 8+ easily.','4 × max'],
+          ['SportsArt Seated Row — heavier','Go heavier than last session. Explode the pull, slow the return.','3 × 8–10'],
+          ['Cable Face Pull','With Band Pull-Aparts (SS). Elbows high, pull to ears.','3 × 15','SS'],
+          ['Band Pull-Aparts (own band)','Posture and shoulder health. Every single week.','3 × 20','SS'],
+          ['DB Hammer Curl','Neutral grip. Builds forearm — great for racket grip strength.','3 × 10–12'],
+          ['Med Ball Rotational Throw (wall)','Use gym med ball against wall. Load and rotate — mimics serve chain.','3 × 10/side'],
+          ['Ab Machine + Lower Back Machine','One set each, back to back. Balanced anterior/posterior core.','2 × 15 each'],
+        ],
+        home:[
+          ['Pull-Ups','As many as possible. Band assist if needed.','4 × max'],
+          ['Single-Arm DB Row','Brace on chair. Heavy. Row elbow past hip.','3 × 10/side'],
+          ['Band Face Pull','With Band Pull-Aparts (SS). Band at face height in door.','3 × 15','SS'],
+          ['Band Pull-Aparts','Straight arms. Squeeze shoulder blades fully.','3 × 20','SS'],
+          ['DB Hammer Curl','Neutral grip. Slow controlled reps.','3 × 10–12'],
+          ['Med Ball Rotational Throw (wall/fence)','10 lb ball outside against wall or fence. Serve rotation.','3 × 10/side'],
+          ['Lying Knee Raise','Flat on back, raise knees to chest and lower slowly.','3 × 15'],
+        ]
+      },
+    ]
+  },
+  { // PHASE 3 — Power
+    days: [
+      { badge:'TUE', badgeClass:'tuesday', name:'Explosive Lower', focus:'Power · Speed · Quads · Posterior Chain',
+        gym:[
+          ['Box Jump (step-up boxes)','⚡ Max height you can land softly. Full reset between every rep. 3 min rest.','4 × 5'],
+          ['Leg Press — Explosive','Heavy load, drive the sled as explosively as possible. 2–3 min rest.','4 × 5'],
+          ['Lateral Bounds','Use open gym floor. Jump side to side, stick each landing firmly.','3 × 8/side'],
+          ['Single-Leg RDL (DB)','Balance + hamstring. Control is everything — no wobbling.','3 × 8/leg'],
+          ['DB Step-Up — Explosive','Drive up fast off box, land controlled. Hold DBs at sides.','3 × 8/leg'],
+          ['Calf Raise on Box — Explosive','Fast up, 3-sec controlled down. Mimics explosive court push-off.','3 × 15'],
+        ],
+        home:[
+          ['Box Jump (onto couch/sturdy step)','⚡ Land softly. Full reset between every rep.','4 × 5'],
+          ['DB Goblet Jump Squat','Hold light DB at chest, squat down, explode up off floor.','4 × 6'],
+          ['Lateral Bounds','On grass or carpet. Jump side to side, stick each landing.','3 × 8/side'],
+          ['Single-Leg RDL (DB)','Balance + hamstring control. Slow and controlled.','3 × 8/leg'],
+          ['Single-Leg Calf Raise — Explosive','On stair edge. Fast up, slow 3-sec down.','3 × 15/side'],
+        ]
+      },
+      { badge:'THU', badgeClass:'thursday', name:'Explosive Upper', focus:'Power · Serve Speed · Chest · Shoulders',
+        gym:[
+          ['Med Ball Chest Pass (wall)','⚡ Use gym med ball against solid wall. Full effort every rep. 2 min rest.','4 × 6'],
+          ['Chest Press Machine — Speed Sets','Set to ~70% of max. Drive the press explosively, control the return.','5 × 3'],
+          ['Shoulder Press Machine — Heavy','Still pushing max weight. Power output is the goal.','3 × 8'],
+          ['Med Ball Rotational Throw (wall)','⚡ Load hips, rotate, throw hard. Serve kinetic chain.','4 × 8/side'],
+          ['Dips — Explosive (pull-up/dip unit)','Drive up fast, control down. Tricep power finisher.','3 × max'],
+          ['Cable Face Pull','Shoulder health. Non-negotiable every single week.','3 × 15'],
+        ],
+        home:[
+          ['Med Ball Chest Pass (wall)','⚡ Use 10 lb ball against exterior wall. Full power throw.','4 × 6'],
+          ['Explosive Push-Up','Explode off floor as fast as possible on the way up. Control down.','5 × 5'],
+          ['DB Shoulder Press — Explosive','Press fast up, control on the way down.','3 × 8'],
+          ['Med Ball Rotational Throw','⚡ 10 lb ball against wall or fence outside. Serve motion.','4 × 8/side'],
+          ['DB Tricep Kickback','Bent over, extend arm fully, squeeze hard at lockout.','3 × 12'],
+          ['Band Face Pull','Shoulder health. Every week no matter what.','3 × 15'],
+        ]
+      },
+      { badge:'FRI', badgeClass:'friday', name:'Full Body + Conditioning', focus:'Strength · Power · Tennis Conditioning',
+        gym:[
+          ['Pull-Ups — Weighted (pull-up/dip unit)','Add DB between feet or use weight belt. Max reps every set.','4 × max'],
+          ['SportsArt Seated Row — Explosive','Drive elbows back fast. Slow controlled return. Heavy.','4 × 5'],
+          ['DB Farmers Carry','Heaviest DBs in the rack. Walk length of gym. Grip + core + posture.','4 × 40m'],
+          ['Box Jump Repeats (step-up boxes)','⚡ Step off, immediately jump again. Continuous — no pause at top.','3 × 8'],
+          ['Rower — Sprint Intervals','⚡ 8 × 20 sec all-out effort, 40 sec rest. Best gym cardio for court fitness.','8 rounds'],
+          ['Plank Complex','Front 45s → L side 30s → R side 30s. No rest between sides.','2 rounds'],
+        ],
+        home:[
+          ['Pull-Ups','As many as possible. Add weight via loaded backpack if easy.','4 × max'],
+          ['DB Farmers Carry (outside)','Heaviest DBs you have. Walk driveway or street. Grip and posture.','4 × 40m'],
+          ['Swiss Ball DB Row','Face down on Swiss ball, row DBs up. Great mid-back stability work.','3 × 10/side'],
+          ['Sprint Intervals (driveway/street)','⚡ 10 × 20m sprints. Full effort. Walk back = full rest.','10 × 20m'],
+          ['Plank Complex','Front 45s → L side 30s → R side 30s. No rest between.','2 rounds'],
+        ]
+      },
+    ]
+  },
+];
+
+function setLocation(loc, btn) {
+  currentLocation = loc;
+  document.querySelectorAll('#loc-gym, #loc-home').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const note = document.getElementById('location-note');
+  const noteText = document.getElementById('location-note-text');
+  if (loc === 'gym') {
+    note.style.borderColor = 'var(--blue)';
+    note.style.background = '#60a5fa11';
+    note.style.color = 'var(--blue)';
+    noteText.innerHTML = '🏋️ Gym mode: Stoneybrook HOA — machines, cables, full DB rack, pull-up/dip unit.';
+  } else {
+    note.style.borderColor = '#a78bfa';
+    note.style.background = '#a78bfa11';
+    note.style.color = '#a78bfa';
+    noteText.innerHTML = '🏠 Home mode: SelectTech 525 DBs, med balls (5 & 10 lb), bands, Swiss ball.';
+  }
+  renderWorkouts();
+}
+
+function selectWorkoutPhase(n, btn) {
+  document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentPhaseIdx = n - 1;
+  renderWorkouts();
+}
+
+function renderWorkouts() {
+  const phase = PHASES[currentPhaseIdx];
+  const loc = currentLocation;
+  let html = '';
+  if (phase.alert) {
+    html += `<div class="rehab-note">⚠️ <div>${phase.alert}</div></div>`;
+  }
+  const dayLabels = ['Tuesday','Thursday','Friday'];
+  phase.days.forEach((day, di) => {
+    const exercises = day[loc] || day.gym;
+    html += `
+      <div class="section-label">${dayLabels[di]} — ${day.name}</div>
+      <div class="workout-day" onclick="toggleDay(this)">
+        <div class="workout-day-header">
+          <div class="workout-day-title">
+            <div class="day-badge ${day.badgeClass}">${day.badge}</div>
+            <div>
+              <div class="workout-day-name">${day.name}</div>
+              <div class="workout-day-focus">${day.focus}</div>
+            </div>
+          </div>
+          <div class="chevron">›</div>
+        </div>
+        <div class="exercise-list">
+          ${exercises.map((ex, i) => `
+            <div class="exercise-item">
+              <div class="ex-num">${i+1}</div>
+              <div class="ex-info">
+                <div class="ex-name">${ex[0]}${ex[3] ? ' <span class="superset-tag">SS</span>' : ''}</div>
+                <div class="ex-note">${ex[1]}</div>
+              </div>
+              <div class="ex-sets">${ex[2]}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  });
+  document.getElementById('workout-render').innerHTML = html;
+}
+
+function toggleDay(el) {
+  el.classList.toggle('open');
+}
+
+// ===== GOOGLE SHEETS BACKEND =====
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz5_mND4MnGqicFhDpcS1vNAhwSrXThRqemCxWmI7SAdsTpL_TzhMDT1g6WabHBP_PT2Q/exec';
+
+// In-memory cache — loaded once on startup from Sheets
+let logsCache = [];
+let sheetsReady = false;
+
+async function sheetsRequest(payload) {
+  const res = await fetch(SHEET_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+}
+
+async function loadLogsFromSheets() {
+  try {
+    const data = await sheetsRequest({ action: 'getAll' });
+    if (data.status === 'ok') {
+      logsCache = data.logs.sort((a, b) => new Date(b.date) - new Date(a.date));
+      sheetsReady = true;
+    }
+  } catch(e) {
+    console.warn('Could not load from Sheets, using localStorage fallback', e);
+    logsCache = getLocalLogs();
+    sheetsReady = false;
+  }
+}
+
+function getLogs() { return logsCache; }
+
+function getLocalLogs() {
+  try { return JSON.parse(localStorage.getItem('tennis-logs') || '[]'); } catch(e) { return []; }
+}
+
+// ===== LOG FORM =====
+function updateExerciseFields() {
+  const session = document.getElementById('log-session').value;
+  const section = document.getElementById('exercise-log-section');
+  const rows = document.getElementById('exercise-log-rows');
+  if (!session) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  const exercises = WORKOUT_EXERCISES[session] || [];
+  rows.innerHTML = exercises.map((ex, i) => `
+    <div style="margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--border)">
+      <div class="ex-log-name">${i+1}. ${ex}</div>
+      <div class="ex-top-row">
+        <div>
+          <div class="ex-log-label">Sets done</div>
+          <input type="number" id="ex-${i}-sets" placeholder="3" min="0" max="10" oninput="updateSetRepInputs(${i}, this.value)">
+        </div>
+        <div>
+          <div class="ex-log-label">Weight (lbs)</div>
+          <input type="number" id="ex-${i}-weight" placeholder="—" min="0">
+        </div>
+      </div>
+      <div class="per-set-reps" id="ex-${i}-reps-wrap" style="display:none">
+        <div class="per-set-reps-label">Reps per set</div>
+        <div class="set-inputs" id="ex-${i}-set-inputs"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateSetRepInputs(exIdx, numSets) {
+  const wrap = document.getElementById(`ex-${exIdx}-reps-wrap`);
+  const container = document.getElementById(`ex-${exIdx}-set-inputs`);
+  const n = parseInt(numSets);
+  if (!n || n < 1) { wrap.style.display = 'none'; container.innerHTML = ''; return; }
+  wrap.style.display = 'block';
+  // Preserve existing values
+  const existing = [];
+  container.querySelectorAll('input').forEach(inp => existing.push(inp.value));
+  container.innerHTML = Array.from({length: n}, (_, s) => `
+    <div class="set-input-wrap">
+      <span>S${s+1}</span>
+      <input type="number" id="ex-${exIdx}-rep-${s}" placeholder="—" min="0" value="${existing[s] || ''}">
+    </div>
+  `).join('');
+}
+
+async function saveLog() {
+  const date = document.getElementById('log-date').value;
+  const session = document.getElementById('log-session').value;
+  const effort = document.getElementById('log-effort').value;
+  const notes = document.getElementById('log-notes').value;
+  if (!date || !session) { alert('Please fill in date and workout type.'); return; }
+
+  const exercises = (WORKOUT_EXERCISES[session] || []).map((ex, i) => {
+    const sets = document.getElementById(`ex-${i}-sets`)?.value || '';
+    const weight = document.getElementById(`ex-${i}-weight`)?.value || '';
+    const numSets = parseInt(sets) || 0;
+    const repsPerSet = Array.from({length: numSets}, (_, s) =>
+      document.getElementById(`ex-${i}-rep-${s}`)?.value || ''
+    ).filter(Boolean);
+    return { name: ex, sets, weight, repsPerSet };
+  }).filter(e => e.sets || e.weight);
+
+  const log = { id: Date.now(), date, session, effort, notes, exercises };
+
+  // Optimistic UI — add to cache immediately
+  logsCache.unshift(log);
+  renderHistory();
+  renderProgress();
+
+  // Clear form
+  document.getElementById('log-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('log-session').value = '';
+  document.getElementById('exercise-log-section').style.display = 'none';
+  document.getElementById('log-notes').value = '';
+  document.getElementById('log-effort').value = '';
+
+  // Save to Sheets
+  showToast('⏳ Saving...');
+  try {
+    const result = await sheetsRequest({ action: 'save', log });
+    if (result.status === 'ok') {
+      showToast('✓ Workout saved to cloud!');
+      // Also keep localStorage as a local backup
+      localStorage.setItem('tennis-logs', JSON.stringify(logsCache));
+    } else {
+      showToast('⚠️ Saved locally only');
+    }
+  } catch(e) {
+    showToast('⚠️ Saved locally only');
+    localStorage.setItem('tennis-logs', JSON.stringify(logsCache));
+  }
+}
+
+const SESSION_NAMES = {
+  'P1-TUE':'Ph.1 · Upper Push','P1-THU':'Ph.1 · Upper Pull','P1-FRI':'Ph.1 · Full Upper + Rehab',
+  'P2-TUE':'Ph.2 · Lower Body','P2-THU':'Ph.2 · Upper Push','P2-FRI':'Ph.2 · Upper Pull + Core',
+  'P3-TUE':'Ph.3 · Explosive Lower','P3-THU':'Ph.3 · Explosive Upper','P3-FRI':'Ph.3 · Full Body',
+};
+
+function renderHistory() {
+  const logs = getLogs();
+  const el = document.getElementById('log-history');
+  if (!logs.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><h3>No workouts logged yet</h3><p>Complete your first session and log it here to start tracking progress.</p></div>`;
+    return;
+  }
+  el.innerHTML = logs.map(log => `
+    <div class="log-entry">
+      <div class="log-entry-header">
+        <div>
+          <div class="log-entry-date">${formatDate(log.date)}</div>
+          <div class="log-entry-day">${SESSION_NAMES[log.session] || log.session}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${log.effort ? `<div class="log-entry-phase">Effort: ${log.effort}/10</div>` : ''}
+          <button class="delete-btn" onclick="deleteLog(${log.id})">✕</button>
+        </div>
+      </div>
+      ${log.exercises?.length ? `<div class="log-exercises">${log.exercises.map(e=>{
+        const repsStr = e.repsPerSet?.length
+          ? e.repsPerSet.join(', ') + ' reps'
+          : (e.reps ? e.reps + ' reps' : '');
+        const weightStr = e.weight ? ' @ ' + e.weight + 'lbs' : '';
+        const setsStr = e.sets ? e.sets + ' sets' : '';
+        return `<div class="log-ex-row"><span>${e.name}</span><span>${setsStr}${repsStr ? ' · ' + repsStr : ''}${weightStr}</span></div>`;
+      }).join('')}</div>` : ''}
+      ${log.notes ? `<div class="log-notes">"${log.notes}"</div>` : ''}
+    </div>
+  `).join('');
+}
+
+async function deleteLog(id) {
+  // Optimistic remove from cache
+  logsCache = logsCache.filter(l => l.id !== id);
+  renderHistory();
+  renderProgress();
+  localStorage.setItem('tennis-logs', JSON.stringify(logsCache));
+
+  // Delete from Sheets
+  try {
+    await sheetsRequest({ action: 'delete', id });
+  } catch(e) {
+    console.warn('Could not delete from Sheets', e);
+  }
+}
+
+function formatDate(d) {
+  const [y,m,day] = d.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const dt = new Date(y, m-1, day);
+  return `${days[dt.getDay()]} ${months[m-1]} ${+day}, ${y}`;
+}
+
+// ===== PROGRESS =====
+function renderProgress() {
+  const logs = getLogs();
+  const today = new Date();
+  const start = new Date('2026-05-10');
+  const end = new Date('2026-08-10');
+  const totalDays = Math.round((end - start) / 86400000);
+  const elapsed = Math.max(0, Math.round((today - start) / 86400000));
+  const daysLeft = Math.max(0, Math.round((end - today) / 86400000));
+  const progPct = Math.min(100, Math.round(elapsed / totalDays * 100));
+
+  document.getElementById('stat-workouts').textContent = logs.length;
+  document.getElementById('stat-days-left').textContent = daysLeft;
+  document.getElementById('program-progress').style.width = progPct + '%';
+  document.getElementById('prog-pct').textContent = progPct + '%';
+
+  const efforts = logs.map(l => +l.effort).filter(Boolean);
+  document.getElementById('stat-avg-effort').textContent = efforts.length ? (efforts.reduce((a,b)=>a+b,0)/efforts.length).toFixed(1) : '—';
+
+  // Phase progress
+  const phases = [
+    { name: 'Phase 1 — Recovery', start: new Date('2026-05-10'), end: new Date('2026-05-24'), dates: 'May 10 – May 24' },
+    { name: 'Phase 2 — Build', start: new Date('2026-05-25'), end: new Date('2026-06-28'), dates: 'May 25 – Jun 28' },
+    { name: 'Phase 3 — Power', start: new Date('2026-06-29'), end: new Date('2026-08-10'), dates: 'Jun 29 – Aug 10' },
+  ];
+  let currentPhase = phases[0]; let phaseIdx = 0;
+  for (let i = 0; i < phases.length; i++) {
+    if (today >= phases[i].start && today <= phases[i].end) { currentPhase = phases[i]; phaseIdx = i; break; }
+    if (today > phases[i].end) { currentPhase = phases[i+1] || phases[2]; phaseIdx = Math.min(i+1, 2); }
+  }
+  const phaseElapsed = Math.max(0, (today - currentPhase.start) / 86400000);
+  const phaseDays = (currentPhase.end - currentPhase.start) / 86400000;
+  const phasePct = Math.min(100, Math.round(phaseElapsed / phaseDays * 100));
+  document.getElementById('current-phase-name').textContent = currentPhase.name;
+  document.getElementById('current-phase-dates').textContent = currentPhase.dates;
+  document.getElementById('phase-progress').style.width = phasePct + '%';
+  document.getElementById('phase-prog-pct').textContent = phasePct + '%';
+  document.getElementById('current-phase-badge').textContent = `Phase ${phaseIdx+1}`;
+
+  // Streak (weeks with 3+ workouts)
+  const weekMap = {};
+  logs.forEach(log => {
+    const d = new Date(log.date + 'T12:00:00');
+    const weekKey = `${d.getFullYear()}-W${getWeek(d)}`;
+    weekMap[weekKey] = (weekMap[weekKey] || 0) + 1;
+  });
+  let streak = 0;
+  const checkDate = new Date(today);
+  for (let w = 0; w < 12; w++) {
+    const key = `${checkDate.getFullYear()}-W${getWeek(checkDate)}`;
+    if ((weekMap[key] || 0) >= 3) { streak++; checkDate.setDate(checkDate.getDate() - 7); }
+    else break;
+  }
+  document.getElementById('stat-streak').textContent = streak;
+}
+
+function getWeek(d) {
+  const onejan = new Date(d.getFullYear(), 0, 1);
+  return Math.ceil((((d - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== MOBILITY =====
+let currentMobSection = 'daily';
+const DAILY_IDS = ['m1','m2','m3','m4','m5','m6','m7'];
+const FULL_IDS  = ['m1','m2','m3','m4','m8','m9','m5','m6','m7','m10','m11','m12','m13','m14'];
+
+function getMobDone() {
+  const key = 'mob-done-' + new Date().toISOString().split('T')[0];
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { return []; }
+}
+function saveMobDone(ids) {
+  const key = 'mob-done-' + new Date().toISOString().split('T')[0];
+  localStorage.setItem(key, JSON.stringify(ids));
+}
+
+function toggleMob(el) {
+  const id = el.dataset.id;
+  const done = getMobDone();
+  const idx = done.indexOf(id);
+  if (idx === -1) done.push(id); else done.splice(idx, 1);
+  saveMobDone(done);
+  renderMobItems();
+  updateMobProgress();
+}
+
+function renderMobItems() {
+  const done = getMobDone();
+  document.querySelectorAll('.mob-item').forEach(el => {
+    if (done.includes(el.dataset.id)) el.classList.add('done');
+    else el.classList.remove('done');
+  });
+}
+
+function updateMobProgress() {
+  const done = getMobDone();
+  const ids = currentMobSection === 'daily' ? DAILY_IDS : FULL_IDS;
+  const count = ids.filter(id => done.includes(id)).length;
+  const total = ids.length;
+  const pct = total ? Math.round(count / total * 100) : 0;
+  document.getElementById('mob-progress-bar').style.width = pct + '%';
+  document.getElementById('mob-progress-label').textContent = count + ' / ' + total;
+  const banner = document.getElementById('mob-completion-banner');
+  if (count === total && total > 0) banner.classList.add('visible');
+  else banner.classList.remove('visible');
+  renderMobItems();
+}
+
+function showMobSection(section, btn) {
+  currentMobSection = section;
+  document.querySelectorAll('.mob-toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('mob-daily').style.display = section === 'daily' ? 'block' : 'none';
+  document.getElementById('mob-full').style.display  = section === 'full'  ? 'block' : 'none';
+  updateMobProgress();
+}
+
+function resetMobility() {
+  const key = 'mob-done-' + new Date().toISOString().split('T')[0];
+  localStorage.removeItem(key);
+  updateMobProgress();
+}
+
+// ===== EXPORT (backup only — primary storage is Google Sheets) =====
+function exportLogs() {
+  const logs = getLogs();
+  if (!logs.length) { showToast('No logs to export yet!'); return; }
+  const payload = { exportedAt: new Date().toISOString(), version: 1, logs };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const dateStr = new Date().toISOString().split('T')[0];
+  a.href = url;
+  a.download = `tennis-training-logs-${dateStr}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✓ Backup downloaded!');
+}
+
+window.onload = async () => {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('log-date').value = today;
+  renderWorkouts();
+  updateMobProgress();
+
+  // Show loading state while fetching logs from Sheets
+  const histEl = document.getElementById('log-history');
+  if (histEl) histEl.innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><h3>Loading logs...</h3><p>Fetching your workout history from the cloud.</p></div>';
+
+  await loadLogsFromSheets();
+  renderHistory();
+  renderProgress();
+};
+</script>
+</body>
+</html>
