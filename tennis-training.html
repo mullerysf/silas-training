@@ -1179,13 +1179,20 @@
       <input type="date" id="log-date">
     </div>
     <div class="form-row">
+      <label class="form-label">Location</label>
+      <div style="display:flex; gap:6px; margin-top:2px">
+        <button class="mob-toggle-btn active" id="log-loc-gym" onclick="setLogLocation('gym', this)" style="font-size:12px; padding:8px">🏋️ HOA Gym</button>
+        <button class="mob-toggle-btn" id="log-loc-home" onclick="setLogLocation('home', this)" style="font-size:12px; padding:8px">🏠 At Home</button>
+      </div>
+    </div>
+    <div class="form-row">
       <label class="form-label">Phase & Day</label>
       <select id="log-session" onchange="updateExerciseFields()">
         <option value="">Select workout...</option>
         <optgroup label="Phase 1 — Recovery">
           <option value="P1-TUE">Phase 1 · Tuesday — Upper Push</option>
           <option value="P1-THU">Phase 1 · Thursday — Upper Pull</option>
-          <option value="P1-FRI">Phase 1 · Friday — Full Upper + Rehab</option>
+          <option value="P1-FRI">Phase 1 · Friday — Full Upper</option>
         </optgroup>
         <optgroup label="Phase 2 — Build">
           <option value="P2-TUE">Phase 2 · Tuesday — Lower Body</option>
@@ -1195,7 +1202,7 @@
         <optgroup label="Phase 3 — Power">
           <option value="P3-TUE">Phase 3 · Tuesday — Explosive Lower</option>
           <option value="P3-THU">Phase 3 · Thursday — Explosive Upper</option>
-          <option value="P3-FRI">Phase 3 · Friday — Full Body + Conditioning</option>
+          <option value="P3-FRI">Phase 3 · Friday — Full Body</option>
         </optgroup>
       </select>
     </div>
@@ -1651,47 +1658,91 @@ function getLocalLogs() {
 
 // ===== LOG FORM =====
 let editingLogId = null; // null = new log, number = editing existing
+let logLocation = 'gym'; // tracks gym vs home for the log form
+
+function setLogLocation(loc, btn) {
+  logLocation = loc;
+  document.querySelectorAll('#log-loc-gym, #log-loc-home').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Re-render exercise fields if a session is already selected
+  if (document.getElementById('log-session').value) updateExerciseFields();
+}
+
+function getLogExercises(session) {
+  // Map session key to PHASES data
+  const map = {
+    'P1-TUE': [0,0], 'P1-THU': [0,1], 'P1-FRI': [0,2],
+    'P2-TUE': [1,0], 'P2-THU': [1,1], 'P2-FRI': [1,2],
+    'P3-TUE': [2,0], 'P3-THU': [2,1], 'P3-FRI': [2,2],
+  };
+  const idx = map[session];
+  if (!idx) return [];
+  const day = PHASES[idx[0]].days[idx[1]];
+  const exList = day[logLocation] || day.gym;
+  return exList.map(e => e[0]); // just the names
+}
 function updateExerciseFields() {
   const session = document.getElementById('log-session').value;
   const section = document.getElementById('exercise-log-section');
   const rows = document.getElementById('exercise-log-rows');
   if (!session) { section.style.display = 'none'; return; }
   section.style.display = 'block';
-  const exercises = WORKOUT_EXERCISES[session] || [];
+  const exercises = getLogExercises(session);
   rows.innerHTML = exercises.map((ex, i) => `
     <div style="margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--border)">
       <div class="ex-log-name">${i+1}. ${ex}</div>
-      <div class="ex-top-row">
-        <div>
-          <div class="ex-log-label">Sets done</div>
-          <input type="number" id="ex-${i}-sets" placeholder="3" min="0" max="10" oninput="updateSetRepInputs(${i}, this.value)">
-        </div>
-        <div>
-          <div class="ex-log-label">Weight (lbs)</div>
-          <input type="number" id="ex-${i}-weight" placeholder="—" min="0">
-        </div>
+      <div style="margin-bottom:8px">
+        <div class="ex-log-label">Sets done</div>
+        <input type="number" id="ex-${i}-sets" placeholder="3" min="0" max="10" value="3" oninput="updateSetRepInputs(${i}, this.value)" style="width:80px; text-align:center">
       </div>
-      <div class="per-set-reps" id="ex-${i}-reps-wrap" style="display:none">
-        <div class="per-set-reps-label">Reps per set</div>
-        <div class="set-inputs" id="ex-${i}-set-inputs"></div>
+      <div id="ex-${i}-reps-wrap">
+        <div style="display:grid; grid-template-columns: 36px 1fr 1fr; gap:6px; margin-bottom:4px; padding:0 2px">
+          <div></div>
+          <div class="ex-log-label" style="text-align:center">Reps</div>
+          <div class="ex-log-label" style="text-align:center">Weight (lbs)</div>
+        </div>
+        <div class="set-inputs" id="ex-${i}-set-inputs">
+          ${[0,1,2].map(s => `
+            <div style="display:grid; grid-template-columns:36px 1fr 1fr; gap:6px; margin-bottom:6px; align-items:center">
+              <span style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; text-align:center">S${s+1}</span>
+              <input type="number" id="ex-${i}-rep-${s}" placeholder="—" min="0" style="text-align:center">
+              <input type="number" id="ex-${i}-wt-${s}" placeholder="—" min="0" style="text-align:center" ${s > 0 ? `oninput=""` : `oninput="copyWeight(${i}, this.value)"`}>
+            </div>
+          `).join('')}
+        </div>
       </div>
     </div>
   `).join('');
 }
 
+function copyWeight(exIdx, val) {
+  // Auto-fill sets 2+ with set 1 weight if they're empty
+  const numSets = parseInt(document.getElementById(`ex-${exIdx}-sets`)?.value) || 3;
+  for (let s = 1; s < numSets; s++) {
+    const el = document.getElementById(`ex-${exIdx}-wt-${s}`);
+    if (el && !el.dataset.userEdited) el.value = val;
+  }
+}
+
 function updateSetRepInputs(exIdx, numSets) {
-  const wrap = document.getElementById(`ex-${exIdx}-reps-wrap`);
   const container = document.getElementById(`ex-${exIdx}-set-inputs`);
+  if (!container) return;
   const n = parseInt(numSets);
-  if (!n || n < 1) { wrap.style.display = 'none'; container.innerHTML = ''; return; }
-  wrap.style.display = 'block';
+  if (!n || n < 1) { container.innerHTML = ''; return; }
+
   // Preserve existing values
-  const existing = [];
-  container.querySelectorAll('input').forEach(inp => existing.push(inp.value));
+  const existingReps = [], existingWeights = [];
+  container.querySelectorAll('[id^="ex-' + exIdx + '-rep-"]').forEach(el => existingReps.push(el.value));
+  container.querySelectorAll('[id^="ex-' + exIdx + '-wt-"]').forEach(el => existingWeights.push(el.value));
+
+  // Use set 1 weight as the default for new sets
+  const baseWeight = existingWeights[0] || '';
+
   container.innerHTML = Array.from({length: n}, (_, s) => `
-    <div class="set-input-wrap">
-      <span>S${s+1}</span>
-      <input type="number" id="ex-${exIdx}-rep-${s}" placeholder="—" min="0" value="${existing[s] || ''}">
+    <div style="display:grid; grid-template-columns:36px 1fr 1fr; gap:6px; margin-bottom:6px; align-items:center">
+      <span style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; text-align:center">S${s+1}</span>
+      <input type="number" id="ex-${exIdx}-rep-${s}" placeholder="—" min="0" style="text-align:center" value="${existingReps[s] || ''}">
+      <input type="number" id="ex-${exIdx}-wt-${s}" placeholder="—" min="0" style="text-align:center" value="${existingWeights[s] || (s > 0 ? baseWeight : '')}" ${s === 0 ? `oninput="copyWeight(${exIdx}, this.value)"` : ''}>
     </div>
   `).join('');
 }
@@ -1703,15 +1754,19 @@ async function saveLog() {
   const notes = document.getElementById('log-notes').value;
   if (!date || !session) { alert('Please fill in date and workout type.'); return; }
 
-  const exercises = (WORKOUT_EXERCISES[session] || []).map((ex, i) => {
+  const exercises = (getLogExercises(session) || []).map((ex, i) => {
     const sets = document.getElementById(`ex-${i}-sets`)?.value || '';
-    const weight = document.getElementById(`ex-${i}-weight`)?.value || '';
     const numSets = parseInt(sets) || 0;
     const repsPerSet = Array.from({length: numSets}, (_, s) =>
       document.getElementById(`ex-${i}-rep-${s}`)?.value || ''
     ).filter(Boolean);
-    return { name: ex, sets, weight, repsPerSet };
-  }).filter(e => e.sets || e.weight);
+    const weightsPerSet = Array.from({length: numSets}, (_, s) =>
+      document.getElementById(`ex-${i}-wt-${s}`)?.value || ''
+    );
+    // For display/compatibility keep a single weight = set 1 weight
+    const weight = weightsPerSet[0] || '';
+    return { name: ex, sets, weight, repsPerSet, weightsPerSet };
+  }).filter(e => e.sets);
 
   // Build log object — keep existing id if editing
   const log = { 
@@ -1784,12 +1839,21 @@ function renderHistory() {
         </div>
       </div>
       ${log.exercises?.length ? `<div class="log-exercises">${log.exercises.map(e=>{
-        const repsStr = e.repsPerSet?.length
-          ? e.repsPerSet.join(', ') + ' reps'
-          : (e.reps ? e.reps + ' reps' : '');
-        const weightStr = e.weight ? ' @ ' + e.weight + 'lbs' : '';
+        const numSets = parseInt(e.sets) || 0;
+        const setDetails = Array.from({length: numSets}, (_, s) => {
+          const reps = e.repsPerSet?.[s] ? e.repsPerSet[s] + ' reps' : '';
+          const wt = e.weightsPerSet?.[s] ? e.weightsPerSet[s] + 'lbs' : (e.weight && s === 0 ? e.weight + 'lbs' : '');
+          return [reps, wt].filter(Boolean).join(' @ ');
+        }).filter(Boolean);
         const setsStr = e.sets ? e.sets + ' sets' : '';
-        return `<div class="log-ex-row"><span>${e.name}</span><span>${setsStr}${repsStr ? ' · ' + repsStr : ''}${weightStr}</span></div>`;
+        // If all sets have same weight, show condensed; otherwise show per-set
+        const allSameWeight = e.weightsPerSet && e.weightsPerSet.every(w => w === e.weightsPerSet[0]);
+        const summaryStr = allSameWeight && e.weightsPerSet?.[0]
+          ? `${setsStr} · ${e.repsPerSet?.join(', ') || ''} reps @ ${e.weightsPerSet[0]}lbs`
+          : setDetails.length
+            ? `${setsStr} · ` + setDetails.map((d,s)=>`S${s+1}: ${d}`).join(' | ')
+            : setsStr;
+        return `<div class="log-ex-row"><span>${e.name}</span><span>${summaryStr}</span></div>`;
       }).join('')}</div>` : ''}
       ${log.notes ? `<div class="log-notes">"${log.notes}"</div>` : ''}
     </div>
@@ -1820,7 +1884,7 @@ function editLog(id) {
 
   // Wait a tick for exercise fields to render, then fill in the values
   setTimeout(() => {
-    const exercises = WORKOUT_EXERCISES[log.session] || [];
+    const exercises = getLogExercises(log.session);
     exercises.forEach((ex, i) => {
       const saved = log.exercises?.find(e => e.name === ex);
       if (!saved) return;
@@ -1836,6 +1900,19 @@ function editLog(id) {
             const repEl = document.getElementById(`ex-${i}-rep-${s}`);
             if (repEl) repEl.value = r;
           });
+          // Restore per-set weights
+          (saved.weightsPerSet || []).forEach((w, s) => {
+            const wtEl = document.getElementById(`ex-${i}-wt-${s}`);
+            if (wtEl) wtEl.value = w;
+          });
+          // Fallback: if no weightsPerSet, use single weight for all sets
+          if (!saved.weightsPerSet && saved.weight) {
+            const numSets = parseInt(saved.sets) || 0;
+            for (let s = 0; s < numSets; s++) {
+              const wtEl = document.getElementById(`ex-${i}-wt-${s}`);
+              if (wtEl) wtEl.value = saved.weight;
+            }
+          }
         }, 50);
       }
       if (weightEl) weightEl.value = saved.weight || '';
