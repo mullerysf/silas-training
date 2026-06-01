@@ -130,12 +130,12 @@
 </div>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('program',this)"><span class="tab-icon">&#128203;</span>Program</div>
-  <div class="tab" onclick="switchTab('workouts',this)"><span class="tab-icon">&#128170;</span>Workouts</div>
-  <div class="tab" onclick="switchTab('golf',this)"><span class="tab-icon">&#9971;</span>Golf</div>
-  <div class="tab" onclick="switchTab('mobility',this)"><span class="tab-icon">&#129496;</span>Stretch</div>
-  <div class="tab" onclick="switchTab('log',this)"><span class="tab-icon">&#128221;</span>Log</div>
-  <div class="tab" onclick="switchTab('progress',this)"><span class="tab-icon">&#11088;</span>Progress</div>
+  <div class="tab active" onclick="switchTab('program')"><span class="tab-icon">&#128203;</span>Program</div>
+  <div class="tab" onclick="switchTab('workouts')"><span class="tab-icon">&#128170;</span>Workouts</div>
+  <div class="tab" onclick="switchTab('golf')"><span class="tab-icon">&#9971;</span>Golf</div>
+  <div class="tab" onclick="switchTab('mobility')"><span class="tab-icon">&#129496;</span>Stretch</div>
+  <div class="tab" onclick="switchTab('log')"><span class="tab-icon">&#128221;</span>Log</div>
+  <div class="tab" onclick="switchTab('progress')"><span class="tab-icon">&#11088;</span>Progress</div>
 </div>
 
 <!-- PROGRAM -->
@@ -444,11 +444,15 @@
   const SHEETS_URL = "https://script.google.com/macros/s/AKfycbz5_mND4MnGqicFhDpcS1vNAhwSrXThRqemCxWmI7SAdsTpL_TzhMDT1g6WabHBP_PT2Q/exec";
   const SHEET_NAME = "Isla";
 
-  function switchTab(tab, el) {
+  function switchTab(tab) {
     document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.getElementById("section-" + tab).classList.add("active");
-    el.classList.add("active");
+    var sec = document.getElementById("section-" + tab);
+    if (sec) sec.classList.add("active");
+    var tabs = document.querySelectorAll(".tab");
+    var order = ["program","workouts","golf","mobility","log","progress"];
+    var idx = order.indexOf(tab);
+    if (idx >= 0 && tabs[idx]) tabs[idx].classList.add("active");
     if (tab === "log") renderHistory();
     if (tab === "progress") renderProgress();
   }
