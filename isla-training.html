@@ -130,16 +130,16 @@
 </div>
 
 <div class="tabs" id="main-tabs">
-  <div class="tab active" data-tab="program"><span class="tab-icon">&#128203;</span>Program</div>
-  <div class="tab" data-tab="workouts"><span class="tab-icon">&#128170;</span>Workouts</div>
-  <div class="tab" data-tab="golf"><span class="tab-icon">&#9971;</span>Golf</div>
-  <div class="tab" data-tab="mobility"><span class="tab-icon">&#129496;</span>Stretch</div>
-  <div class="tab" data-tab="log"><span class="tab-icon">&#128221;</span>Log</div>
-  <div class="tab" data-tab="progress"><span class="tab-icon">&#11088;</span>Progress</div>
+  <div class="tab active" id="t-program" onclick="switchTab('program')"><span style="pointer-events:none" class="tab-icon">&#128203;</span><span style="pointer-events:none">Program</span></div>
+  <div class="tab" id="t-workouts" onclick="switchTab('workouts')"><span style="pointer-events:none" class="tab-icon">&#128170;</span><span style="pointer-events:none">Workouts</span></div>
+  <div class="tab" id="t-golf" onclick="switchTab('golf')"><span style="pointer-events:none" class="tab-icon">&#9971;</span><span style="pointer-events:none">Golf</span></div>
+  <div class="tab" id="t-mobility" onclick="switchTab('mobility')"><span style="pointer-events:none" class="tab-icon">&#129496;</span><span style="pointer-events:none">Stretch</span></div>
+  <div class="tab" id="t-log" onclick="switchTab('log')"><span style="pointer-events:none" class="tab-icon">&#128221;</span><span style="pointer-events:none">Log</span></div>
+  <div class="tab" id="t-progress" onclick="switchTab('progress')"><span style="pointer-events:none" class="tab-icon">&#11088;</span><span style="pointer-events:none">Progress</span></div>
 </div>
 
 <!-- PROGRAM -->
-<div id="section-program" class="section active content">
+<div id="section-program" class="section active content" style="display:block">
   <div class="card">
     <div class="card-title">&#128197; Weekly Schedule</div>
     <div class="week-grid">
@@ -183,7 +183,7 @@
 </div>
 
 <!-- WORKOUTS -->
-<div id="section-workouts" class="section content">
+<div id="section-workouts" class="section content" style="display:none">
   <div class="sub-toggle">
     <div class="sub-btn active" onclick="showWorkout('monday',this)">Monday</div>
     <div class="sub-btn" onclick="showWorkout('wednesday',this)">Wednesday</div>
@@ -257,7 +257,7 @@
 </div>
 
 <!-- GOLF -->
-<div id="section-golf" class="section content">
+<div id="section-golf" class="section content" style="display:none">
   <div class="golf-banner">
     <h3>&#9971; Golf Practice Guide</h3>
     <p>Short game first &mdash; that's where scores are made! Full swing comes after.</p>
@@ -327,7 +327,7 @@
 </div>
 
 <!-- STRETCH -->
-<div id="section-mobility" class="section content">
+<div id="section-mobility" class="section content" style="display:none">
   <div class="card" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:none;">
     <div style="font-family:'Fredoka One',cursive;font-size:17px;color:#2E7D32;">&#129496; After EVERY workout or golf session &mdash; 5&ndash;7 minutes!</div>
     <div style="font-size:12px;color:#388E3C;margin-top:4px;font-weight:700;">Hold each stretch &mdash; don't bounce. Great for golf AND tennis.</div>
@@ -350,7 +350,7 @@
 </div>
 
 <!-- LOG -->
-<div id="section-log" class="section content">
+<div id="section-log" class="section content" style="display:none">
   <div class="card">
     <div class="card-title">&#128221; Log Today's Session</div>
     <div class="form-row">
@@ -407,7 +407,7 @@
 </div>
 
 <!-- PROGRESS -->
-<div id="section-progress" class="section content">
+<div id="section-progress" class="section content" style="display:none">
   <div class="stat-row">
     <div class="stat-card"><div class="stat-number" id="stat-total">0</div><div class="stat-label">Total Sessions</div></div>
     <div class="stat-card"><div class="stat-number" id="stat-this-week">0</div><div class="stat-label">This Week</div></div>
@@ -445,21 +445,20 @@
   const SHEET_NAME = "Isla";
 
   function switchTab(tab) {
-    document.querySelectorAll(".section").forEach(function(s){ s.classList.remove("active"); });
-    document.querySelectorAll("#main-tabs .tab").forEach(function(t){ t.classList.remove("active"); });
-    var sec = document.getElementById("section-" + tab);
-    if (sec) sec.classList.add("active");
-    var activeTab = document.querySelector("#main-tabs .tab[data-tab=\"" + tab + "\"]");
-    if (activeTab) activeTab.classList.add("active");
+    var allSections = ["program","workouts","golf","mobility","log","progress"];
+    for (var i = 0; i < allSections.length; i++) {
+      var s = document.getElementById("section-" + allSections[i]);
+      var t = document.getElementById("t-" + allSections[i]);
+      if (s) s.style.display = "none";
+      if (t) t.classList.remove("active");
+    }
+    var target = document.getElementById("section-" + tab);
+    var targetTab = document.getElementById("t-" + tab);
+    if (target) target.style.display = "block";
+    if (targetTab) targetTab.classList.add("active");
     if (tab === "log") renderHistory();
     if (tab === "progress") renderProgress();
   }
-
-  // Bulletproof tab click handler using event delegation
-  document.getElementById("main-tabs").addEventListener("click", function(e) {
-    var tab = e.target.closest("[data-tab]");
-    if (tab) switchTab(tab.getAttribute("data-tab"));
-  });
 
   function showWorkout(day, el) {
     ["monday","wednesday","friday"].forEach(d => {
