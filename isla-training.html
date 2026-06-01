@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Isla's Summer Training</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --coral: #FF6B6B; --teal: #2DD4BF; --teal-dark: #0F9D8A;
+    --yellow: #FFD166; --purple: #C084FC; --green: #4CAF50;
+    --bg: #FFF7F0; --card: #FFFFFF; --text: #2D2D2D; --text-light: #777;
+    --radius: 18px; --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:"Nunito",sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:90px; }
+
+  .header { background:linear-gradient(135deg,var(--coral) 0%,#FF8E53 100%); padding:28px 20px 20px; text-align:center; position:relative; overflow:hidden; }
+  .header::before { content:""; position:absolute; top:-30px; right:-30px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,0.1); }
+  .header::after { content:""; position:absolute; bottom:-20px; left:-20px; width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,0.08); }
+  .header h1 { font-family:"Fredoka One",cursive; font-size:28px; color:white; letter-spacing:1px; position:relative; z-index:1; }
+  .header p { color:rgba(255,255,255,0.85); font-size:13px; font-weight:600; margin-top:4px; position:relative; z-index:1; }
+  .emoji-row { font-size:22px; margin-top:8px; position:relative; z-index:1; letter-spacing:6px; }
+
+  .tabs { display:flex; background:white; border-bottom:2px solid #F0E8E0; overflow-x:auto; scrollbar-width:none; position:sticky; top:0; z-index:100; }
+  .tabs::-webkit-scrollbar { display:none; }
+  .tab { flex:1; padding:10px 4px 8px; text-align:center; font-size:10px; font-weight:800; color:var(--text-light); cursor:pointer; border-bottom:3px solid transparent; transition:all 0.2s; white-space:nowrap; text-transform:uppercase; letter-spacing:0.3px; min-width:52px; }
+  .tab .tab-icon { font-size:17px; display:block; margin-bottom:2px; }
+  .tab.active { color:var(--coral); border-bottom-color:var(--coral); }
+
+  .content { padding:16px; }
+  .section { display:none; }
+  .section.active { display:block; }
+
+  .card { background:var(--card); border-radius:var(--radius); padding:18px; margin-bottom:14px; box-shadow:var(--shadow); }
+  .card-title { font-family:"Fredoka One",cursive; font-size:18px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+
+  .phase-banner { border-radius:var(--radius); padding:18px; margin-bottom:14px; color:white; position:relative; overflow:hidden; }
+  .phase-banner.p1 { background:linear-gradient(135deg,#2DD4BF,#0F9D8A); }
+  .phase-banner.p2 { background:linear-gradient(135deg,#FF6B6B,#FF8E53); }
+  .phase-banner.p3 { background:linear-gradient(135deg,#C084FC,#9B59F5); }
+  .phase-banner h2 { font-family:"Fredoka One",cursive; font-size:20px; }
+  .phase-banner p { font-size:13px; opacity:0.9; margin-top:4px; }
+  .phase-banner .dates { font-size:12px; opacity:0.75; margin-top:6px; font-weight:700; }
+  .phase-active-badge { position:absolute; top:14px; right:14px; background:rgba(255,255,255,0.25); border:1.5px solid rgba(255,255,255,0.5); border-radius:20px; padding:2px 10px; font-size:11px; font-weight:800; }
+
+  .week-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-top:10px; }
+  .day-cell { text-align:center; border-radius:10px; padding:8px 2px; font-size:10px; font-weight:800; }
+  .day-cell .day-name { display:block; opacity:0.6; margin-bottom:4px; text-transform:uppercase; }
+  .day-cell .day-icon { font-size:17px; display:block; }
+  .day-cell.workout { background:#FFF0F0; color:var(--coral); }
+  .day-cell.tennis { background:#F0FFF9; color:var(--teal-dark); }
+  .day-cell.golf-day { background:#E8F5E9; color:#2E7D32; }
+  .day-cell.rest { background:#F8F8F8; color:#aaa; }
+
+  .sub-toggle { display:flex; background:#F5F5F5; border-radius:30px; padding:4px; margin-bottom:16px; }
+  .sub-btn { flex:1; padding:8px; border-radius:26px; text-align:center; font-size:12px; font-weight:800; cursor:pointer; transition:all 0.2s; color:var(--text-light); }
+  .sub-btn.active { background:white; color:var(--coral); box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+
+  .golf-location-toggle { display:flex; background:#F5F5F5; border-radius:30px; padding:4px; margin-bottom:14px; }
+  .golf-loc-btn { flex:1; padding:8px; border-radius:26px; text-align:center; font-size:12px; font-weight:800; cursor:pointer; transition:all 0.2s; color:var(--text-light); }
+  .golf-loc-btn.active { background:white; color:#2E7D32; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+
+  .ex-block { margin-bottom:16px; }
+  .ex-block-title { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--text-light); margin-bottom:8px; }
+  .exercise-item { display:flex; align-items:flex-start; gap:10px; padding:12px; background:#FAFAFA; border-radius:12px; margin-bottom:7px; border-left:3px solid var(--coral); }
+  .exercise-item.teal { border-left-color:var(--teal); }
+  .exercise-item.purple { border-left-color:var(--purple); }
+  .exercise-item.yellow { border-left-color:var(--yellow); }
+  .exercise-item.green { border-left-color:var(--green); background:#F5FFF5; }
+  .ex-emoji { font-size:22px; flex-shrink:0; }
+  .ex-info { flex:1; }
+  .ex-name { font-weight:800; font-size:14px; }
+  .ex-detail { font-size:12px; color:var(--text-light); margin-top:2px; line-height:1.5; }
+  .ex-tip { font-size:11px; color:var(--teal-dark); margin-top:4px; font-style:italic; }
+  .ex-tip.gtip { color:#2E7D32; }
+
+  .golf-banner { background:linear-gradient(135deg,#4CAF50,#2E7D32); border-radius:var(--radius); padding:16px; margin-bottom:14px; color:white; }
+  .golf-banner h3 { font-family:"Fredoka One",cursive; font-size:18px; }
+  .golf-banner p { font-size:12px; opacity:0.9; margin-top:4px; }
+
+  .mobility-item { display:flex; align-items:center; gap:12px; padding:12px; background:#F5FFFE; border-radius:12px; margin-bottom:8px; border:1.5px solid #D0F5EF; }
+  .mob-emoji { font-size:24px; }
+  .mob-info .mob-name { font-weight:800; font-size:14px; }
+  .mob-info .mob-time { font-size:12px; color:var(--teal-dark); font-weight:700; margin-top:2px; }
+
+  .form-row { margin-bottom:14px; }
+  .form-label { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-light); margin-bottom:6px; display:block; }
+  .form-input, .form-select, .form-textarea { width:100%; padding:12px 14px; border:2px solid #F0E8E0; border-radius:12px; font-family:"Nunito",sans-serif; font-size:14px; font-weight:600; background:white; color:var(--text); outline:none; transition:border-color 0.2s; -webkit-appearance:none; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--coral); }
+  .form-textarea { height:72px; resize:none; }
+  .star-row { display:flex; gap:8px; }
+  .star { font-size:28px; cursor:pointer; opacity:0.3; transition:opacity 0.15s,transform 0.15s; }
+  .star.lit { opacity:1; transform:scale(1.1); }
+  .save-btn { width:100%; padding:15px; background:linear-gradient(135deg,var(--coral),#FF8E53); color:white; border:none; border-radius:14px; font-family:"Fredoka One",cursive; font-size:18px; cursor:pointer; letter-spacing:1px; box-shadow:0 4px 15px rgba(255,107,107,0.4); transition:transform 0.15s; }
+  .save-btn:active { transform:scale(0.97); }
+  .sync-status { font-size:12px; text-align:center; margin-top:8px; font-weight:700; min-height:18px; }
+  .sync-status.ok { color:var(--teal-dark); }
+  .sync-status.err { color:var(--coral); }
+  .sync-status.pending { color:#999; }
+
+  .log-entry { background:white; border-radius:var(--radius); padding:14px; margin-bottom:10px; box-shadow:var(--shadow); border-left:4px solid var(--coral); }
+  .log-entry.golf-log { border-left-color:var(--green); }
+  .log-entry.tennis-log { border-left-color:var(--teal); }
+  .log-entry-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .log-entry-date { font-weight:800; font-size:14px; }
+  .log-entry-type { font-size:12px; color:var(--text-light); font-weight:700; }
+  .log-entry-notes { font-size:13px; color:var(--text-light); margin-top:5px; font-style:italic; }
+  .no-logs { text-align:center; padding:30px; color:var(--text-light); font-size:14px; }
+  .no-logs .icon { font-size:40px; margin-bottom:8px; }
+
+  .stat-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+  .stat-card { background:white; border-radius:var(--radius); padding:16px; text-align:center; box-shadow:var(--shadow); }
+  .stat-number { font-family:"Fredoka One",cursive; font-size:32px; color:var(--coral); }
+  .stat-label { font-size:12px; color:var(--text-light); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-top:2px; }
+  .streak-bar { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+  .streak-dot { width:28px; height:28px; border-radius:50%; background:#F0E8E0; display:flex; align-items:center; justify-content:center; font-size:14px; }
+  .streak-dot.done { background:var(--coral); }
+  .tip-card { background:linear-gradient(135deg,#FFF3CD,#FFE082); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
+  .tip-title { font-family:"Fredoka One",cursive; font-size:16px; color:#7A5C00; margin-bottom:6px; }
+  .tip-text { font-size:13px; color:#7A5C00; line-height:1.5; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>&#127775; Isla's Summer Training</h1>
+  <p>Strong. Fast. Unstoppable.</p>
+  <div class="emoji-row">&#127934; &#127948;&#65039;&#8205;&#9792;&#65039; &#129306; &#128170;</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('program',this)"><span class="tab-icon">&#128203;</span>Program</div>
+  <div class="tab" onclick="switchTab('workouts',this)"><span class="tab-icon">&#128170;</span>Workouts</div>
+  <div class="tab" onclick="switchTab('golf',this)"><span class="tab-icon">&#9971;</span>Golf</div>
+  <div class="tab" onclick="switchTab('mobility',this)"><span class="tab-icon">&#129496;</span>Stretch</div>
+  <div class="tab" onclick="switchTab('log',this)"><span class="tab-icon">&#128221;</span>Log</div>
+  <div class="tab" onclick="switchTab('progress',this)"><span class="tab-icon">&#11088;</span>Progress</div>
+</div>
+
+<!-- PROGRAM -->
+<div id="section-program" class="section active content">
+  <div class="card">
+    <div class="card-title">&#128197; Weekly Schedule</div>
+    <div class="week-grid">
+      <div class="day-cell golf-day"><span class="day-name">Sun</span><span class="day-icon">&#9971;</span></div>
+      <div class="day-cell workout"><span class="day-name">Mon</span><span class="day-icon">&#128170;</span></div>
+      <div class="day-cell tennis"><span class="day-name">Tue</span><span class="day-icon">&#127934;</span></div>
+      <div class="day-cell workout"><span class="day-name">Wed</span><span class="day-icon">&#129336;&#65039;</span></div>
+      <div class="day-cell tennis"><span class="day-name">Thu</span><span class="day-icon">&#127934;</span></div>
+      <div class="day-cell workout"><span class="day-name">Fri</span><span class="day-icon">&#129306;</span></div>
+      <div class="day-cell golf-day"><span class="day-name">Sat</span><span class="day-icon">&#127948;&#65039;&#8205;&#9792;&#65039;</span></div>
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:var(--text-light);font-weight:700;">&#128170; Strength &middot; &#127934; Tennis &middot; &#9971; Golf &middot; Weekend = Golf days!</div>
+  </div>
+  <div class="phase-banner p1">
+    <div class="phase-active-badge">&#9989; NOW</div>
+    <h2>Phase 1 &middot; Foundation</h2>
+    <p>Build basics &mdash; bodyweight strength, balance, and golf fundamentals</p>
+    <div class="dates">June 2 &ndash; June 28</div>
+  </div>
+  <div class="phase-banner p2">
+    <h2>Phase 2 &middot; Power Up</h2>
+    <p>Add intensity &mdash; agility circuits, jump rope, and golf short game</p>
+    <div class="dates">June 29 &ndash; July 26</div>
+  </div>
+  <div class="phase-banner p3">
+    <h2>Phase 3 &middot; Game Mode</h2>
+    <p>Sport-specific &mdash; footwork, full swing power, and on-course play</p>
+    <div class="dates">July 27 &ndash; August 15</div>
+  </div>
+  <div class="card">
+    <div class="card-title">&#128207; The Rules</div>
+    <div style="font-size:13px;line-height:1.9;color:var(--text-light);">
+      &#9989; Workout before screens on training days<br>
+      &#9989; Stretch after every session (5&ndash;7 min)<br>
+      &#9989; Drink water throughout &mdash; sip between exercises<br>
+      &#9989; Log every workout AND golf session<br>
+      &#9989; Tennis days (Tue/Thu) = no extra workout needed<br>
+      &#9989; Golf on weekends &mdash; even 20 min of putting counts!<br>
+    </div>
+  </div>
+</div>
+
+<!-- WORKOUTS -->
+<div id="section-workouts" class="section content">
+  <div class="sub-toggle">
+    <div class="sub-btn active" onclick="showWorkout('monday',this)">Monday</div>
+    <div class="sub-btn" onclick="showWorkout('wednesday',this)">Wednesday</div>
+    <div class="sub-btn" onclick="showWorkout('friday',this)">Friday</div>
+  </div>
+
+  <div id="workout-monday">
+    <div class="card">
+      <div class="card-title">&#9889; Warm-Up <span style="font-size:13px;font-weight:600;color:var(--text-light);">3 min</span></div>
+      <div class="exercise-item yellow"><div class="ex-emoji">&#129306;</div><div class="ex-info"><div class="ex-name">Jump Rope &mdash; Easy Pace</div><div class="ex-detail">2 minutes to get the heart going</div><div class="ex-tip">&#128161; March in place if you need a break</div></div></div>
+      <div class="exercise-item yellow"><div class="ex-emoji">&#129463;</div><div class="ex-info"><div class="ex-name">Leg Swings</div><div class="ex-detail">10 each leg &mdash; front/back and side to side</div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">&#128170; Monday &mdash; Lower Body Strength</div>
+      <div class="ex-block">
+        <div class="ex-block-title">Circuit &mdash; 3 Rounds</div>
+        <div class="exercise-item"><div class="ex-emoji">&#129463;</div><div class="ex-info"><div class="ex-name">Bodyweight Squats</div><div class="ex-detail">15 reps &mdash; slow down, fast up</div><div class="ex-tip">&#128161; Feet shoulder-width, knees track over toes</div></div></div>
+        <div class="exercise-item teal"><div class="ex-emoji">&#128694;&#65039;&#8205;&#9792;&#65039;</div><div class="ex-info"><div class="ex-name">Reverse Lunges</div><div class="ex-detail">10 each leg &mdash; step back, front knee over ankle</div></div></div>
+        <div class="exercise-item purple"><div class="ex-emoji">&#129358;</div><div class="ex-info"><div class="ex-name">Glute Bridges</div><div class="ex-detail">15 reps &mdash; squeeze at the top for 1 second</div></div></div>
+        <div class="exercise-item yellow"><div class="ex-emoji">&#11014;&#65039;</div><div class="ex-info"><div class="ex-name">Calf Raises</div><div class="ex-detail">20 reps &mdash; use a stair edge if possible</div></div></div>
+        <div style="font-size:12px;color:var(--text-light);padding:8px 0;font-weight:700;">Rest 45 sec between rounds</div>
+      </div>
+      <div class="ex-block">
+        <div class="ex-block-title">Finisher</div>
+        <div class="exercise-item"><div class="ex-emoji">&#129306;</div><div class="ex-info"><div class="ex-name">Jump Rope &mdash; Fast!</div><div class="ex-detail">30 sec on, 15 sec rest &times; 4</div><div class="ex-tip">&#128161; Try to go faster each round</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="workout-wednesday" style="display:none;">
+    <div class="card">
+      <div class="card-title">&#9889; Warm-Up <span style="font-size:13px;font-weight:600;color:var(--text-light);">3 min</span></div>
+      <div class="exercise-item yellow"><div class="ex-emoji">&#128102;&#65039;&#8205;&#9792;&#65039;</div><div class="ex-info"><div class="ex-name">Arm Circles + Shoulder Rolls</div><div class="ex-detail">10 forward, 10 backward &mdash; big circles</div></div></div>
+      <div class="exercise-item yellow"><div class="ex-emoji">&#128260;</div><div class="ex-info"><div class="ex-name">Torso Twists</div><div class="ex-detail">20 slow twists with arms out wide &mdash; warms up your golf rotation too!</div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">&#128170; Wednesday &mdash; Upper Body + Core</div>
+      <div class="ex-block">
+        <div class="ex-block-title">Circuit &mdash; 3 Rounds</div>
+        <div class="exercise-item"><div class="ex-emoji">&#11015;&#65039;</div><div class="ex-info"><div class="ex-name">Incline Push-Ups</div><div class="ex-detail">10&ndash;12 reps &mdash; hands on couch or stairs</div><div class="ex-tip">&#128161; Body straight like a plank, don't let hips sag</div></div></div>
+        <div class="exercise-item teal"><div class="ex-emoji">&#127947;&#65039;&#8205;&#9792;&#65039;</div><div class="ex-info"><div class="ex-name">Resistance Band Rows</div><div class="ex-detail">12 reps &mdash; anchor band in door, pull elbows back</div><div class="ex-tip">&#128161; Same muscles used in your golf backswing!</div></div></div>
+        <div class="exercise-item purple"><div class="ex-emoji">&#127755;</div><div class="ex-info"><div class="ex-name">Dead Bug</div><div class="ex-detail">8 each side &mdash; slow and controlled</div><div class="ex-tip">&#128161; Lower back stays flat on the ground the whole time</div></div></div>
+        <div class="exercise-item yellow"><div class="ex-emoji">&#9201;&#65039;</div><div class="ex-info"><div class="ex-name">Plank Hold</div><div class="ex-detail">20&ndash;30 seconds &mdash; build up each week!</div><div class="ex-tip">&#128161; Core strength = more power in your golf swing</div></div></div>
+        <div style="font-size:12px;color:var(--text-light);padding:8px 0;font-weight:700;">Rest 45 sec between rounds</div>
+      </div>
+      <div class="ex-block">
+        <div class="ex-block-title">Finisher</div>
+        <div class="exercise-item"><div class="ex-emoji">&#129306;</div><div class="ex-info"><div class="ex-name">Jump Rope Skills Practice</div><div class="ex-detail">3 min &mdash; try alternating feet, high knees, or double-unders!</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="workout-friday" style="display:none;">
+    <div class="card">
+      <div class="card-title">&#9889; Warm-Up <span style="font-size:13px;font-weight:600;color:var(--text-light);">3 min</span></div>
+      <div class="exercise-item yellow"><div class="ex-emoji">&#127939;&#65039;&#8205;&#9792;&#65039;</div><div class="ex-info"><div class="ex-name">Jog in Place + High Knees</div><div class="ex-detail">1 minute total &mdash; 30 sec each</div></div></div>
+      <div class="exercise-item yellow"><div class="ex-emoji">&#128518;</div><div class="ex-info"><div class="ex-name">Hip Circles + Ankle Rolls</div><div class="ex-detail">10 each direction, both sides</div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">&#9889; Friday &mdash; Agility + Full Body</div>
+      <div class="ex-block">
+        <div class="ex-block-title">Agility Circuit &mdash; 3 Rounds</div>
+        <div class="exercise-item"><div class="ex-emoji">&#128165;</div><div class="ex-info"><div class="ex-name">Lateral Shuffles</div><div class="ex-detail">10 yards left + right &times; 4 &mdash; stay low!</div><div class="ex-tip">&#128161; Wide tennis shots AND moving around the green in golf</div></div></div>
+        <div class="exercise-item teal"><div class="ex-emoji">&#128056;</div><div class="ex-info"><div class="ex-name">Squat Jumps</div><div class="ex-detail">8 reps &mdash; land soft like a cat</div><div class="ex-tip">&#128161; Bend knees on landing to protect joints</div></div></div>
+        <div class="exercise-item purple"><div class="ex-emoji">&#127939;&#65039;&#8205;&#9792;&#65039;</div><div class="ex-info"><div class="ex-name">Sprint Bursts</div><div class="ex-detail">5 &times; 10-yard sprints &mdash; full effort each one</div></div></div>
+        <div class="exercise-item yellow"><div class="ex-emoji">&#129306;</div><div class="ex-info"><div class="ex-name">Jump Rope EMOM</div><div class="ex-detail">Every minute for 4 min: 30 jumps, rest the remainder</div></div></div>
+        <div style="font-size:12px;color:var(--text-light);padding:8px 0;font-weight:700;">Rest 60 sec between rounds</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GOLF -->
+<div id="section-golf" class="section content">
+  <div class="golf-banner">
+    <h3>&#9971; Golf Practice Guide</h3>
+    <p>Short game first &mdash; that's where scores are made! Full swing comes after.</p>
+  </div>
+
+  <div class="golf-location-toggle">
+    <div class="golf-loc-btn active" onclick="showGolfLoc('home',this)">&#127968; At Home</div>
+    <div class="golf-loc-btn" onclick="showGolfLoc('range',this)">&#9971; At the Range/Course</div>
+  </div>
+
+  <div id="golf-home">
+    <div class="card">
+      <div class="card-title" style="color:#2E7D32;">&#127968; Home Practice <span style="font-size:13px;font-weight:600;color:var(--text-light);">~20&ndash;25 min</span></div>
+      <div class="ex-block">
+        <div class="ex-block-title">&#127919; Putting &mdash; 10 min</div>
+        <div class="exercise-item green"><div class="ex-emoji">&#127947;&#65039;&#8205;&#9792;&#65039;</div><div class="ex-info"><div class="ex-name">Gate Drill</div><div class="ex-detail">Set 2 tees (or pencils) just wider than your putter face. Roll 20 putts through without hitting them.</div><div class="ex-tip gtip">&#128161; Keeps your stroke straight &mdash; the #1 skill for making putts</div></div></div>
+        <div class="exercise-item green"><div class="ex-emoji">&#128207;</div><div class="ex-info"><div class="ex-name">Distance Ladder</div><div class="ex-detail">Set targets at 3 ft, 6 ft, and 10 ft. Hit 5 putts at each. Count how many you make &mdash; try to beat your record!</div><div class="ex-tip gtip">&#128161; Track your makes each session and try to beat it next time</div></div></div>
+        <div class="exercise-item green"><div class="ex-emoji">&#128260;</div><div class="ex-info"><div class="ex-name">Circle Drill</div><div class="ex-detail">Place 6 balls in a circle 3 feet from a cup or target. Make all 6 before moving on.</div><div class="ex-tip gtip">&#128161; Builds pressure putting &mdash; the short ones matter most on the course!</div></div></div>
+      </div>
+      <div class="ex-block">
+        <div class="ex-block-title">&#127914; Swing Mechanics &mdash; 10 min (foam balls)</div>
+        <div class="exercise-item green"><div class="ex-emoji">&#129719;</div><div class="ex-info"><div class="ex-name">Slow-Motion Swings</div><div class="ex-detail">10 swings at 25% speed. Watch your takeaway in a mirror or window. Club stays low and inside &mdash; don't pick it up steep.</div><div class="ex-tip gtip">&#128161; Slow practice = faster learning</div></div></div>
+        <div class="exercise-item green"><div class="ex-emoji">&#9878;&#65039;</div><div class="ex-info"><div class="ex-name">Weight Shift Drill</div><div class="ex-detail">Take your stance. Swing back &mdash; feel weight go to back foot. Swing through &mdash; weight shifts to front foot. Repeat 15&times; with a short iron.</div><div class="ex-tip gtip">&#128161; Weight shift is the #1 thing that adds distance</div></div></div>
+        <div class="exercise-item green"><div class="ex-emoji">&#127947;&#65039;&#8205;&#9792;&#65039;</div><div class="ex-info"><div class="ex-name">Foam Ball Chip Shots</div><div class="ex-detail">Set a target (pillow, cup). Chip 20 balls with a 7-iron or wedge. Hands stay ahead of ball, weight on front foot.</div><div class="ex-tip gtip">&#128161; This motion is the same as a short pitch shot on the course</div></div></div>
+      </div>
+      <div class="ex-block">
+        <div class="ex-block-title">&#128170; Golf Fitness &mdash; 5 min</div>
+        <div class="exercise-item green"><div class="ex-emoji">&#128260;</div><div class="ex-info"><div class="ex-name">Trunk Rotations with Club</div><div class="ex-detail">Hold a club across your shoulders. Rotate slowly left and right &times; 20. Feel the stretch.</div><div class="ex-tip gtip">&#128161; More rotation = more power without swinging harder!</div></div></div>
+        <div class="exercise-item green"><div class="ex-emoji">&#129496;</div><div class="ex-info"><div class="ex-name">Hip Hinge Drill</div><div class="ex-detail">Hold club against your spine. Bend forward from hips (not waist) 15&times;. This is your golf posture &mdash; practice it!</div><div class="ex-tip gtip">&#128161; Good posture = consistent ball striking every time</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="golf-range" style="display:none;">
+    <div class="card">
+      <div class="card-title" style="color:#2E7D32;">&#9971; Range/Course Session <span style="font-size:13px;font-weight:600;color:var(--text-light);">~45&ndash;60 min</span></div>
+      <div class="ex-block">
+        <div class="ex-block-title">&#127919; Putting Green &mdash; 15 min</div>
+        <div class="exercise-item green"><div class="ex-emoji">&#128207;</div><div class="ex-info"><div class="ex-name">Lag Putting</div><div class="ex-detail">Find holes at 20 ft, 30 ft, 40 ft. Hit 5 putts at each. Goal: stop within 2 feet every time. No 3-putts!</div><div class="ex-tip gtip">&#128161; Lag putting saves more strokes than any other skill</div></div></div>
+        <div class="exercise-item green"><div class="ex-emoji">&#127919;</div><div class="ex-info"><div class="ex-name">5-Hole Make Challenge</div><div class="ex-detail">Find a hole ~5 feet away. You can't move to the next hole until you make 3 in a row.</div><div class="ex-tip gtip">&#128161; Pressure practice = staying calm on the course</div></div></div>
+      </div>
+      <div class="ex-block">
+        <div class="ex-block-title">&#127947;&#65039; Chipping Green &mdash; 15 min</div>
+        <div class="exercise-item green"><div class="ex-emoji">&#127919;</div><div class="ex-info"><div class="ex-name">Up-and-Down Game</div><div class="ex-detail">Drop a ball ~10 yards from the flag. Chip, then putt. Count how many you get in 2 shots or less out of 10.</div><div class="ex-tip gtip">&#128161; Getting "up and down" is how you save strokes around the green!</div></div></div>
+        <div class="exercise-item green"><div class="ex-emoji">&#129330;</div><div class="ex-info"><div class="ex-name">Bump-and-Run vs Lob</div><div class="ex-detail">Same spot: try a low rolling chip with a 7-iron, then a high lofted wedge chip. 5 of each. See which you're better at!</div><div class="ex-tip gtip">&#128161; Knowing which shot fits the situation = smarter golf</div></div></div>
+        <div class="exercise-item green"><div class="ex-emoji">&#128543;</div><div class="ex-info"><div class="ex-name">Trouble Shots</div><div class="ex-detail">Drop balls in the rough or on a slope. Practice getting out cleanly &mdash; no penalty!</div></div></div>
+      </div>
+      <div class="ex-block">
+        <div class="ex-block-title">&#127947;&#65039;&#8205;&#9792;&#65039; Driving Range &mdash; 20&ndash;25 min</div>
+        <div class="exercise-item green"><div class="ex-emoji">&#127919;</div><div class="ex-info"><div class="ex-name">Warm-Up Wedges</div><div class="ex-detail">Start with 10 easy half-swings with a pitching wedge. No rushing &mdash; just feel the contact.</div><div class="ex-tip gtip">&#128161; Always start small. Don't try to crush it on swing one!</div></div></div>
+        <div class="exercise-item green"><div class="ex-emoji">&#128202;</div><div class="ex-info"><div class="ex-name">Structured Practice</div><div class="ex-detail">10 balls each: 7-iron &rarr; 5-iron &rarr; hybrid &rarr; driver. Pick a specific target for every single shot.</div><div class="ex-tip gtip">&#128161; Always aim at something. Random hitting = slow improvement</div></div></div>
+        <div class="exercise-item green"><div class="ex-emoji">&#128260;</div><div class="ex-info"><div class="ex-name">Tempo Drill</div><div class="ex-detail">Count "1-2-3" during your backswing, "4" at the top, "5-6" on the downswing. Hit 10 balls this way.</div><div class="ex-tip gtip">&#128161; Smooth tempo = straighter shots. Most beginners rush the downswing!</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);box-shadow:none;">
+    <div class="card-title" style="color:#2E7D32;">&#127942; Golf Goals This Summer</div>
+    <div style="font-size:13px;line-height:1.9;color:#2E7D32;">
+      &#9971; Make putts consistently inside 5 feet<br>
+      &#127919; Get up and down from around the green<br>
+      &#128170; Build a repeatable, smooth full swing<br>
+      &#128207; Learn your distances with each club<br>
+      &#128516; Stay calm, have fun, and enjoy the game!<br>
+    </div>
+  </div>
+</div>
+
+<!-- STRETCH -->
+<div id="section-mobility" class="section content">
+  <div class="card" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:none;">
+    <div style="font-family:'Fredoka One',cursive;font-size:17px;color:#2E7D32;">&#129496; After EVERY workout or golf session &mdash; 5&ndash;7 minutes!</div>
+    <div style="font-size:12px;color:#388E3C;margin-top:4px;font-weight:700;">Hold each stretch &mdash; don't bounce. Great for golf AND tennis.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">&#129463; Lower Body</div>
+    <div class="mobility-item"><div class="mob-emoji">&#129501;&#65039;&#8205;&#9792;&#65039;</div><div class="mob-info"><div class="mob-name">Standing Quad Stretch</div><div class="mob-time">30 sec each leg &mdash; hold a wall if needed</div></div></div>
+    <div class="mobility-item"><div class="mob-emoji">&#129463;</div><div class="mob-info"><div class="mob-name">Hamstring Reach (seated)</div><div class="mob-time">30 sec each leg &mdash; reach toward toes, keep back flat</div></div></div>
+    <div class="mobility-item"><div class="mob-emoji">&#128038;</div><div class="mob-info"><div class="mob-name">Hip Flexor Lunge Stretch</div><div class="mob-time">30 sec each side &mdash; great for golf rotation</div></div></div>
+    <div class="mobility-item"><div class="mob-emoji">&#129503;&#65039;&#8205;&#9792;&#65039;</div><div class="mob-info"><div class="mob-name">Calf Stretch (wall)</div><div class="mob-time">20 sec each leg</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">&#128134; Upper Body + Back</div>
+    <div class="mobility-item"><div class="mob-emoji">&#128102;&#65039;&#8205;&#9792;&#65039;</div><div class="mob-info"><div class="mob-name">Cross-Body Shoulder Stretch</div><div class="mob-time">20 sec each arm &mdash; key for tennis AND golf</div></div></div>
+    <div class="mobility-item"><div class="mob-emoji">&#128260;</div><div class="mob-info"><div class="mob-name">Standing Torso Rotation</div><div class="mob-time">10 slow rotations each direction &mdash; golf mobility!</div></div></div>
+    <div class="mobility-item"><div class="mob-emoji">&#128591;</div><div class="mob-info"><div class="mob-name">Child's Pose</div><div class="mob-time">45 sec &mdash; breathe slowly, let your back relax</div></div></div>
+    <div class="mobility-item"><div class="mob-emoji">&#127752;</div><div class="mob-info"><div class="mob-name">Lying Spinal Twist</div><div class="mob-time">30 sec each side &mdash; amazing for your back</div></div></div>
+    <div class="mobility-item"><div class="mob-emoji">&#128568;</div><div class="mob-info"><div class="mob-name">Cat-Cow (slow)</div><div class="mob-time">8 slow reps &mdash; breathe in as you arch, out as you round</div></div></div>
+  </div>
+</div>
+
+<!-- LOG -->
+<div id="section-log" class="section content">
+  <div class="card">
+    <div class="card-title">&#128221; Log Today's Session</div>
+    <div class="form-row">
+      <label class="form-label">Date</label>
+      <input type="date" class="form-input" id="log-date">
+    </div>
+    <div class="form-row">
+      <label class="form-label">What Did You Do?</label>
+      <select class="form-select" id="log-type" onchange="toggleGolfNotes(this.value)">
+        <option value="">Pick one...</option>
+        <optgroup label="&#128170; Workouts">
+          <option value="Monday - Lower Body">Monday &mdash; Lower Body</option>
+          <option value="Wednesday - Upper + Core">Wednesday &mdash; Upper + Core</option>
+          <option value="Friday - Agility">Friday &mdash; Agility</option>
+        </optgroup>
+        <optgroup label="&#127934; Tennis">
+          <option value="Tennis Practice">Tennis Practice</option>
+          <option value="Tennis Match">Tennis Match</option>
+        </optgroup>
+        <optgroup label="&#9971; Golf">
+          <option value="Golf - Home Practice">Golf &mdash; Home Practice</option>
+          <option value="Golf - Range Session">Golf &mdash; Range Session</option>
+          <option value="Golf - Putting Practice">Golf &mdash; Putting Practice</option>
+          <option value="Golf - Course Round">Golf &mdash; Course Round</option>
+        </optgroup>
+        <optgroup label="&#127775; Other">
+          <option value="Extra Activity">Extra Activity / Fun</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="form-row">
+      <label class="form-label">How Hard Was It? &#11088;</label>
+      <div class="star-row" id="star-row">
+        <span class="star" data-v="1" onclick="setStar(1)">&#11088;</span>
+        <span class="star" data-v="2" onclick="setStar(2)">&#11088;</span>
+        <span class="star" data-v="3" onclick="setStar(3)">&#11088;</span>
+        <span class="star" data-v="4" onclick="setStar(4)">&#11088;</span>
+        <span class="star" data-v="5" onclick="setStar(5)">&#11088;</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-light);margin-top:4px;">1 = Easy &middot; 3 = Medium &middot; 5 = Super Hard</div>
+    </div>
+    <div class="form-row" id="golf-notes-row" style="display:none;">
+      <label class="form-label">&#9971; Golf Notes</label>
+      <input type="text" class="form-input" id="log-golf-notes" placeholder="e.g. Made 8/10 short putts, chipping felt great">
+    </div>
+    <div class="form-row">
+      <label class="form-label">General Notes (optional)</label>
+      <textarea class="form-textarea" id="log-notes" placeholder="What was fun? What felt hard? What do you want to improve?"></textarea>
+    </div>
+    <button class="save-btn" onclick="saveLog()">Save Session! &#127881;</button>
+    <div class="sync-status pending" id="sync-status"></div>
+  </div>
+  <div id="log-history"></div>
+</div>
+
+<!-- PROGRESS -->
+<div id="section-progress" class="section content">
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-number" id="stat-total">0</div><div class="stat-label">Total Sessions</div></div>
+    <div class="stat-card"><div class="stat-number" id="stat-this-week">0</div><div class="stat-label">This Week</div></div>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-number" id="stat-golf">0</div><div class="stat-label">Golf Sessions</div></div>
+    <div class="stat-card"><div class="stat-number" id="stat-tennis">0</div><div class="stat-label">Tennis Days</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">&#128293; Recent Activity</div>
+    <div class="streak-bar" id="streak-bar"></div>
+    <div style="font-size:12px;color:var(--text-light);margin-top:10px;font-weight:700;">Last 14 days</div>
+  </div>
+  <div class="tip-card">
+    <div class="tip-title">&#128161; Tip of the Week</div>
+    <div class="tip-text" id="weekly-tip">Loading...</div>
+  </div>
+  <div class="card">
+    <div class="card-title">&#127942; How It All Connects</div>
+    <div style="font-size:13px;line-height:1.9;color:var(--text-light);">
+      &#129463; <strong>Squats &amp; lunges</strong> = power in your golf swing AND tennis split step<br>
+      &#128260; <strong>Core + rotation drills</strong> = more distance with less effort in golf<br>
+      &#9889; <strong>Lateral shuffles</strong> = chasing wide shots + footwork around the green<br>
+      &#128170; <strong>Push-ups &amp; rows</strong> = stronger groundstrokes and better ball striking<br>
+      &#129306; <strong>Jump rope</strong> = light feet and quick reactions in both sports<br>
+      &#129496; <strong>Stretching</strong> = staying healthy and playing all summer long<br>
+    </div>
+  </div>
+</div>
+
+<script>
+  // GOOGLE SHEETS CONFIG
+  // Paste your Apps Script Web App URL here after redeploying:
+  const SHEETS_URL = "https://script.google.com/macros/s/AKfycbz5_mND4MnGqicFhDpcS1vNAhwSrXThRqemCxWmI7SAdsTpL_TzhMDT1g6WabHBP_PT2Q/exec";
+  const SHEET_NAME = "Isla";
+
+  function switchTab(tab, el) {
+    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.getElementById("section-" + tab).classList.add("active");
+    el.classList.add("active");
+    if (tab === "log") renderHistory();
+    if (tab === "progress") renderProgress();
+  }
+
+  function showWorkout(day, el) {
+    ["monday","wednesday","friday"].forEach(d => {
+      document.getElementById("workout-" + d).style.display = d === day ? "block" : "none";
+    });
+    document.querySelectorAll(".sub-btn").forEach(b => b.classList.remove("active"));
+    el.classList.add("active");
+  }
+
+  function showGolfLoc(loc, el) {
+    document.getElementById("golf-home").style.display = loc === "home" ? "block" : "none";
+    document.getElementById("golf-range").style.display = loc === "range" ? "block" : "none";
+    document.querySelectorAll(".golf-loc-btn").forEach(b => b.classList.remove("active"));
+    el.classList.add("active");
+  }
+
+  function toggleGolfNotes(val) {
+    document.getElementById("golf-notes-row").style.display = val.toLowerCase().includes("golf") ? "block" : "none";
+  }
+
+  let starVal = 0;
+  function setStar(v) {
+    starVal = v;
+    document.querySelectorAll(".star").forEach(s => {
+      s.classList.toggle("lit", parseInt(s.dataset.v) <= v);
+    });
+  }
+
+  document.getElementById("log-date").value = new Date().toISOString().split("T")[0];
+
+  async function saveLog() {
+    const date = document.getElementById("log-date").value;
+    const type = document.getElementById("log-type").value;
+    const notes = document.getElementById("log-notes").value;
+    const golfNotes = document.getElementById("log-golf-notes").value;
+    if (!date || !type || !starVal) {
+      alert("Fill in the date, session type, and effort stars!");
+      return;
+    }
+    const entry = { id: Date.now(), date, type, effort: starVal, notes, golf_notes: golfNotes, savedAt: new Date().toISOString() };
+    const logs = getLogs();
+    logs.unshift(entry);
+    saveLogs(logs);
+
+    document.getElementById("log-type").value = "";
+    document.getElementById("log-notes").value = "";
+    document.getElementById("log-golf-notes").value = "";
+    document.getElementById("golf-notes-row").style.display = "none";
+    setStar(0);
+    document.getElementById("log-date").value = new Date().toISOString().split("T")[0];
+    showBurst();
+    renderHistory();
+
+    if (SHEETS_URL && SHEETS_URL !== "https://script.google.com/macros/s/AKfycbz5_mND4MnGqicFhDpcS1vNAhwSrXThRqemCxWmI7SAdsTpL_TzhMDT1g6WabHBP_PT2Q/exec") {
+      setSync("pending", "Syncing to Google Sheets...");
+      try {
+        const res = await fetch(SHEETS_URL, {
+          method: "POST",
+          body: JSON.stringify({ sheet: SHEET_NAME, id: entry.id, date: entry.date, session: entry.type, effort: entry.effort, notes: entry.notes, exercises: "", golf_notes: entry.golf_notes, savedAt: entry.savedAt })
+        });
+        const data = await res.json();
+        if (data.status === "success") setSync("ok", "Saved to Google Sheets!");
+        else setSync("err", "Saved locally - Sheets sync failed");
+      } catch(e) {
+        setSync("err", "Saved locally - check internet connection");
+      }
+    } else {
+      setSync("pending", "Saved locally (add Sheets URL to sync)");
+    }
+  }
+
+  function setSync(type, msg) {
+    const el = document.getElementById("sync-status");
+    el.className = "sync-status " + type;
+    el.textContent = msg;
+    if (type === "ok") setTimeout(() => el.textContent = "", 4000);
+  }
+
+  function showBurst() {
+    const btn = document.querySelector(".save-btn");
+    const orig = btn.textContent;
+    btn.textContent = "Logged! Amazing work!";
+    btn.style.background = "linear-gradient(135deg,var(--teal),var(--teal-dark))";
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ""; }, 2200);
+  }
+
+  function getLogs() { try { return JSON.parse(localStorage.getItem("isla_logs_v2") || "[]"); } catch { return []; } }
+  function saveLogs(logs) { localStorage.setItem("isla_logs_v2", JSON.stringify(logs)); }
+
+  function renderHistory() {
+    const logs = getLogs();
+    const el = document.getElementById("log-history");
+    if (!logs.length) {
+      el.innerHTML = "<div class="no-logs"><div class="icon">&#128219;</div>No sessions logged yet!<br>Complete your first session and log it here.</div>";
+      return;
+    }
+    el.innerHTML = "<div style="font-family:'Fredoka One',cursive;font-size:18px;margin-bottom:10px;">&#128218; History</div>" +
+      logs.map(l => {
+        const isGolf = l.type.toLowerCase().includes("golf");
+        const isTennis = l.type.toLowerCase().includes("tennis");
+        const cls = isGolf ? " golf-log" : isTennis ? " tennis-log" : "";
+        const icon = isGolf ? "&#9971;" : isTennis ? "&#127934;" : "&#128170;";
+        return "<div class="log-entry" + cls + ""><div class="log-entry-header"><div class="log-entry-date">" + formatDate(l.date) + "</div><div class="log-entry-stars">" + "&#11088;".repeat(l.effort) + "</div></div><div class="log-entry-type">" + icon + " " + l.type + "</div>" +
+          (l.golf_notes ? "<div class="log-entry-notes">&#9971; " + l.golf_notes + "</div>" : "") +
+          (l.notes ? "<div class="log-entry-notes">&ldquo;" + l.notes + "&rdquo;</div>" : "") +
+          "</div>";
+      }).join("");
+  }
+
+  const tips = [
+    "In putting, keeping your head still is the #1 thing. Don't look up until you hear it drop!",
+    "Sleep is where you get stronger. Your body repairs muscle while you sleep. Aim for 9 hours!",
+    "Consistency beats perfection. Three good sessions beat one perfect one and two skipped ones.",
+    "In golf, the short game (chipping + putting) is where most strokes are saved. Practice it every session!",
+    "Jump rope is one of the best exercises ever &mdash; footwork, rhythm, and cardio all at once.",
+    "Rest days are growth days. Your muscles rebuild stronger on the days you rest.",
+    "In golf, a smooth tempo beats a fast swing every time. Count 1-2-3 on your backswing!",
+    "Every session you log is proof you're building a habit. Habits stick long after summer ends.",
+    "Lateral shuffle drills train the exact same movement you use to chase down wide tennis shots!",
+    "Core strength is your secret weapon in golf &mdash; a strong core = more power with less effort."
+  ];
+
+  function renderProgress() {
+    const logs = getLogs();
+    document.getElementById("stat-total").textContent = logs.length;
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    document.getElementById("stat-this-week").textContent = logs.filter(l => new Date(l.date + "T12:00:00") >= weekStart).length;
+    document.getElementById("stat-golf").textContent = logs.filter(l => l.type.toLowerCase().includes("golf")).length;
+    document.getElementById("stat-tennis").textContent = logs.filter(l => l.type.toLowerCase().includes("tennis")).length;
+    const streakEl = document.getElementById("streak-bar");
+    const logDates = new Set(logs.map(l => l.date));
+    streakEl.innerHTML = "";
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const ds = d.toISOString().split("T")[0];
+      const dot = document.createElement("div");
+      dot.className = "streak-dot" + (logDates.has(ds) ? " done" : "");
+      dot.textContent = logDates.has(ds) ? "&#9989;" : "";
+      streakEl.appendChild(dot);
+    }
+    const weekNum = Math.floor((new Date() - new Date("2026-06-02")) / (7 * 86400000));
+    document.getElementById("weekly-tip").textContent = tips[Math.abs(weekNum) % tips.length];
+  }
+
+  function formatDate(ds) {
+    const d = new Date(ds + "T12:00:00");
+    return d.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+  }
+
+  renderHistory();
+  renderProgress();
+</script>
+</body>
+</html>
