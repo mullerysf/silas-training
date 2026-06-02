@@ -549,23 +549,30 @@
   function saveLogs(logs) { localStorage.setItem("isla_logs_v2", JSON.stringify(logs)); }
 
   function renderHistory() {
-    const logs = getLogs();
-    const el = document.getElementById("log-history");
+    var logs = getLogs();
+    var el = document.getElementById("log-history");
     if (!logs.length) {
-      el.innerHTML = "<div class="no-logs"><div class="icon">&#128219;</div>No sessions logged yet!<br>Complete your first session and log it here.</div>";
+      el.innerHTML = '<div class="no-logs"><div class="icon">&#128219;</div>No sessions logged yet!<br>Complete your first session and log it here.</div>';
       return;
     }
-    el.innerHTML = "<div style="font-family:'Fredoka One',cursive;font-size:18px;margin-bottom:10px;">&#128218; History</div>" +
-      logs.map(l => {
-        const isGolf = l.type.toLowerCase().includes("golf");
-        const isTennis = l.type.toLowerCase().includes("tennis");
-        const cls = isGolf ? " golf-log" : isTennis ? " tennis-log" : "";
-        const icon = isGolf ? "&#9971;" : isTennis ? "&#127934;" : "&#128170;";
-        return "<div class="log-entry" + cls + ""><div class="log-entry-header"><div class="log-entry-date">" + formatDate(l.date) + "</div><div class="log-entry-stars">" + "&#11088;".repeat(l.effort) + "</div></div><div class="log-entry-type">" + icon + " " + l.type + "</div>" +
-          (l.golf_notes ? "<div class="log-entry-notes">&#9971; " + l.golf_notes + "</div>" : "") +
-          (l.notes ? "<div class="log-entry-notes">&ldquo;" + l.notes + "&rdquo;</div>" : "") +
-          "</div>";
-      }).join("");
+    var html = '<div style="font-family: sans-serif; font-size:18px; margin-bottom:10px;">&#128218; History</div>';
+    for (var i = 0; i < logs.length; i++) {
+      var l = logs[i];
+      var isGolf = l.type.toLowerCase().indexOf("golf") >= 0;
+      var isTennis = l.type.toLowerCase().indexOf("tennis") >= 0;
+      var cls = isGolf ? " golf-log" : isTennis ? " tennis-log" : "";
+      var icon = isGolf ? "&#9971;" : isTennis ? "&#127934;" : "&#128170;";
+      html += '<div class="log-entry' + cls + '">';
+      html += '<div class="log-entry-header">';
+      html += '<div class="log-entry-date">' + formatDate(l.date) + '</div>';
+      html += '<div class="log-entry-stars">' + '&#11088;'.repeat(l.effort) + '</div>';
+      html += '</div>';
+      html += '<div class="log-entry-type">' + icon + ' ' + l.type + '</div>';
+      if (l.golf_notes) { html += '<div class="log-entry-notes">&#9971; ' + l.golf_notes + '</div>'; }
+      if (l.notes) { html += '<div class="log-entry-notes">' + l.notes + '</div>'; }
+      html += '</div>';
+    }
+    el.innerHTML = html;
   }
 
   const tips = [
