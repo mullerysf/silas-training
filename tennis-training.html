@@ -84,9 +84,9 @@
   .nav-tab {
     flex: 1;
     text-align: center;
-    padding: 7px 4px;
+    padding: 7px 2px;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 500;
     color: var(--muted);
     cursor: pointer;
@@ -806,6 +806,7 @@
     <button class="nav-tab" onclick="showView('mobility')">Mobility</button>
     <button class="nav-tab" onclick="showView('log')">Log</button>
     <button class="nav-tab" onclick="showView('progress')">Progress</button>
+    <button class="nav-tab" onclick="showView('tips')">Tips</button>
   </div>
 </div>
 
@@ -835,7 +836,7 @@
       <div class="phase-num">1</div>
       <div class="phase-info">
         <div class="phase-name">Recovery &amp; Foundation</div>
-        <div class="phase-dates">May 10 – May 24 · Weeks 1–2</div>
+        <div class="phase-dates">May 10 – TBD · Weeks 1–2+</div>
       </div>
       <span class="phase-tag tag-recovery">Current</span>
     </div>
@@ -853,7 +854,7 @@
       <div class="phase-num">2</div>
       <div class="phase-info">
         <div class="phase-name">Build &amp; Hypertrophy</div>
-        <div class="phase-dates">May 25 – Jun 28 · Weeks 3–8</div>
+        <div class="phase-dates">TBD – TBD · Weeks vary</div>
       </div>
       <span class="phase-tag tag-build">Build</span>
     </div>
@@ -871,7 +872,7 @@
       <div class="phase-num">3</div>
       <div class="phase-info">
         <div class="phase-name">Power &amp; Performance</div>
-        <div class="phase-dates">Jun 29 – Aug 10 · Weeks 9–13</div>
+        <div class="phase-dates">TBD – Aug 10 · Final weeks</div>
       </div>
       <span class="phase-tag tag-peak">Peak</span>
     </div>
@@ -1291,6 +1292,10 @@
     </div>
   </div>
 
+</div>
+
+<!-- TIPS VIEW -->
+<div id="view-tips" class="view">
   <div class="section-label">Tips for Success</div>
   <div class="tip-card">
     <h4>Sleep Is the Gains</h4>
@@ -1357,7 +1362,7 @@ function showView(name) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   const tabs = document.querySelectorAll('.nav-tab');
-  const idx = ['program','workouts','mobility','log','progress'].indexOf(name);
+  const idx = ['program','workouts','mobility','log','progress','tips'].indexOf(name);
   if (tabs[idx]) tabs[idx].classList.add('active');
   if (name === 'log') renderHistory();
   if (name === 'progress') renderProgress();
@@ -1621,6 +1626,18 @@ function toggleDay(el) {
   el.classList.toggle('open');
 }
 
+// ===== PHASE OVERRIDE =====
+function getActivePhase() {
+  // Returns 0, 1, or 2 — manually set overrides date-based logic
+  const override = localStorage.getItem('active-phase-override');
+  return override !== null ? parseInt(override) : null;
+}
+function setActivePhase(idx) {
+  localStorage.setItem('active-phase-override', idx);
+  renderProgress();
+  showToast('✓ Phase updated!');
+}
+
 // ===== GOOGLE SHEETS BACKEND =====
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz5_mND4MnGqicFhDpcS1vNAhwSrXThRqemCxWmI7SAdsTpL_TzhMDT1g6WabHBP_PT2Q/exec';
 
@@ -1629,9 +1646,12 @@ let logsCache = [];
 let sheetsReady = false;
 
 async function sheetsRequest(payload) {
-  const res = await fetch(SHEET_URL, {
-    method: 'POST',
-    body: JSON.stringify(payload),
+  // Google Apps Script requires no-cors for cross-origin POST,
+  // so we use a GET with the payload encoded as a URL parameter instead.
+  const url = SHEET_URL + '?data=' + encodeURIComponent(JSON.stringify(payload));
+  const res = await fetch(url, {
+    method: 'GET',
+    mode: 'cors',
   });
   return res.json();
 }
@@ -1978,15 +1998,20 @@ function renderProgress() {
 
   // Phase progress
   const phases = [
-    { name: 'Phase 1 — Recovery', start: new Date('2026-05-10'), end: new Date('2026-05-24'), dates: 'May 10 – May 24' },
-    { name: 'Phase 2 — Build', start: new Date('2026-05-25'), end: new Date('2026-06-28'), dates: 'May 25 – Jun 28' },
-    { name: 'Phase 3 — Power', start: new Date('2026-06-29'), end: new Date('2026-08-10'), dates: 'Jun 29 – Aug 10' },
+    { name: 'Phase 1 — Recovery', start: new Date('2026-05-10'), end: new Date('2026-08-10'), dates: 'May 10 – TBD' },
+    { name: 'Phase 2 — Build', start: new Date('2026-06-01'), end: new Date('2026-07-15'), dates: 'TBD – TBD' },
+    { name: 'Phase 3 — Power', start: new Date('2026-07-16'), end: new Date('2026-08-10'), dates: 'TBD – Aug 10' },
   ];
-  let currentPhase = phases[0]; let phaseIdx = 0;
-  for (let i = 0; i < phases.length; i++) {
-    if (today >= phases[i].start && today <= phases[i].end) { currentPhase = phases[i]; phaseIdx = i; break; }
-    if (today > phases[i].end) { currentPhase = phases[i+1] || phases[2]; phaseIdx = Math.min(i+1, 2); }
+  let phaseIdx = getActivePhase();
+  if (phaseIdx === null) {
+    // Fall back to date-based detection
+    phaseIdx = 0;
+    for (let i = 0; i < phases.length; i++) {
+      if (today >= phases[i].start && today <= phases[i].end) { phaseIdx = i; break; }
+      if (today > phases[i].end) { phaseIdx = Math.min(i+1, 2); }
+    }
   }
+  let currentPhase = phases[phaseIdx];
   const phaseElapsed = Math.max(0, (today - currentPhase.start) / 86400000);
   const phaseDays = (currentPhase.end - currentPhase.start) / 86400000;
   const phasePct = Math.min(100, Math.round(phaseElapsed / phaseDays * 100));
@@ -1995,6 +2020,10 @@ function renderProgress() {
   document.getElementById('phase-progress').style.width = phasePct + '%';
   document.getElementById('phase-prog-pct').textContent = phasePct + '%';
   document.getElementById('current-phase-badge').textContent = `Phase ${phaseIdx+1}`;
+  // Update manual phase selector buttons
+  document.querySelectorAll('.phase-override-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === phaseIdx);
+  });
 
   // Streak (weeks with 3+ workouts)
   const weekMap = {};
@@ -2103,6 +2132,8 @@ function exportLogs() {
 }
 
 window.onload = async () => {
+  // Default to Phase 1 if no override set yet
+  if (getActivePhase() === null) setActivePhase(0);
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('log-date').value = today;
   renderWorkouts();
