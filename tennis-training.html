@@ -1862,14 +1862,16 @@ function renderHistory() {
         const numSets = parseInt(e.sets) || 0;
         const setDetails = Array.from({length: numSets}, (_, s) => {
           const reps = e.repsPerSet?.[s] ? e.repsPerSet[s] + ' reps' : '';
-          const wt = e.weightsPerSet?.[s] ? e.weightsPerSet[s] + 'lbs' : (e.weight && s === 0 ? e.weight + 'lbs' : '');
+          const rawWt = e.weightsPerSet?.[s] || (s === 0 ? e.weight : '');
+          const wt = rawWt && parseFloat(rawWt) > 0 ? rawWt + 'lbs' : '';
           return [reps, wt].filter(Boolean).join(' @ ');
         }).filter(Boolean);
         const setsStr = e.sets ? e.sets + ' sets' : '';
-        // If all sets have same weight, show condensed; otherwise show per-set
         const allSameWeight = e.weightsPerSet && e.weightsPerSet.every(w => w === e.weightsPerSet[0]);
-        const summaryStr = allSameWeight && e.weightsPerSet?.[0]
-          ? `${setsStr} · ${e.repsPerSet?.join(', ') || ''} reps @ ${e.weightsPerSet[0]}lbs`
+        const baseWt = e.weightsPerSet?.[0];
+        const showWeight = baseWt && parseFloat(baseWt) > 0;
+        const summaryStr = allSameWeight && showWeight
+          ? `${setsStr} · ${e.repsPerSet?.join(', ') || ''} reps @ ${baseWt}lbs`
           : setDetails.length
             ? `${setsStr} · ` + setDetails.map((d,s)=>`S${s+1}: ${d}`).join(' | ')
             : setsStr;
@@ -1970,11 +1972,13 @@ async function deleteLog(id) {
 }
 
 function formatDate(d) {
-  const [y,m,day] = d.split('-');
+  if (!d) return 'Unknown date';
+  // Handle both 'YYYY-MM-DD' string and Date objects or other formats
+  const dt = new Date(d);
+  if (isNaN(dt.getTime())) return d; // fallback — just show raw value
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const dt = new Date(y, m-1, day);
-  return `${days[dt.getDay()]} ${months[m-1]} ${+day}, ${y}`;
+  return `${days[dt.getDay()]} ${months[dt.getMonth()]} ${dt.getDate()}, ${dt.getFullYear()}`;
 }
 
 // ===== PROGRESS =====
