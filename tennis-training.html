@@ -754,6 +754,61 @@
     color: #a78bfa;
     white-space: nowrap;
   }
+  /* EXERCISE HOW-TO */
+  .ex-howto {
+    display: none;
+    background: #0d1a12;
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .ex-howto.open { display: block; }
+  .ex-howto ol {
+    padding-left: 18px;
+    margin: 6px 0 0;
+  }
+  .ex-howto li { margin-bottom: 4px; }
+  .ex-howto-toggle {
+    font-size: 10px;
+    color: #a78bfa;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 3px;
+    border: none;
+    background: none;
+    padding: 0;
+  }
+  /* MOB ITEM HOW-TO */
+  .mob-howto {
+    display: none;
+    background: #0d0f14;
+    border-top: 1px solid var(--border);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    border-radius: 0 0 12px 12px;
+    margin-top: 8px;
+  }
+  .mob-howto.open { display: block; }
+  .mob-howto ol { padding-left: 18px; margin: 4px 0 0; }
+  .mob-howto li { margin-bottom: 4px; }
+  .mob-item { flex-wrap: wrap; }
+  .mob-howto-btn {
+    width: 100%;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #a78bfa;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    padding: 0;
+  }
+
   .mob-reset-btn {
     background: none;
     border: 1px solid var(--border);
@@ -927,8 +982,14 @@
     <div class="mob-completion-icon">🙌</div>
     <h3>Daily Routine Complete!</h3>
     <p>Hip flexors happy. Body ready. Come back tomorrow.</p>
+    <button class="btn btn-primary" id="mob-log-btn" onclick="logMobilitySession()" style="margin-top:14px; font-size:14px; padding:11px; background:#a78bfa; color:white">✓ Log This Session</button>
+    <div id="mob-log-status" style="font-size:12px; color:#a78bfa; margin-top:8px; display:none">Already logged today!</div>
   </div>
 
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
+    <div style="font-size:13px; font-weight:600; color:var(--text)">Today's Routine</div>
+    <button onclick="logMobilitySession(true)" style="background:none; border:1px solid #a78bfa55; color:#a78bfa; font-size:11px; padding:4px 12px; border-radius:20px; cursor:pointer">+ Log Manual Session</button>
+  </div>
   <div class="mob-progress-row">
     <div class="mob-progress-bar-wrap">
       <div class="mob-progress-bar" id="mob-progress-bar" style="width:0%"></div>
@@ -952,6 +1013,7 @@
         <div class="mob-section-tag tag-hip">Hip</div>
         <div class="mob-name">90/90 Hip Flexor Stretch</div>
         <div class="mob-detail">Sit with front leg at 90° and rear leg at 90° to the side. Tall spine, lean gently forward over front shin. Don't force it — breathe into the stretch.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>Sit on the floor. Front leg bent at 90° in front of you, shin parallel to your body.</li><li>Rear leg bent at 90° out to the side, shin perpendicular to your body.</li><li>Sit tall — don't round your back. Gently lean forward over your front shin.</li><li>Breathe deeply into the stretch. Don't force it — let gravity do the work.</li><li>Hold the full 2 minutes. It will deepen as you relax into it.</li></ol></div>
       </div>
       <div class="mob-duration">2 min/side</div>
     </div>
@@ -962,6 +1024,7 @@
         <div class="mob-section-tag tag-hip">Hip</div>
         <div class="mob-name">Kneeling Hip Flexor Stretch</div>
         <div class="mob-detail">Low lunge, rear knee on ground. Squeeze the glute of the rear leg — this is key. Shift forward until you feel the front of the hip. Hold still, don't rock.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>Take a low lunge position with rear knee on the floor (put a towel under it if needed).</li><li>The key: squeeze the glute of your rear leg hard before leaning forward.</li><li>Shift your hips forward until you feel a stretch at the front of the rear hip.</li><li>Stay tall — don't lean your upper body forward.</li><li>Hold still and breathe. The stretch is at the front of the hip, not the knee.</li></ol></div>
       </div>
       <div class="mob-duration">90 sec/side</div>
     </div>
@@ -982,6 +1045,7 @@
         <div class="mob-section-tag tag-hip">Hip</div>
         <div class="mob-name">Hip Circle / CARs</div>
         <div class="mob-detail">Standing, hold something for balance. Draw the biggest circle possible with your knee — forward, out, back, in. Slow and controlled. This keeps the joint healthy and mobile.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>Stand holding something for balance (wall, door frame).</li><li>Lift one knee up, then slowly draw the biggest circle you can with that knee.</li><li>Forward, out to the side, back behind you, then back in front.</li><li>Go as slowly as possible — you want full range of motion at the hip joint.</li><li>5 circles in each direction per side.</li></ol></div>
       </div>
       <div class="mob-duration">5 circles/side</div>
     </div>
@@ -994,6 +1058,7 @@
         <div class="mob-section-tag tag-tennis">Tennis</div>
         <div class="mob-name">Thoracic Rotation (T-Spine)</div>
         <div class="mob-detail">Sit cross-legged or kneel. Place hand behind head, rotate elbow toward the ceiling as far as possible. T-spine rotation = serve power and forehand snap. Critical for tennis.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>Sit cross-legged on the floor, or kneel.</li><li>Place one hand behind your head, elbow pointing out.</li><li>Rotate that elbow up toward the ceiling as far as you can.</li><li>Eyes follow the elbow. Hold 1-2 seconds at the top.</li><li>Return slowly. The rotation should come from your upper back, not your lower back.</li></ol></div>
       </div>
       <div class="mob-duration">10 reps/side</div>
     </div>
@@ -1004,6 +1069,7 @@
         <div class="mob-section-tag tag-tennis">Tennis</div>
         <div class="mob-name">Shoulder Sleeper Stretch</div>
         <div class="mob-detail">Lie on your side (dominant arm down). Arm at 90°, use other hand to gently press wrist toward the floor. Protects the rotator cuff from overuse injury — especially important for heavy serving.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>Lie on your side on the dominant arm (right side if right-handed).</li><li>Your arm should be at 90° — upper arm pointing away from body, forearm pointing toward ceiling.</li><li>With your other hand, gently press your wrist down toward the floor.</li><li>You'll feel a stretch in the back of your shoulder.</li><li>Don't force it. Hold and breathe. This protects your rotator cuff from serving stress.</li></ol></div>
       </div>
       <div class="mob-duration">2 min/side</div>
     </div>
@@ -1014,6 +1080,7 @@
         <div class="mob-section-tag tag-tennis">Tennis</div>
         <div class="mob-name">Ankle Circles + Calf Stretch</div>
         <div class="mob-detail">10 slow ankle circles each direction, then calf stretch against a wall — straight leg and bent knee. Ankles take a beating with all the lateral movement in tennis.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>For circles: sit or stand, lift one foot off the floor. Draw 10 big slow circles each direction.</li><li>For calf stretch (straight leg): stand facing a wall, hands on it. Step one foot back, press heel into floor.</li><li>For calf stretch (bent knee): same position but bend the back knee slightly. Targets the deeper calf muscle.</li><li>Hold each stretch 45-60 seconds per side.</li><li>Don't bounce — hold still and breathe.</li></ol></div>
       </div>
       <div class="mob-duration">1 min/side</div>
     </div>
@@ -1069,6 +1136,7 @@
         <div class="mob-section-tag tag-hip">Hip</div>
         <div class="mob-name">Pigeon Pose</div>
         <div class="mob-detail">From downward dog, bring one shin forward parallel to your hands and lower hips toward the floor. Deep hip opener — targets glute med and external rotators. Breathe and relax into it, don't push.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>From a push-up or downward dog position, bring your right shin forward and lay it on the floor.</li><li>Right knee near your right hand, right foot near your left hand — shin diagonal.</li><li>Lower your hips toward the floor. Place them as evenly as possible on both sides.</li><li>Walk your hands forward and rest your forehead on the floor or your hands if you can.</li><li>Breathe slowly and deeply. Completely relax into it — don't tense up against the stretch.</li></ol></div>
       </div>
       <div class="mob-duration">2 min/side</div>
     </div>
@@ -1079,6 +1147,7 @@
         <div class="mob-section-tag tag-hip">Hip</div>
         <div class="mob-name">Frog Stretch</div>
         <div class="mob-detail">On hands and knees, slide knees wide apart, toes out. Lower hips toward the floor. Deep inner hip/groin stretch — great for hip flexor recovery and squat depth.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>Start on hands and knees on a soft surface.</li><li>Slowly slide your knees apart as wide as comfortable, toes pointing outward.</li><li>Keep your ankles in line with your knees — feet stay wide too.</li><li>Lower your hips toward the floor. You'll feel a deep stretch in your inner thighs and groin.</li><li>Hold and breathe. Let gravity pull your hips down. Don't force it.</li></ol></div>
       </div>
       <div class="mob-duration">90 sec</div>
     </div>
@@ -1123,6 +1192,7 @@
         <div class="mob-section-tag tag-full">Full Body</div>
         <div class="mob-name">World's Greatest Stretch</div>
         <div class="mob-detail">From lunge, place same-side hand inside foot on the floor. Rotate other arm to the sky, eyes following. Then drop elbow to the floor inside foot. Hits hips, thoracic spine, hamstrings, and shoulders all in one movement.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>Start in a lunge position — right foot forward, left knee on floor.</li><li>Place your right hand inside your right foot on the floor.</li><li>Rotate your left arm up toward the ceiling, eyes following it.</li><li>Then drop that elbow to the floor inside your right foot.</li><li>5 slow reps per side. This hits hip flexors, thoracic spine, hamstrings, and shoulders all at once.</li></ol></div>
       </div>
       <div class="mob-duration">5 reps/side</div>
     </div>
@@ -1133,6 +1203,7 @@
         <div class="mob-section-tag tag-full">Full Body</div>
         <div class="mob-name">Hamstring Stretch (Standing or Lying)</div>
         <div class="mob-detail">Standing: hinge forward with soft knees and reach toward the floor, hold. Or lie on back and pull one leg toward you with a band or towel. Tennis players notoriously tight here.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>Standing: stand tall, hinge forward at hips with soft knees. Reach toward the floor.</li><li>Hold when you feel tension in the back of your leg. Don't bounce.</li><li>Lying version: lie on your back, loop a band or towel around one foot.</li><li>Gently pull your leg toward you, keeping it as straight as comfortable.</li><li>Hold 90 seconds per side. Breathe and let it relax deeper over time.</li></ol></div>
       </div>
       <div class="mob-duration">90 sec/side</div>
     </div>
@@ -1143,6 +1214,7 @@
         <div class="mob-section-tag tag-full">Full Body</div>
         <div class="mob-name">Cat-Cow</div>
         <div class="mob-detail">On hands and knees. Inhale — drop belly, lift head and tailbone (cow). Exhale — round spine to ceiling, tuck chin and pelvis (cat). Slow and deliberate. Keeps the spine loose and healthy.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>Start on hands and knees, wrists under shoulders, knees under hips.</li><li>COW (inhale): let your belly drop toward the floor, lift your head and tailbone up.</li><li>CAT (exhale): round your spine up toward the ceiling, tuck your chin and pelvis under.</li><li>Move slowly between the two. Let your breath guide the movement.</li><li>10 slow, full reps. This keeps the spine healthy and mobile.</li></ol></div>
       </div>
       <div class="mob-duration">10 slow reps</div>
     </div>
@@ -1153,6 +1225,7 @@
         <div class="mob-section-tag tag-full">Full Body</div>
         <div class="mob-name">Doorway Chest Stretch</div>
         <div class="mob-detail">Stand in a doorway, arms at 90° on the frame, step forward until you feel a stretch across the chest and front of shoulders. Counters all the forward posture from being hunched over a phone and serves.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>Stand in a doorway, place both forearms on the door frame, elbows at 90°.</li><li>Step one foot through the doorway until you feel a stretch across your chest and front shoulders.</li><li>Stand tall — don't let your lower back arch.</li><li>Hold still and breathe. You should feel it across your pecs and front of shoulders.</li><li>Counters the forward posture that comes from phones, schoolwork, and serving.</li></ol></div>
       </div>
       <div class="mob-duration">2 × 45 sec</div>
     </div>
@@ -1163,6 +1236,7 @@
         <div class="mob-section-tag tag-full">Full Body</div>
         <div class="mob-name">Child's Pose</div>
         <div class="mob-detail">Kneel and sit back on heels, arms stretched forward on the floor. Breathe deeply. Decompresses the lower back, opens lats, and is a great way to end any session. Just relax.</div>
+        <button class="mob-howto-btn" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.textContent.includes("▾") ? '▴ Hide instructions' : '▾ How to do it'">▾ How to do it</button><div class="mob-howto"><strong>How to do it:</strong><ol><li>Kneel and sit your hips back toward your heels.</li><li>Stretch both arms forward on the floor in front of you.</li><li>Rest your forehead on the floor or on your hands.</li><li>Let your whole body relax. Breathe deeply and slowly.</li><li>Decompresses the lower back and stretches the lats. Perfect way to end any session.</li></ol></div>
       </div>
       <div class="mob-duration">90 sec</div>
     </div>
@@ -1237,7 +1311,15 @@
     </div>
     <div class="stat-card">
       <div class="stat-val" id="stat-streak">0</div>
-      <div class="stat-label">Week Streak</div>
+      <div class="stat-label">Lift Week Streak</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-mobility">0</div>
+      <div class="stat-label">Mobility Sessions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-mob-streak">0</div>
+      <div class="stat-label">Mobility Streak</div>
     </div>
     <div class="stat-card">
       <div class="stat-val" id="stat-days-left">74</div>
@@ -1277,6 +1359,9 @@
       <span>Next phase</span>
     </div>
   </div>
+
+  <div class="section-label">Mobility History</div>
+  <div id="mobility-log-history" style="margin-bottom:10px"></div>
 
   <div class="section-label">Data Storage</div>
   <div class="stat-card" style="margin-bottom:10px; text-align:left; padding:16px">
@@ -1371,6 +1456,94 @@ function showView(name) {
 // ===== WORKOUT DATA & RENDERER =====
 let currentLocation = 'gym';
 let currentPhaseIdx = 0;
+
+// ===== EXERCISE HOW-TO DESCRIPTIONS =====
+const EXERCISE_HOWTO = new Map([
+  ["Seated Chest Press Machine", ["Sit with back flat against pad, handles at mid-chest height.", "Grip handles with palms forward, elbows at about 90 degrees.", "Push handles out until arms are almost fully extended - don't lock elbows.", "Slowly return to start. Feel the chest stretch at the bottom.", "Keep shoulders down and back - don't shrug."]],
+  ["Shoulder Press Machine", ["Adjust seat so handles start at shoulder height.", "Grip handles, elbows pointing down and out.", "Press straight up until arms are nearly extended.", "Lower slowly back to shoulder height. Don't let the weight slam down.", "Keep your core tight and lower back against the pad."]],
+  ["Cable Chest Fly (dual cable)", ["Set both cables to chest height. Stand in the middle, one foot slightly forward.", "Hold one handle in each hand, arms wide with a slight bend in the elbows.", "Bring both hands together in front of your chest in a hugging motion.", "Slowly open arms back out - feel the stretch across your chest.", "Keep the bend in your elbows fixed the whole time."]],
+  ["Cable Incline Fly (low cable angle)", ["Set cables at the lowest position. Stand between them.", "With a slight elbow bend, pull both handles up and together toward your chin.", "Squeeze your chest at the top, then slowly lower back out.", "Imagine hugging a giant barrel - keep that elbow angle throughout."]],
+  ["DB Chest Fly on Swiss Ball", ["Sit on Swiss ball, walk feet out until upper back rests on it.", "Hold a DB in each hand, arms out to sides with a slight elbow bend.", "Bring DBs together above your chest in a wide arc.", "Lower slowly - feel the stretch across your chest at the bottom.", "Keep hips up throughout. Don't let them sag."]],
+  ["Incline Push-Up", ["Place hands on the floor, feet up on the couch or chair.", "Body forms a straight line from head to heels.", "Lower your chest toward the floor by bending elbows out to the sides.", "Push back up to start. Full range - chest nearly touches the floor.", "Keep core tight. Don't let hips sag or pike up."]],
+  ["Push-Up Variations", ["Standard: hands shoulder-width, body straight line, lower chest to floor.", "Wide grip: hands wider than shoulders - more chest focus.", "Close grip: hands under chest, elbows close to body - more tricep focus.", "Do all reps of each variation in sequence.", "Quality over speed - full range of motion every rep."]],
+  ["DB Floor Press", ["Lie on your back on the floor, knees bent, feet flat.", "Hold DBs at chest level, elbows resting on the floor at about 45 degrees.", "Press DBs straight up until arms are extended.", "Lower slowly until elbows touch the floor, pause briefly, press again.", "The floor limits range slightly - that's fine, still very effective."]],
+  ["Lateral Raises (DB)", ["Stand tall, DBs at your sides, slight bend in the elbows.", "Raise both arms out to the sides to shoulder height - like a T shape.", "Pause for a second at the top, squeezing your shoulders.", "Lower slowly - take 2-3 seconds on the way down.", "Use light weight. If you're swinging to get them up, the weight is too heavy."]],
+  ["Cable Tricep Pushdown", ["Set cable to top position with rope or bar attachment.", "Stand facing the cable, elbows pinned at your sides, forearms parallel to floor.", "Push the attachment straight down until arms are fully extended.", "Squeeze triceps at the bottom, then slowly let it back up.", "Elbows must stay still - only your forearms move."]],
+  ["Band Tricep Pushdown", ["Anchor band in top of door frame.", "Grip band with both hands, elbows pinned to your sides.", "Push hands straight down until arms extend fully.", "Control the return - don't let band snap back.", "If too easy, choke up on the band or use a thicker one."]],
+  ["DB Skull Crushers", ["Lie on your back on the floor. Hold DBs directly above your chest, palms facing in.", "Keeping upper arms totally still, bend elbows to lower DBs toward your forehead.", "Stop just before DBs touch your head, then press back up.", "Only your forearms move. Upper arms stay pointing straight up.", "Go slow on the way down - this is a control exercise."]],
+  ["Dips (pull-up/dip unit)", ["Grip the parallel bars, arms straight, body hanging.", "Lean slightly forward - this puts more emphasis on chest.", "Bend elbows and lower until upper arms are parallel to floor.", "Push back up to start. Don't lock out elbows completely at top.", "If too hard, start with feet on a chair for assistance."]],
+  ["DB Arnold Press", ["Sit on a chair, hold DBs at shoulder height with palms facing YOU.", "As you press up, rotate palms forward so at the top they face away.", "Press to full extension overhead, then reverse the rotation on the way down.", "It's a corkscrew motion - the rotation is the whole point.", "Hits all three parts of the shoulder."]],
+  ["DB Shoulder Press", ["Sit on a chair, hold DBs at shoulder height, palms facing forward.", "Press both DBs straight up until arms are almost fully extended.", "Lower slowly back to shoulder height - take 2 seconds.", "Keep your core tight and don't arch your lower back."]],
+  ["DB Shoulder Press on Swiss Ball", ["Sit centered on the Swiss ball, feet flat on floor.", "Hold DBs at shoulder height, palms forward.", "Press both up to almost full extension, then lower slowly.", "The ball forces your core to work to keep you stable - that's the point.", "Start light until you're comfortable with the balance."]],
+  ["Med Ball Chest Pass (wall)", ["Stand about 3 feet from a solid wall, feet shoulder-width.", "Hold med ball at chest level with both hands.", "Throw it at the wall as hard and fast as you can - like a basketball chest pass.", "Catch the rebound and immediately reset for the next throw.", "Full effort every rep. This is a power exercise - slow doesn't count."]],
+  ["Explosive Push-Up", ["Set up in a standard push-up position.", "Lower your chest to the floor under control.", "Then explode upward as fast as possible - hands may leave the floor.", "Land soft and immediately reset for the next rep.", "The explosive UP phase is what matters. Make it fast."]],
+  ["Lat Pulldown Machine", ["Sit with thighs locked under the pad. Grip the bar wider than shoulder width.", "Lean back slightly - about 10-15 degrees. No more.", "Pull the bar straight down to your upper chest, driving elbows down and back.", "Squeeze your lats at the bottom for a second.", "Let the bar rise slowly back up to full arm extension - feel the stretch."]],
+  ["SportsArt Seated Row", ["Sit tall, feet on platforms, knees slightly bent.", "Grip handles with a neutral grip (palms facing each other).", "Pull handles to your lower chest/upper abdomen, driving elbows back.", "Squeeze your shoulder blades together hard at the finish.", "Slowly extend arms back out - full stretch at the front."]],
+  ["SportsArt Seated Row — heavier", ["Same setup as regular seated row but increase the weight this session.", "Drive the pull harder and focus on the squeeze at the finish.", "Slow return - 3 seconds back to full extension.", "Quality over speed. Heavy weight with sloppy form doesn't count."]],
+  ["SportsArt Seated Row — Explosive", ["Same setup but drive the pull as fast as possible.", "Explode the elbows back - maximum speed on the pull.", "Controlled 3-second return.", "Heavy and fast on the way in. This trains power."]],
+  ["Cable Face Pull (dual cable)", ["Set cable at face height. Grip rope handles with both hands.", "Step back to create tension, arms extended toward the cable.", "Pull the rope toward your face, separating your hands as you pull.", "Bring hands to either side of your head, elbows high and wide.", "Pause at the end, then slowly return. This protects your rotator cuff."]],
+  ["Rear Delt DB Raise", ["Hold light DBs, bend forward at hips until chest is near parallel to floor.", "Arms hang straight down, slight bend in elbows.", "Raise both arms out to sides in a wide arc until parallel with floor.", "Squeeze your rear shoulder at the top, then lower slowly.", "Keep your back flat and don't use momentum. Go very light."]],
+  ["Pull-Ups (or band-assisted)", ["Hang from the bar with an overhand grip, hands just wider than shoulders.", "For band assist: loop band over bar and put one knee or foot in it.", "Pull yourself up by driving elbows down toward your hips.", "Chin clears the bar at the top - don't stop short.", "Lower slowly - a 3-second descent builds more strength than dropping down."]],
+  ["Pull-Ups", ["Hang from the bar with an overhand grip, hands just wider than shoulders.", "Pull yourself up by driving elbows down toward your hips.", "Chin clears the bar - full range of motion every rep.", "Lower slowly - 3 seconds down. Builds as much strength as the pull up.", "If easy: add a dumbbell between your feet or use a weighted backpack."]],
+  ["Pull-Ups — Weighted (pull-up/dip unit)", ["Hang from bar with overhand grip.", "Hold a dumbbell between your feet, or use a dip belt with weight.", "Pull up until chin clears the bar.", "Lower slowly - 3 full seconds.", "If you can't do 5+ unassisted, skip the weight and just do max reps."]],
+  ["Single-Arm DB Row", ["Place your same-side knee and hand on a bench or chair for support.", "Hold DB in the other hand, arm hanging straight down.", "Pull the DB up toward your hip, driving your elbow up and back.", "Squeeze your shoulder blade at the top.", "Lower slowly back to full arm extension. Full range every rep."]],
+  ["Band Face Pull", ["Anchor band at face height in a door frame.", "Hold both ends, step back to create tension, arms extended.", "Pull hands toward your face, separating them as you pull - elbows high.", "Bring hands to either side of your head. Pause and squeeze.", "This is a shoulder health exercise - don't rush it or go heavy."]],
+  ["Band Pull-Aparts", ["Hold band in front of you at chest height, hands shoulder-width, arms straight.", "Pull the band apart by moving both arms out to the sides.", "Keep arms straight - only move at the shoulder.", "Squeeze your shoulder blades together when the band reaches your chest.", "Don't rush. Controlled movement."]],
+  ["DB Hammer Curl", ["Stand tall, hold DBs at your sides with palms facing your body.", "Curl both DBs up toward your shoulders - keep palms facing in the whole time.", "Don't swing. Upper arms stay still at your sides.", "Squeeze at the top, then lower slowly.", "Neutral grip trains your forearm alongside your bicep - great for racket grip strength."]],
+  ["Bicep/Tricep Machine — curl side", ["Sit facing the machine, upper arm resting on the pad.", "Grip the handle and curl upward through full range.", "Squeeze at the top for a second.", "Lower slowly - the negative (lowering) phase builds as much muscle as the curl.", "Keep your upper arm glued to the pad throughout."]],
+  ["Inverted Row (under table)", ["Lie under a sturdy table, chest directly below the edge.", "Reach up and grip the table edge with both hands, slightly wider than shoulders.", "Body straight like a plank from heels to head - squeeze your glutes.", "Pull your chest up to the underside of the table, squeezing shoulder blades.", "Lower slowly back to arms fully extended. Keep the plank position throughout."]],
+  ["Swiss Ball Plank", ["Kneel in front of Swiss ball, place forearms on it.", "Roll forward until your body forms a straight line from head to heels.", "Hold position - don't let hips sag or pike up.", "The ball will want to roll - your core has to fight that. That's the point.", "Breathe steadily. Don't hold your breath."]],
+  ["Med Ball Rotational Throw (wall)", ["Stand sideways to a wall, feet shoulder-width, med ball at your side.", "Load your hips by rotating away from the wall.", "Rotate explosively toward the wall, throwing the ball like a tennis serve.", "Catch the rebound and immediately reload for the next rep.", "Power comes from the hips and core rotation - not just the arms."]],
+  ["Med Ball Rotational Throw", ["Stand sideways to a wall or fence, feet shoulder-width.", "Load your hips by rotating away from the surface.", "Rotate explosively and throw hard. Like a tennis serve.", "Catch the rebound and reload.", "Power comes from hip rotation - not just the arms."]],
+  ["Leg Press / Hip Sled", ["Sit in the machine, back and hips flat against the pad.", "Place feet shoulder-width on the platform, toes pointed slightly outward.", "Release the safety handles and lower the platform by bending knees.", "Stop when knees are at about 90 degrees - don't let knees cave inward.", "Press back up through your heels to the start. Don't lock out knees at top."]],
+  ["Leg Press — Explosive", ["Same setup as regular leg press but heavier weight.", "Lower the platform under control.", "At the bottom, drive back up as explosively as possible - max force.", "The intent to move fast is what trains power.", "2-3 minutes rest between sets for full power output."]],
+  ["Leg Curl Machine", ["Lie face down on the machine, pad resting on back of your ankles.", "Curl your legs up toward your glutes as far as possible.", "Squeeze your hamstrings hard at the top.", "Lower slowly - 3 seconds. Don't let the weight drop.", "Keep your hips on the bench throughout."]],
+  ["Leg Extension Machine", ["Sit in the machine, pad resting on your shins just above the ankles.", "Extend legs straight out until fully extended.", "Squeeze your quads hard at the top for a full second.", "Lower slowly - 3 seconds back down.", "Keep your back against the pad throughout."]],
+  ["Bulgarian Split Squat (DB)", ["Stand about 2 feet in front of a bench or couch, facing away from it.", "Place the top of one foot on the bench behind you.", "Hold DBs at your sides. Front foot far enough forward that knee stays behind toes.", "Lower your back knee toward the floor by bending your front knee.", "Drive back up through your front heel. This will feel hard - it should."]],
+  ["DB Step-Up (step-up box)", ["Stand in front of a box or step, hold DBs at sides.", "Step up with one foot, planting your whole foot flat on the box.", "Drive through that heel to lift your body up - don't push off the back foot.", "Step the other foot up to meet it, then step back down.", "All the work should come from the leg on the box."]],
+  ["DB Step-Up — Explosive", ["Stand in front of the box, DBs at sides.", "Step up with one foot and drive FAST through the heel.", "The explosive drive is the point - make it powerful.", "Step back down under control.", "Alternate legs each rep."]],
+  ["Calf Raise on Step-Up Box (DB)", ["Stand on the edge of the box with balls of your feet, heels hanging off.", "Hold DBs for extra weight.", "Lower heels as far below the box edge as possible - full stretch.", "Rise up as high as you can on toes. Pause at the top.", "Slow and controlled. Don't bounce."]],
+  ["Calf Raise on Box — Explosive", ["Stand on box edge, balls of feet on edge, heels off.", "Lower heels with control.", "Drive up as fast as possible.", "Pause at the top, then take 3 seconds to lower back down.", "Fast up, slow down - builds both power and strength."]],
+  ["Goblet Squat (DB)", ["Hold one heavy DB vertically at your chest with both hands.", "Stand with feet slightly wider than shoulder-width, toes out slightly.", "Push your hips back and down, keeping your chest tall.", "Go as deep as you can - aim for thighs parallel to floor or below.", "Drive back up through your heels. Keep the DB close to your chest."]],
+  ["DB Romanian Deadlift", ["Stand tall, hold DBs in front of your thighs, palms facing you.", "Hinge at the hips - push them back - while keeping your back flat.", "Lower DBs along your legs until you feel a strong hamstring stretch.", "Drive hips forward to stand back up. Squeeze glutes at the top.", "Keep a slight bend in the knees throughout - this is a hip hinge not a squat."]],
+  ["Nordic Hamstring Curl", ["Kneel on the floor, tuck both feet under the couch or a heavy object.", "Arms crossed at chest or hands ready to catch yourself.", "Slowly lower your body toward the floor by straightening your knees.", "Go as slow as you can - fight gravity the whole way down.", "Catch yourself with your hands, then use arms to push back to start. Even 3-5 reps is great."]],
+  ["Single-Leg Calf Raise (stair edge)", ["Stand on the edge of a stair, ball of one foot on the edge, heel hanging off.", "Hold something for balance. Tuck the other foot behind your ankle.", "Lower your heel as far below the step as possible.", "Rise all the way up on your toes. Pause at the top.", "3-second lowering phase. Don't bounce at the bottom."]],
+  ["Box Jump (step-up boxes)", ["Stand facing the box, feet shoulder-width, a few inches away.", "Dip into a quarter squat and swing arms back.", "Explode upward, swinging arms forward, land softly on the box with both feet.", "Land with knees bent to absorb impact - soft landing every time.", "Step down (don't jump down) and fully reset before the next rep."]],
+  ["Lateral Bounds", ["Stand on one foot, slight bend in the knee.", "Jump sideways as far as possible onto the other foot.", "Land softly and stick it - pause for a full second before the next jump.", "Absorb the landing through your whole foot, bending the knee.", "Mimics the explosive lateral push-off in tennis. Make the landing solid."]],
+  ["Single-Leg RDL (DB)", ["Stand on one foot, slight bend in the standing knee.", "Hold a DB in the opposite hand.", "Hinge forward at the hip, lowering the DB toward the floor while raising the free leg behind you.", "Keep your back flat and hips square - don't rotate.", "Drive back up to standing. Control the whole movement - no wobbling."]],
+  ["DB Goblet Jump Squat", ["Hold one light DB at your chest with both hands.", "Squat down to parallel.", "Explode upward as fast as possible - leave the ground.", "Land softly with knees bent and immediately sink into the next squat.", "The landing absorption is part of the exercise."]],
+  ["DB Farmers Carry", ["Pick up the heaviest DBs you can hold, one in each hand.", "Stand tall - chest up, shoulders back, core tight.", "Walk forward at a steady pace. Don't let your shoulders shrug up.", "Your grip, core, and posture are all working. That's the point.", "If your grip fails before the distance, that's okay - grip strength builds fast."]],
+  ["Ab Machine", ["Sit in the machine with back against the pad, hands on handles.", "Crunch forward by contracting your abs - not pulling with your arms.", "Don't use momentum. Slow and deliberate.", "Pause at the full crunch position, then slowly return.", "Your abs do the work - hands just hold the handles."]],
+  ["Chest Press Machine — Speed Sets", ["Set the weight to about 70% of what you'd normally use for 8 reps.", "Press the handles out as fast as possible - maximum speed.", "Control them back in slowly.", "The goal is explosive intent on every rep. Fast out, controlled back.", "This trains your muscles to contract quickly - that's power training."]],
+  ["Dead Bug", ["Lie on your back, arms pointing straight up, knees bent at 90 degrees in the air.", "Slowly lower your right arm overhead AND your left leg toward the floor simultaneously.", "Stop just before they touch the floor. Hold 5 seconds.", "Return to start and repeat on the other side.", "Lower back must stay flat against the floor the entire time - that's the whole point."]],
+  ["Pallof Press (cable)", ["Set cable to chest height. Stand sideways to the cable, feet shoulder-width.", "Hold the handle at your chest with both hands. Step out until there's good tension.", "Press handle straight out from your chest until arms are extended.", "Hold for 2 seconds - fight the cable pulling you sideways.", "Bring hands back to chest. Don't rotate at all throughout."]],
+  ["Pallof Press (band)", ["Anchor band at chest height in a door frame. Stand sideways to the door.", "Hold band at your chest with both hands, step away for tension.", "Press hands straight out, arms fully extended.", "Hold 2 seconds - resist the band pulling you toward the door.", "Return to chest. The anti-rotation challenge is the whole exercise."]],
+  ["Bird Dog", ["Start on hands and knees, wrists under shoulders, knees under hips.", "Extend your right arm forward and left leg back simultaneously.", "Hold for 2-3 seconds - keep your back flat and hips level. Don't rotate.", "Return to start and switch sides.", "Imagine balancing a glass of water on your lower back - don't spill it."]],
+  ["Side Plank", ["Lie on your side, forearm on the floor, elbow under your shoulder.", "Stack feet on top of each other (or drop bottom knee for easier version).", "Lift hips off the floor until body forms a straight line.", "Hold - don't let hips sag. Breathe steadily.", "For Swiss ball version: forearm on the ball instead of floor."]],
+  ["Plank", ["Forearms on floor, elbows under shoulders. Rise up on toes.", "Body should form a straight line from head to heels.", "Squeeze your glutes and brace your core - like someone's about to punch your stomach.", "Don't let hips sag down or pike up.", "Breathe steadily. Don't hold your breath."]],
+  ["Swiss Ball Rollout", ["Kneel in front of the Swiss ball, place forearms on it.", "Roll the ball forward by extending your arms and hips forward.", "Go until your body is nearly parallel to the floor - or as far as you can control.", "Roll back by pulling your arms back in.", "Keep your lower back flat - don't let it arch."]],
+  ["Ab Wheel Rollout", ["Kneel on the floor, hold ab wheel with both hands directly below your shoulders.", "Slowly roll the wheel forward, extending your body toward the floor.", "Go as far as you can while keeping lower back flat.", "Pull wheel back in by contracting your abs.", "Start with small range of motion and increase as you get stronger."]],
+  ["Hanging Knee Raise", ["Hang from the pull-up bar with both hands, arms fully extended.", "Bring both knees up toward your chest by contracting your abs.", "Control the swing - don't use momentum.", "Lower slowly back to the hanging position.", "If swinging is a problem, squeeze your glutes and cross your feet."]],
+  ["Lying Knee Raise", ["Lie flat on your back, legs straight, arms at your sides.", "Keeping legs together, raise them until vertical (or as far as comfortable).", "Lower slowly - don't let feet touch the floor between reps.", "Keep your lower back pressed into the floor throughout.", "If too hard, bend your knees slightly."]],
+  ["Sprint Intervals", ["Mark out about 20 meters (roughly 6 car lengths).", "Start from a standing start. Drive hard with your arms.", "Run at absolute maximum effort for the full 20m.", "Walk back to the start - that's your rest.", "Full effort every rep. If you're not breathing hard, you're not going fast enough."]],
+  ["Sprint Intervals (driveway/street)", ["Mark out about 20 meters.", "Full sprint - maximum effort, drive your arms.", "Walk back to start. That's your rest.", "Every rep at full speed. If the last rep feels easy, you're not working hard enough."]],
+  ["Rower — Sprint Intervals", ["Sit on the rower, feet strapped in, handle in both hands.", "Drive with your legs first, then lean back slightly, then pull handle to your chest.", "For sprint intervals: row as hard as you possibly can for 20 seconds.", "Rest 40 seconds, then go again.", "The split time on the monitor should drop significantly during sprints."]],
+  ["Box Jump Repeats (step-up boxes)", ["Stand in front of the box.", "Jump up onto the box, land softly.", "Step off the front and immediately jump again - no pause at the bottom.", "Continuous rhythm - the goal is reactive speed, not height.", "Land every jump softly with bent knees."]],
+  ["Plank Complex", ["Start in a front plank - forearms on floor, hold 45 seconds.", "Without resting, rotate to a left side plank - hold 30 seconds.", "Without resting, rotate to a right side plank - hold 30 seconds.", "That's one round. Rest 30 seconds between rounds.", "Keep everything tight throughout. Don't let form slip in the later holds."]],
+  ["DB Incline Curl", ["Sit on an incline bench (or lean back in a chair), arms hanging down.", "Hold DBs with palms facing forward.", "Curl both DBs up toward your shoulders.", "Lower slowly - the stretch at the bottom is the whole point of the incline.", "Keep upper arms still throughout."]],
+  ["DB Curl", ["Sit or stand, hold DBs at your sides, palms facing forward.", "Curl one DB up toward your shoulder while keeping the upper arm still.", "Lower it slowly, then repeat on the other side.", "No swinging. Core tight.", "Full range of motion - all the way up and all the way down."]],
+]);
+
+// Helper to look up how-to
+function getHowTo(name) {
+  // Try exact match first
+  if (EXERCISE_HOWTO.has(name)) return EXERCISE_HOWTO.get(name);
+  // Try partial match
+  for (const [key, val] of EXERCISE_HOWTO) {
+    if (name.includes(key) || key.includes(name)) return val;
+  }
+  return null;
+}
 
 const PHASES = [
   { // PHASE 1 — Recovery
@@ -1605,16 +1778,23 @@ function renderWorkouts() {
           <div class="chevron">›</div>
         </div>
         <div class="exercise-list">
-          ${exercises.map((ex, i) => `
-            <div class="exercise-item">
+          ${exercises.map((ex, i) => {
+            const howto = getHowTo(ex[0]);
+            const howtoId = 'ht-' + Math.random().toString(36).slice(2);
+            return `
+            <div class="exercise-item" style="flex-wrap:wrap">
               <div class="ex-num">${i+1}</div>
               <div class="ex-info">
                 <div class="ex-name">${ex[0]}${ex[3] ? ' <span class="superset-tag">SS</span>' : ''}</div>
                 <div class="ex-note">${ex[1]}</div>
               </div>
-              <div class="ex-sets">${ex[2]}</div>
-            </div>
-          `).join('')}
+              <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px">
+                <div class="ex-sets">${ex[2]}</div>
+                ${howto ? `<button class="ex-howto-toggle" onclick="toggleHowTo('${howtoId}', this)">▾ How to</button>` : ''}
+              </div>
+              ${howto ? `<div class="ex-howto" id="${howtoId}"><ol>${howto.map(s=>`<li>${s}</li>`).join('')}</ol></div>` : ''}
+            </div>`;
+          }).join('')}
         </div>
       </div>`;
   });
@@ -1623,6 +1803,13 @@ function renderWorkouts() {
 
 function toggleDay(el) {
   el.classList.toggle('open');
+}
+
+function toggleHowTo(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('open');
+  btn.textContent = el.classList.contains('open') ? '▴ Hide' : '▾ How to';
 }
 
 // ===== PHASE OVERRIDE =====
@@ -1657,6 +1844,7 @@ async function sheetsRequest(payload) {
 
 async function loadLogsFromSheets() {
   try {
+    // Load workout logs
     const data = await sheetsRequest({ action: 'getAll' });
     if (data.status === 'ok') {
       logsCache = data.logs.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -1666,6 +1854,15 @@ async function loadLogsFromSheets() {
     console.warn('Could not load from Sheets, using localStorage fallback', e);
     logsCache = getLocalLogs();
     sheetsReady = false;
+  }
+  try {
+    // Load mobility logs
+    const mobData = await sheetsRequest({ action: 'getAllMobility' });
+    if (mobData.status === 'ok' && mobData.logs.length) {
+      saveMobilityLogs(mobData.logs.sort((a,b) => new Date(b.date) - new Date(a.date)));
+    }
+  } catch(e) {
+    console.warn('Could not load mobility logs from Sheets', e);
   }
 }
 
@@ -2023,6 +2220,9 @@ function renderProgress() {
   document.getElementById('phase-progress').style.width = phasePct + '%';
   document.getElementById('phase-prog-pct').textContent = phasePct + '%';
   document.getElementById('current-phase-badge').textContent = `Phase ${phaseIdx+1}`;
+  // Mobility history
+  if (document.getElementById('mobility-log-history')) renderMobilityHistory();
+
   // Update manual phase selector buttons
   document.querySelectorAll('.phase-override-btn').forEach((b, i) => {
     b.classList.toggle('active', i === phaseIdx);
@@ -2043,6 +2243,11 @@ function renderProgress() {
     else break;
   }
   document.getElementById('stat-streak').textContent = streak;
+
+  // Mobility stats
+  const mobLogs = getMobilityLogs();
+  document.getElementById('stat-mobility').textContent = mobLogs.length;
+  document.getElementById('stat-mob-streak').textContent = getMobilityStreak();
 }
 
 function getWeek(d) {
@@ -2055,6 +2260,74 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== MOBILITY LOGGING =====
+function getMobilityLogs() {
+  try { return JSON.parse(localStorage.getItem('mobility-logs') || '[]'); } catch(e) { return []; }
+}
+function saveMobilityLogs(logs) {
+  localStorage.setItem('mobility-logs', JSON.stringify(logs));
+}
+
+async function logMobilitySession(manual = false) {
+  const today = new Date().toISOString().split('T')[0];
+  const logs = getMobilityLogs();
+
+  // Check if already logged today
+  const alreadyLogged = logs.some(l => l.date === today);
+  if (alreadyLogged) {
+    document.getElementById('mob-log-status').style.display = 'block';
+    document.getElementById('mob-log-btn') && (document.getElementById('mob-log-btn').style.display = 'none');
+    showToast('Already logged today!');
+    return;
+  }
+
+  const section = document.getElementById('mob-daily').style.display === 'none' ? 'full' : 'daily';
+  const log = {
+    id: Date.now(),
+    date: today,
+    type: manual ? 'manual' : section,
+    completedAt: new Date().toISOString()
+  };
+
+  logs.unshift(log);
+  saveMobilityLogs(logs);
+
+  // Hide log button, show confirmation
+  const btn = document.getElementById('mob-log-btn');
+  if (btn) btn.style.display = 'none';
+  const status = document.getElementById('mob-log-status');
+  if (status) { status.style.display = 'block'; status.textContent = '✓ Logged!'; }
+
+  // Save to Sheets
+  showToast('⏳ Saving mobility session...');
+  try {
+    await sheetsRequest({ action: 'saveMobility', log });
+    showToast('✓ Mobility session saved!');
+  } catch(e) {
+    showToast('✓ Saved locally');
+  }
+
+  renderProgress();
+}
+
+function getMobilityStreak() {
+  const logs = getMobilityLogs();
+  if (!logs.length) return 0;
+  const dates = [...new Set(logs.map(l => l.date))].sort().reverse();
+  let streak = 0;
+  const today = new Date().toISOString().split('T')[0];
+  let check = today;
+  for (const date of dates) {
+    if (date === check) {
+      streak++;
+      const d = new Date(check);
+      d.setDate(d.getDate() - 1);
+      check = d.toISOString().split('T')[0];
+    } else break;
+  }
+  return streak;
 }
 
 // ===== MOBILITY =====
@@ -2098,8 +2371,23 @@ function updateMobProgress() {
   document.getElementById('mob-progress-bar').style.width = pct + '%';
   document.getElementById('mob-progress-label').textContent = count + ' / ' + total;
   const banner = document.getElementById('mob-completion-banner');
-  if (count === total && total > 0) banner.classList.add('visible');
-  else banner.classList.remove('visible');
+  if (count === total && total > 0) {
+    banner.classList.add('visible');
+    // Check if already logged today
+    const today = new Date().toISOString().split('T')[0];
+    const alreadyLogged = getMobilityLogs().some(l => l.date === today);
+    const btn = document.getElementById('mob-log-btn');
+    const status = document.getElementById('mob-log-status');
+    if (alreadyLogged) {
+      if (btn) btn.style.display = 'none';
+      if (status) { status.style.display = 'block'; status.textContent = '✓ Already logged today!'; }
+    } else {
+      if (btn) btn.style.display = 'block';
+      if (status) status.style.display = 'none';
+    }
+  } else {
+    banner.classList.remove('visible');
+  }
   renderMobItems();
 }
 
@@ -2133,6 +2421,34 @@ function exportLogs() {
   URL.revokeObjectURL(url);
   showToast('✓ Backup downloaded!');
 }
+
+function renderMobilityHistory() {
+    const logs = getMobilityLogs().slice(0, 14); // last 14 sessions
+    const el = document.getElementById('mobility-log-history');
+    if (!el) return;
+    if (!logs.length) {
+      el.innerHTML = '<div class="empty-state" style="padding:20px"><div class="empty-icon" style="font-size:32px">🧘</div><p style="font-size:13px; color:var(--muted)">No mobility sessions logged yet. Complete the daily routine and tap Log This Session.</p></div>';
+      return;
+    }
+    el.innerHTML = logs.map(l => `
+      <div class="log-entry" style="padding:10px 14px; margin-bottom:6px">
+        <div style="display:flex; justify-content:space-between; align-items:center">
+          <div>
+            <div style="font-size:12px; color:var(--muted); font-family:'DM Mono',monospace">${formatDate(l.date)}</div>
+            <div style="font-size:13px; font-weight:600; color:#a78bfa">${l.type === 'full' ? '🧘 Full Session (20 min)' : l.type === 'manual' ? '✏️ Manual Log' : '🧘 Daily Routine (10 min)'}</div>
+          </div>
+          <button class="delete-btn" onclick="deleteMobilityLog(${l.id})" style="color:var(--muted)">✕</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  async function deleteMobilityLog(id) {
+    const logs = getMobilityLogs().filter(l => l.id !== id);
+    saveMobilityLogs(logs);
+    renderMobilityHistory();
+    renderProgress();
+    try { await sheetsRequest({ action: 'deleteMobility', id }); } catch(e) {}
+  }
 
 window.onload = async () => {
   // Default to Phase 1 if no override set yet
