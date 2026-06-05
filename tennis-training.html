@@ -818,14 +818,13 @@
     <div class="day-cell lift tuesday"><div class="day-name">Tue</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
     <div class="day-cell tennis"><div class="day-name">Wed</div><div class="day-icon">🎾</div><div class="day-label">Tennis</div></div>
     <div class="day-cell lift thursday"><div class="day-name">Thu</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
-    <div class="day-cell lift friday"><div class="day-name">Fri</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
-    <div class="day-cell match"><div class="day-name">Sat</div><div class="day-icon">🏆</div><div class="day-label">Match?</div></div>
+    <div class="day-cell tennis"><div class="day-name">Fri</div><div class="day-icon">🎾</div><div class="day-label">Serves</div></div>
+    <div class="day-cell lift friday"><div class="day-name">Sat</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
     <div class="day-cell rest"><div class="day-name">Sun</div><div class="day-icon">😴</div><div class="day-label">Rest</div></div>
   </div>
   <div class="legend">
     <div class="legend-item"><div class="legend-dot ld-green"></div> Lift</div>
-    <div class="legend-item"><div class="legend-dot ld-yellow"></div> Tennis</div>
-    <div class="legend-item"><div class="legend-dot ld-blue"></div> Match (optional)</div>
+    <div class="legend-item"><div class="legend-dot ld-yellow"></div> Tennis / Serves</div>
     <div class="legend-item"><div class="legend-dot ld-gray"></div> Rest</div>
   </div>
 
@@ -1193,17 +1192,17 @@
         <optgroup label="Phase 1 — Recovery">
           <option value="P1-TUE">Phase 1 · Tuesday — Upper Push</option>
           <option value="P1-THU">Phase 1 · Thursday — Upper Pull</option>
-          <option value="P1-FRI">Phase 1 · Friday — Full Upper</option>
+          <option value="P1-FRI">Phase 1 · Saturday — Full Upper</option>
         </optgroup>
         <optgroup label="Phase 2 — Build">
           <option value="P2-TUE">Phase 2 · Tuesday — Lower Body</option>
           <option value="P2-THU">Phase 2 · Thursday — Upper Push</option>
-          <option value="P2-FRI">Phase 2 · Friday — Upper Pull + Core</option>
+          <option value="P2-FRI">Phase 2 · Saturday — Upper Pull + Core</option>
         </optgroup>
         <optgroup label="Phase 3 — Power">
           <option value="P3-TUE">Phase 3 · Tuesday — Explosive Lower</option>
           <option value="P3-THU">Phase 3 · Thursday — Explosive Upper</option>
-          <option value="P3-FRI">Phase 3 · Friday — Full Body</option>
+          <option value="P3-FRI">Phase 3 · Saturday — Full Body</option>
         </optgroup>
       </select>
     </div>
@@ -1303,7 +1302,7 @@
   </div>
   <div class="tip-card">
     <h4>Tennis + Lifting = Smart Scheduling</h4>
-    <p>You're lifting Tu/Th/Fri so that Mon and Wed tennis days have fresh legs. If you have a match Saturday, keep Friday lifting moderate — don't go to failure on leg exercises.</p>
+    <p>You're lifting Tue/Thu/Sat so Mon, Wed, and Fri are tennis days. Monday and Wednesday are group training, Friday is serve practice at the courts once cleared. If tennis matches return on Saturdays, the third lift day can move back to Friday.</p>
   </div>
   <div class="tip-card">
     <h4>Tracking = Progress</h4>
@@ -1413,7 +1412,7 @@ const PHASES = [
           ['Inverted Row (under table)','Lie under sturdy table, grip edge, pull chest up to it.','3 × max'],
         ]
       },
-      { badge:'FRI', badgeClass:'friday', name:'Upper Total', focus:'Chest · Back · Shoulders · Arms',
+      { badge:'SAT', badgeClass:'friday', name:'Upper Total', focus:'Chest · Back · Shoulders · Arms',
         gym:[
           ['Seated Chest Press Machine','Go slightly heavier than Tuesday. Track the weight.','3 × 8–10'],
           ['Lat Pulldown Machine','Alternate grip — try neutral/close grip today.','3 × 8–10'],
@@ -1475,7 +1474,7 @@ const PHASES = [
           ['Swiss Ball Rollout','Forearms on Swiss ball, roll forward slowly. Core stays tight.','3 × 10'],
         ]
       },
-      { badge:'FRI', badgeClass:'friday', name:'Upper Pull + Core', focus:'Back · Biceps · Rear Delts · Core',
+      { badge:'SAT', badgeClass:'friday', name:'Upper Pull + Core', focus:'Back · Biceps · Rear Delts · Core',
         gym:[
           ['Pull-Ups (pull-up/dip unit)','★ Main pull lift. Add a DB between feet once you can do 8+ easily.','4 × max'],
           ['SportsArt Seated Row — heavier','Go heavier than last session. Explode the pull, slow the return.','3 × 8–10'],
@@ -1534,7 +1533,7 @@ const PHASES = [
           ['Band Face Pull','Shoulder health. Every week no matter what.','3 × 15'],
         ]
       },
-      { badge:'FRI', badgeClass:'friday', name:'Full Body + Conditioning', focus:'Strength · Power · Tennis Conditioning',
+      { badge:'SAT', badgeClass:'friday', name:'Full Body + Conditioning', focus:'Strength · Power · Tennis Conditioning',
         gym:[
           ['Pull-Ups — Weighted (pull-up/dip unit)','Add DB between feet or use weight belt. Max reps every set.','4 × max'],
           ['SportsArt Seated Row — Explosive','Drive elbows back fast. Slow controlled return. Heavy.','4 × 5'],
@@ -1589,7 +1588,7 @@ function renderWorkouts() {
   if (phase.alert) {
     html += `<div class="rehab-note">⚠️ <div>${phase.alert}</div></div>`;
   }
-  const dayLabels = ['Tuesday','Thursday','Friday'];
+  const dayLabels = ['Tuesday','Thursday','Saturday'];
   phase.days.forEach((day, di) => {
     const exercises = day[loc] || day.gym;
     html += `
