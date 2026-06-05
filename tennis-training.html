@@ -1790,9 +1790,9 @@ function renderWorkouts() {
               </div>
               <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px">
                 <div class="ex-sets">${ex[2]}</div>
-                ${howto ? `<button class="ex-howto-toggle" onclick="toggleHowTo('${howtoId}', this)">▾ How to</button>` : ''}
+                ${howto ? `<button class="ex-howto-toggle" onclick="toggleHowTo('${howtoId}', this, event)">▾ How to</button>` : ''}
               </div>
-              ${howto ? `<div class="ex-howto" id="${howtoId}"><ol>${howto.map(s=>`<li>${s}</li>`).join('')}</ol></div>` : ''}
+              ${howto ? `<div class="ex-howto" id="${howtoId}" onclick="event.stopPropagation()"><ol>${howto.map(s=>`<li>${s}</li>`).join('')}</ol></div>` : ''}
             </div>`;
           }).join('')}
         </div>
@@ -1805,7 +1805,8 @@ function toggleDay(el) {
   el.classList.toggle('open');
 }
 
-function toggleHowTo(id, btn) {
+function toggleHowTo(id, btn, event) {
+  event.stopPropagation();
   const el = document.getElementById(id);
   if (!el) return;
   el.classList.toggle('open');
@@ -1904,9 +1905,16 @@ function updateExerciseFields() {
   if (!session) { section.style.display = 'none'; return; }
   section.style.display = 'block';
   const exercises = getLogExercises(session);
-  rows.innerHTML = exercises.map((ex, i) => `
+  rows.innerHTML = exercises.map((ex, i) => {
+    const howto = getHowTo(ex);
+    const howtoId = `log-ht-${i}`;
+    return `
     <div style="margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--border)">
-      <div class="ex-log-name">${i+1}. ${ex}</div>
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:8px; gap:8px">
+        <div class="ex-log-name" style="margin-bottom:0; flex:1">${i+1}. ${ex}</div>
+        ${howto ? `<button class="ex-howto-toggle" onclick="toggleHowTo('${howtoId}', this, event)" style="flex-shrink:0; margin-top:2px">▾ How to</button>` : ''}
+      </div>
+      ${howto ? `<div class="ex-howto" id="${howtoId}" onclick="event.stopPropagation()" style="border-radius:8px; margin-bottom:10px"><ol>${howto.map(s=>`<li>${s}</li>`).join('')}</ol></div>` : ''}
       <div style="margin-bottom:8px">
         <div class="ex-log-label">Sets done</div>
         <input type="number" id="ex-${i}-sets" placeholder="3" min="0" max="10" value="3" oninput="updateSetRepInputs(${i}, this.value)" style="width:80px; text-align:center">
@@ -1922,13 +1930,13 @@ function updateExerciseFields() {
             <div style="display:grid; grid-template-columns:36px 1fr 1fr; gap:6px; margin-bottom:6px; align-items:center">
               <span style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; text-align:center">S${s+1}</span>
               <input type="number" id="ex-${i}-rep-${s}" placeholder="—" min="0" style="text-align:center">
-              <input type="number" id="ex-${i}-wt-${s}" placeholder="—" min="0" style="text-align:center" ${s > 0 ? `oninput=""` : `oninput="copyWeight(${i}, this.value)"`}>
+              <input type="number" id="ex-${i}-wt-${s}" placeholder="—" min="0" style="text-align:center" ${s === 0 ? `oninput="copyWeight(${i}, this.value)"` : ''}>
             </div>
           `).join('')}
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function copyWeight(exIdx, val) {
