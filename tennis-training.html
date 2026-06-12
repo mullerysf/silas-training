@@ -886,14 +886,14 @@
 
   <div class="section-label">Training Phases</div>
 
-  <div class="phase-card current-phase" onclick="this.classList.toggle('open')">
+  <div class="phase-card" id="prog-phase-0" onclick="this.classList.toggle('open')">
     <div class="phase-header">
       <div class="phase-num">1</div>
       <div class="phase-info">
         <div class="phase-name">Recovery &amp; Foundation</div>
-        <div class="phase-dates">May 10 – TBD · Weeks 1–2+</div>
+        <div class="phase-dates">May 10 – Jun 20 · Recovery</div>
       </div>
-      <span class="phase-tag tag-recovery">Current</span>
+      <span class="phase-tag tag-recovery" id="prog-tag-0">Recovery</span>
     </div>
     <div class="phase-desc">Cleared by doctor — full program is active. Focus is upper body strength, core activation, shoulder stability, and hip rehab work. Build the habit and consistency before Phase 2 adds lower body loading next week.</div>
     <div class="phase-goals">
@@ -904,14 +904,14 @@
     </div>
   </div>
 
-  <div class="phase-card" onclick="this.classList.toggle('open')">
+  <div class="phase-card" id="prog-phase-1" onclick="this.classList.toggle('open')">
     <div class="phase-header">
       <div class="phase-num">2</div>
       <div class="phase-info">
         <div class="phase-name">Build &amp; Hypertrophy</div>
-        <div class="phase-dates">TBD – TBD · Weeks vary</div>
+        <div class="phase-dates">Jun 21 – Jul 19 · Build</div>
       </div>
-      <span class="phase-tag tag-build">Build</span>
+      <span class="phase-tag tag-build" id="prog-tag-1">Build</span>
     </div>
     <div class="phase-desc">Full body loading returns as hip flexor clears. Progressive overload each week — add weight when you hit the top rep range. This is where most muscle mass gets built. Big compound moves: squats, rows, bench, deadlifts.</div>
     <div class="phase-goals">
@@ -922,14 +922,14 @@
     </div>
   </div>
 
-  <div class="phase-card" onclick="this.classList.toggle('open')">
+  <div class="phase-card" id="prog-phase-2" onclick="this.classList.toggle('open')">
     <div class="phase-header">
       <div class="phase-num">3</div>
       <div class="phase-info">
         <div class="phase-name">Power &amp; Performance</div>
-        <div class="phase-dates">TBD – Aug 10 · Final weeks</div>
+        <div class="phase-dates">Jul 20 – Aug 10 · Peak</div>
       </div>
-      <span class="phase-tag tag-peak">Peak</span>
+      <span class="phase-tag tag-peak" id="prog-tag-2">Peak</span>
     </div>
     <div class="phase-desc">Shift from pure strength to explosive power — the kind that translates to faster serve speed and quicker court movement. Med ball throws, jump training, and sport-specific conditioning added. Volume drops slightly, intensity stays high.</div>
     <div class="phase-goals">
@@ -1885,14 +1885,43 @@ function toggleHowTo(id, btn, event) {
 }
 
 // ===== PHASE OVERRIDE =====
+// Scheduled phase advances — auto-flips on these dates unless manually overridden later
+const PHASE_SCHEDULE = [
+  { date: '2026-06-21', phase: 1 }, // Phase 2 (index 1) starts June 21 after NY trip
+];
+
 function getActivePhase() {
-  // Returns 0, 1, or 2 — manually set overrides date-based logic
+  // Manual override always wins if it was set AFTER the most recent scheduled advance
   const override = localStorage.getItem('active-phase-override');
-  return override !== null ? parseInt(override) : null;
+  const overrideTime = parseInt(localStorage.getItem('active-phase-override-time') || '0');
+
+  // Find the most recent scheduled phase that has arrived
+  const today = new Date().toISOString().split('T')[0];
+  let scheduledPhase = null;
+  let scheduledDate = null;
+  for (const s of PHASE_SCHEDULE) {
+    if (today >= s.date) { scheduledPhase = s.phase; scheduledDate = s.date; }
+  }
+
+  // If there's a manual override set more recently than the scheduled date, use it
+  if (override !== null && scheduledDate) {
+    const schedTime = new Date(scheduledDate).getTime();
+    if (overrideTime > schedTime) return parseInt(override);
+    return scheduledPhase;
+  }
+  if (override !== null) return parseInt(override);
+  if (scheduledPhase !== null) return scheduledPhase;
+  return null;
 }
 function setActivePhase(idx) {
   localStorage.setItem('active-phase-override', idx);
+  localStorage.setItem('active-phase-override-time', Date.now());
   renderProgress();
+  updateProgramTabHighlight();
+  // Also update the Workouts tab default
+  currentPhaseIdx = idx;
+  document.querySelectorAll('.phase-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+  renderWorkouts();
   showToast('✓ Phase updated!');
 }
 
@@ -2277,9 +2306,9 @@ function renderProgress() {
 
   // Phase progress
   const phases = [
-    { name: 'Phase 1 — Recovery', start: new Date('2026-05-10'), end: new Date('2026-08-10'), dates: 'May 10 – TBD' },
-    { name: 'Phase 2 — Build', start: new Date('2026-06-01'), end: new Date('2026-07-15'), dates: 'TBD – TBD' },
-    { name: 'Phase 3 — Power', start: new Date('2026-07-16'), end: new Date('2026-08-10'), dates: 'TBD – Aug 10' },
+    { name: 'Phase 1 — Recovery', start: new Date('2026-05-10'), end: new Date('2026-06-20'), dates: 'May 10 – Jun 20' },
+    { name: 'Phase 2 — Build', start: new Date('2026-06-21'), end: new Date('2026-07-19'), dates: 'Jun 21 – Jul 19' },
+    { name: 'Phase 3 — Power', start: new Date('2026-07-20'), end: new Date('2026-08-10'), dates: 'Jul 20 – Aug 10' },
   ];
   let phaseIdx = getActivePhase();
   if (phaseIdx === null) {
@@ -2530,10 +2559,17 @@ function renderMobilityHistory() {
   }
 
 window.onload = async () => {
-  // Default to Phase 1 if no override set yet
-  if (getActivePhase() === null) setActivePhase(0);
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('log-date').value = today;
+
+  // Default the Workouts tab to the active phase
+  const activePh = getActivePhase();
+  if (activePh !== null) {
+    currentPhaseIdx = activePh;
+    document.querySelectorAll('.phase-btn').forEach((b, i) => {
+      b.classList.toggle('active', i === activePh);
+    });
+  }
   renderWorkouts();
   updateMobProgress();
 
@@ -2541,10 +2577,30 @@ window.onload = async () => {
   const histEl = document.getElementById('log-history');
   if (histEl) histEl.innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><h3>Loading logs...</h3><p>Fetching your workout history from the cloud.</p></div>';
 
+  updateProgramTabHighlight();
+
   await loadLogsFromSheets();
   renderHistory();
   renderProgress();
 };
+
+function updateProgramTabHighlight() {
+  const active = getActivePhase();
+  if (active === null) return;
+  const tagLabels = ['Recovery','Build','Peak'];
+  for (let i = 0; i < 3; i++) {
+    const card = document.getElementById('prog-phase-' + i);
+    const tag = document.getElementById('prog-tag-' + i);
+    if (!card || !tag) continue;
+    if (i === active) {
+      card.classList.add('current-phase');
+      tag.textContent = 'Current';
+    } else {
+      card.classList.remove('current-phase');
+      tag.textContent = tagLabels[i];
+    }
+  }
+}
 </script>
 </body>
 </html>
