@@ -463,6 +463,12 @@
     <button class="save-btn" onclick="saveLog()">Save Session! &#127881;</button>
     <div class="sync-status pending" id="sync-status"></div>
   </div>
+  <div id="bulk-sync-bar" style="margin-bottom:14px;display:none;">
+    <button onclick="bulkSyncToSheets()" style="width:100%;padding:13px;background:linear-gradient(135deg,#4CAF50,#2E7D32);color:white;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:0.5px;">
+      &#9729;&#65039; Upload All Local Sessions to Google Sheets
+    </button>
+    <div id="bulk-sync-status" style="font-size:12px;text-align:center;margin-top:8px;font-weight:700;color:#999;min-height:18px;"></div>
+  </div>
   <div id="log-history"></div>
 </div>
 
@@ -867,24 +873,36 @@
 
   async function fetchFromSheets() {
     var el = document.getElementById("log-history");
+    var syncBar = document.getElementById("bulk-sync-bar");
     try {
       var res = await fetch(SHEETS_URL + "?sheet=" + SHEET_NAME);
       var data = await res.json();
       if (data.status === "success" && data.data && data.data.length) {
-        // Merge with any local logs not yet in sheets (by id)
+        // Sheets has data - merge with local
         var sheetIds = {};
         data.data.forEach(function(r){ if(r.id) sheetIds[r.id] = true; });
         var local = getLogs().filter(function(l){ return !sheetIds[l.id]; });
         var merged = data.data.concat(local);
         el.innerHTML = buildHistoryHTML(merged);
-        // Update local cache with sheet data
         saveLogs(merged);
+        // Show upload button only if there are unsynced local entries
+        if (local.length > 0 && syncBar) {
+          syncBar.style.display = "block";
+          document.getElementById("bulk-sync-status").textContent = local.length + " local session(s) not yet in Sheets - tap to upload!";
+          document.getElementById("bulk-sync-status").style.color = "#FF8E53";
+        }
       } else {
-        // Fall back to local
-        el.innerHTML = buildHistoryHTML(getLogs());
+        // Sheets empty - show local and offer to upload
+        var local = getLogs();
+        el.innerHTML = buildHistoryHTML(local);
+        if (local.length > 0 && syncBar) {
+          syncBar.style.display = "block";
+          document.getElementById("bulk-sync-status").textContent = local.length + " local session(s) not yet in Sheets - tap to upload!";
+          document.getElementById("bulk-sync-status").style.color = "#FF8E53";
+        }
       }
     } catch(e) {
-      // No internet - fall back to local
+      // No internet
       el.innerHTML = buildHistoryHTML(getLogs());
     }
   }
@@ -939,6 +957,54 @@
   function formatDate(ds) {
     var d = new Date(ds + "T12:00:00");
     return d.toLocaleDateString("en-US", {weekday:"short", month:"short", day:"numeric"});
+  }
+
+  // ---- BULK SYNC ----
+  async function bulkSyncToSheets() {
+    var logs = getLogs();
+    if (!logs.length) {
+      document.getElementById("bulk-sync-status").textContent = "No local sessions to upload.";
+      return;
+    }
+    var statusEl = document.getElementById("bulk-sync-status");
+    statusEl.style.color = "#999";
+    statusEl.textContent = "Uploading " + logs.length + " sessions...";
+    var success = 0;
+    var failed = 0;
+    for (var i = 0; i < logs.length; i++) {
+      var entry = logs[i];
+      try {
+        var payload = JSON.stringify({
+          sheet: SHEET_NAME,
+          id: entry.id,
+          date: entry.date,
+          session: entry.type || entry.session,
+          effort: entry.effort,
+          notes: entry.notes,
+          exercises: "",
+          golf_notes: entry.golf_notes || "",
+          savedAt: entry.savedAt || new Date().toISOString()
+        });
+        var res = await fetch(SHEETS_URL, {
+          method: "POST",
+          headers: {"Content-Type": "text/plain"},
+          body: payload
+        });
+        var data = await res.json();
+        if (data.status === "success") success++;
+        else failed++;
+      } catch(e) {
+        failed++;
+      }
+      statusEl.textContent = "Uploaded " + (success + failed) + " of " + logs.length + "...";
+    }
+    if (failed === 0) {
+      statusEl.style.color = "#0F9D8A";
+      statusEl.textContent = "&#10003; All " + success + " sessions uploaded to Google Sheets!";
+    } else {
+      statusEl.style.color = "#FF6B6B";
+      statusEl.textContent = success + " uploaded, " + failed + " failed. Check connection and try again.";
+    }
   }
 
   // ---- INIT ----
