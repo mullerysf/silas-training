@@ -870,17 +870,19 @@
 
   <div class="section-label">Weekly Schedule</div>
   <div class="week-grid">
-    <div class="day-cell tennis"><div class="day-name">Mon</div><div class="day-icon">🎾</div><div class="day-label">Tennis</div></div>
-    <div class="day-cell lift tuesday"><div class="day-name">Tue</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
-    <div class="day-cell tennis"><div class="day-name">Wed</div><div class="day-icon">🎾</div><div class="day-label">Tennis</div></div>
-    <div class="day-cell lift thursday"><div class="day-name">Thu</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
-    <div class="day-cell tennis"><div class="day-name">Fri</div><div class="day-icon">🎾</div><div class="day-label">Serves</div></div>
-    <div class="day-cell lift friday"><div class="day-name">Sat</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
+    <div class="day-cell lift tuesday"><div class="day-name">Mon</div><div class="day-icon">🏋️🎾</div><div class="day-label">Lift+Tennis</div></div>
+    <div class="day-cell match"><div class="day-name">Tue</div><div class="day-icon">🏃⛳</div><div class="day-label">Cond+Golf</div></div>
+    <div class="day-cell lift thursday"><div class="day-name">Wed</div><div class="day-icon">🏋️🎾</div><div class="day-label">Lift+Tennis</div></div>
+    <div class="day-cell match"><div class="day-name">Thu</div><div class="day-icon">🏃⛳</div><div class="day-label">Cond+Golf</div></div>
+    <div class="day-cell lift friday"><div class="day-name">Fri</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
+    <div class="day-cell match"><div class="day-name">Sat</div><div class="day-icon">🏃</div><div class="day-label">Cond/Makeup</div></div>
     <div class="day-cell rest"><div class="day-name">Sun</div><div class="day-icon">😴</div><div class="day-label">Rest</div></div>
   </div>
   <div class="legend">
-    <div class="legend-item"><div class="legend-dot ld-green"></div> Lift</div>
-    <div class="legend-item"><div class="legend-dot ld-yellow"></div> Tennis / Serves</div>
+    <div class="legend-item"><div class="legend-dot ld-green"></div> Lift (AM)</div>
+    <div class="legend-item"><div class="legend-dot ld-yellow"></div> Tennis (PM)</div>
+    <div class="legend-item"><div class="legend-dot ld-blue"></div> Conditioning (AM) + Golf (PM)</div>
+    <div class="legend-item"><div class="legend-dot ld-blue"></div> Conditioning / Makeup Lift</div>
     <div class="legend-item"><div class="legend-dot ld-gray"></div> Rest</div>
   </div>
 
@@ -927,7 +929,7 @@
       <div class="phase-num">3</div>
       <div class="phase-info">
         <div class="phase-name">Power &amp; Performance</div>
-        <div class="phase-dates">Jul 20 – Aug 10 · Peak</div>
+        <div class="phase-dates">Jul 20 – Jul 26 · Peak Power</div>
       </div>
       <span class="phase-tag tag-peak" id="prog-tag-2">Peak</span>
     </div>
@@ -935,8 +937,44 @@
     <div class="phase-goals">
       <span class="goal-chip">⚡ Explosive power</span>
       <span class="goal-chip">🏃 Court speed</span>
-      <span class="goal-chip">🎯 Tennis-specific</span>
+      <span class="goal-chip">🎯 Golf-specific</span>
       <span class="goal-chip">🔁 Med ball work</span>
+    </div>
+  </div>
+
+  <div class="phase-card" id="prog-phase-3" onclick="this.classList.toggle('open')">
+    <div class="phase-header">
+      <div class="phase-num">4</div>
+      <div class="phase-info">
+        <div class="phase-name">Taper Week</div>
+        <div class="phase-dates">Jul 27 · Pre-Tryout</div>
+      </div>
+      <span class="phase-tag tag-build" id="prog-tag-3">Taper</span>
+    </div>
+    <div class="phase-desc">One week before golf tryouts. Reduce volume, maintain intensity. Same weights but fewer sets and stop short of failure. Goal is to feel fresh, strong, and explosive going into tryouts — not tired from heavy training.</div>
+    <div class="phase-goals">
+      <span class="goal-chip">⬇ Reduced volume</span>
+      <span class="goal-chip">💪 Maintain strength</span>
+      <span class="goal-chip">⚡ Stay sharp</span>
+      <span class="goal-chip">😴 Extra recovery</span>
+    </div>
+  </div>
+
+  <div class="phase-card" id="prog-phase-4" onclick="this.classList.toggle('open')">
+    <div class="phase-header">
+      <div class="phase-num">5</div>
+      <div class="phase-info">
+        <div class="phase-name">Tryout Week</div>
+        <div class="phase-dates">Jul 28 – Aug 2 · Golf Tryouts</div>
+      </div>
+      <span class="phase-tag tag-recovery" id="prog-tag-4">Tryouts</span>
+    </div>
+    <div class="phase-desc">Golf is the only priority this week. Light activation work only — no heavy lifting, no soreness, no fatigue. Keep the body loose and mobile with short movement sessions. Save all your energy for the course.</div>
+    <div class="phase-goals">
+      <span class="goal-chip">⛳ Golf first</span>
+      <span class="goal-chip">🏃 Light activation</span>
+      <span class="goal-chip">🧘 Mobility focus</span>
+      <span class="goal-chip">😴 Max recovery</span>
     </div>
   </div>
 
@@ -967,10 +1005,12 @@
     🏋️ <div id="location-note-text">Gym mode: full cable, machine, and barbell access.</div>
   </div>
 
-  <div class="phase-select-row">
-    <button class="phase-btn active" onclick="selectWorkoutPhase(1, this)">Phase 1</button>
-    <button class="phase-btn" onclick="selectWorkoutPhase(2, this)">Phase 2</button>
-    <button class="phase-btn" onclick="selectWorkoutPhase(3, this)">Phase 3</button>
+  <div class="phase-select-row" style="flex-wrap:wrap; gap:5px">
+    <button class="phase-btn" onclick="selectWorkoutPhase(1, this)" style="flex:1; min-width:60px">Ph.1</button>
+    <button class="phase-btn" onclick="selectWorkoutPhase(2, this)" style="flex:1; min-width:60px">Ph.2</button>
+    <button class="phase-btn" onclick="selectWorkoutPhase(3, this)" style="flex:1; min-width:60px">Ph.3</button>
+    <button class="phase-btn" onclick="selectWorkoutPhase(4, this)" style="flex:1; min-width:60px; font-size:11px">Taper</button>
+    <button class="phase-btn" onclick="selectWorkoutPhase(5, this)" style="flex:1; min-width:60px; font-size:11px">Tryouts</button>
   </div>
 
   <div id="workout-render"></div>
@@ -1265,22 +1305,32 @@
       <select id="log-session" onchange="updateExerciseFields()">
         <option value="">Select workout...</option>
         <optgroup label="Phase 1 — Recovery">
-          <option value="P1-TUE">Phase 1 · Tuesday — Upper Push</option>
-          <option value="P1-THU">Phase 1 · Thursday — Upper Pull</option>
-          <option value="P1-FRI">Phase 1 · Saturday — Full Upper</option>
+          <option value="P1-TUE">Phase 1 · Monday — Upper Push</option>
+          <option value="P1-THU">Phase 1 · Wednesday — Upper Pull</option>
+          <option value="P1-FRI">Phase 1 · Friday — Full Upper</option>
           <option value="P1-OPT">Phase 1 · Optional — Arms & Shoulders</option>
         </optgroup>
         <optgroup label="Phase 2 — Build">
-          <option value="P2-TUE">Phase 2 · Tuesday — Lower Body</option>
-          <option value="P2-THU">Phase 2 · Thursday — Upper Push</option>
-          <option value="P2-FRI">Phase 2 · Saturday — Upper Pull + Core</option>
+          <option value="P2-TUE">Phase 2 · Monday — Lower Body</option>
+          <option value="P2-THU">Phase 2 · Wednesday — Upper Push</option>
+          <option value="P2-FRI">Phase 2 · Friday — Upper Pull + Core</option>
           <option value="P2-OPT">Phase 2 · Optional — Arms & Shoulders</option>
         </optgroup>
         <optgroup label="Phase 3 — Power">
-          <option value="P3-TUE">Phase 3 · Tuesday — Explosive Lower</option>
-          <option value="P3-THU">Phase 3 · Thursday — Explosive Upper</option>
-          <option value="P3-FRI">Phase 3 · Saturday — Full Body</option>
+          <option value="P3-TUE">Phase 3 · Monday — Explosive Lower</option>
+          <option value="P3-THU">Phase 3 · Wednesday — Explosive Upper</option>
+          <option value="P3-FRI">Phase 3 · Friday — Full Body</option>
           <option value="P3-OPT">Phase 3 · Optional — Arms & Shoulders</option>
+        </optgroup>
+        <optgroup label="Taper Week">
+          <option value="P4-TUE">Taper · Monday — Upper Push</option>
+          <option value="P4-THU">Taper · Wednesday — Upper Pull</option>
+          <option value="P4-FRI">Taper · Friday — Lower Body</option>
+        </optgroup>
+        <optgroup label="Tryout Week">
+          <option value="P5-TUE">Tryout Week · Monday — Upper Activation</option>
+          <option value="P5-THU">Tryout Week · Wednesday — Lower Activation</option>
+          <option value="P5-FRI">Tryout Week · Friday — Mobility Only</option>
         </optgroup>
       </select>
     </div>
@@ -1391,7 +1441,7 @@
   </div>
   <div class="tip-card">
     <h4>Tennis + Lifting = Smart Scheduling</h4>
-    <p>You're lifting Tue/Thu/Sat so Mon, Wed, and Fri are tennis days. Monday and Wednesday are group training, Friday is serve practice at the courts once cleared. If tennis matches return on Saturdays, the third lift day can move back to Friday.</p>
+    <p>You're lifting Mon/Wed/Fri in the morning. Tuesday and Thursday are golf days — conditioning in the morning (treadmill jog, bike, or row 20-30 min), then golf 3:30-5:30pm. Lifting is in the morning with 4+ hours before any afternoon activity.</p>
   </div>
   <div class="tip-card">
     <h4>Tracking = Progress</h4>
@@ -1664,7 +1714,7 @@ const PHASES = [
           ['Lateral Raises (DB)','With Cable Fly (SS). Slight elbow bend, control the negative.','3 × 15','SS'],
           ['Cable Tricep Pushdown — rope','Full extension. Flare the rope apart at the bottom.','3 × 10–12'],
           ['Dips (pull-up/dip unit)','Bodyweight. Lean slightly forward for chest emphasis.','4 × max'],
-          ['Cable Lateral Raise','Extra shoulder volume for width. One arm at a time, light and strict.','3 × 15'],
+          ['Cable Front Raise','Set cable low, raise one arm straight out in front to shoulder height. Hits front deltoid — different from the lateral raises.','3 × 12'],
           ['Ab Machine','Control the crunch. Slow and deliberate — no momentum.','3 × 15'],
         ],
         home:[
@@ -1832,7 +1882,7 @@ function renderWorkouts() {
   if (phase.alert) {
     html += `<div class="rehab-note">⚠️ <div>${phase.alert}</div></div>`;
   }
-  const dayLabels = ['Tuesday','Thursday','Saturday','Optional Day'];
+  const dayLabels = ['Monday','Wednesday','Friday','Optional Day'];
   phase.days.forEach((day, di) => {
     const exercises = day[loc] || day.gym;
     html += `
@@ -1887,7 +1937,11 @@ function toggleHowTo(id, btn, event) {
 // ===== PHASE OVERRIDE =====
 // Scheduled phase advances — auto-flips on these dates unless manually overridden later
 const PHASE_SCHEDULE = [
-  { date: '2026-06-21', phase: 1 }, // Phase 2 (index 1) starts June 21 after NY trip
+  { date: '2026-06-21', phase: 1 }, // Phase 2 starts June 21
+  { date: '2026-07-20', phase: 2 }, // Phase 3 starts July 20
+  { date: '2026-07-27', phase: 3 }, // Taper Week starts July 27
+  { date: '2026-07-28', phase: 4 }, // Tryout Week starts July 28
+  { date: '2026-08-03', phase: 2 }, // Resume Phase 3 Aug 3
 ];
 
 function getActivePhase() {
@@ -1986,17 +2040,49 @@ function setLogLocation(loc, btn) {
 }
 
 function getLogExercises(session) {
-  // Map session key to PHASES data
   const map = {
     'P1-TUE': [0,0], 'P1-THU': [0,1], 'P1-FRI': [0,2], 'P1-OPT': [0,3],
     'P2-TUE': [1,0], 'P2-THU': [1,1], 'P2-FRI': [1,2], 'P2-OPT': [1,3],
     'P3-TUE': [2,0], 'P3-THU': [2,1], 'P3-FRI': [2,2], 'P3-OPT': [2,3],
+    'P4-TUE': [3,0], 'P4-THU': [3,1], 'P4-FRI': [3,2],
+    'P5-TUE': [4,0], 'P5-THU': [4,1], 'P5-FRI': [4,2],
   };
   const idx = map[session];
   if (!idx) return [];
   const day = PHASES[idx[0]].days[idx[1]];
   const exList = day[logLocation] || day.gym;
-  return exList.map(e => e[0]); // just the names
+  return exList; // return full exercise data [name, note, sets, ss?]
+}
+
+// Look up last performance for a given exercise name from logsCache
+function getLastPerformance(exerciseName, currentSession) {
+  // Find the most recent log entry for the same session type
+  const pastLogs = logsCache.filter(l => l.session === currentSession);
+  if (!pastLogs.length) return null;
+  // Most recent is first in logsCache
+  const lastLog = pastLogs[0];
+  if (!lastLog.exercises) return null;
+  const ex = lastLog.exercises.find(e => e.name === exerciseName);
+  if (!ex) return null;
+
+  // Build a compact summary
+  const date = formatDate(lastLog.date);
+  const sets = ex.sets || '';
+  const weight = ex.weightsPerSet?.[0] || ex.weight || '';
+  const reps = ex.repsPerSet?.length ? ex.repsPerSet.join(', ') : '';
+  
+  if (!sets) return null;
+  
+  let summary = `${sets} sets`;
+  if (reps) summary += ` · ${reps} reps`;
+  if (weight && parseFloat(weight) > 0) summary += ` @ ${weight}lbs`;
+  
+  return { summary, date };
+}
+
+// Get just exercise names for saveLog compatibility
+function getLogExerciseNames(session) {
+  return getLogExercises(session).map(e => e[0]);
 }
 function updateExerciseFields() {
   const session = document.getElementById('log-session').value;
@@ -2005,13 +2091,21 @@ function updateExerciseFields() {
   if (!session) { section.style.display = 'none'; return; }
   section.style.display = 'block';
   const exercises = getLogExercises(session);
-  rows.innerHTML = exercises.map((ex, i) => {
+  rows.innerHTML = exercises.map((exData, i) => {
+    const ex = Array.isArray(exData) ? exData[0] : exData;
+    const exNote = Array.isArray(exData) ? exData[1] : '';
+    const exTarget = Array.isArray(exData) ? exData[2] : '';
     const howto = getHowTo(ex);
     const howtoId = `log-ht-${i}`;
     return `
     <div style="margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--border)">
-      <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:8px; gap:8px">
-        <div class="ex-log-name" style="margin-bottom:0; flex:1">${i+1}. ${ex}</div>
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:6px; gap:8px">
+        <div style="flex:1">
+          <div class="ex-log-name" style="margin-bottom:2px">${i+1}. ${ex}</div>
+          ${exTarget ? `<div style="display:inline-block; background:var(--green-dim); border:1px solid var(--green); color:var(--green); font-family:'DM Mono',monospace; font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; margin-bottom:4px">TARGET: ${exTarget}</div>` : ''}
+          ${(() => { const last = getLastPerformance(ex, session); return last ? `<div style="display:flex; align-items:center; gap:5px; margin-bottom:4px"><span style="font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted)">Last:</span><span style="font-family:'DM Mono',monospace; font-size:11px; color:#a78bfa">${last.summary}</span><span style="font-size:10px; color:var(--muted)">(${last.date})</span></div>` : ''; })()}
+          ${exNote ? `<div style="font-size:11px; color:var(--muted); line-height:1.4; margin-top:2px">${exNote}</div>` : ''}
+        </div>
         ${howto ? `<button class="ex-howto-toggle" onclick="toggleHowTo('${howtoId}', this, event)" style="flex-shrink:0; margin-top:2px">▾ How to</button>` : ''}
       </div>
       ${howto ? `<div class="ex-howto" id="${howtoId}" onclick="event.stopPropagation()" style="border-radius:8px; margin-bottom:10px"><ol>${howto.map(s=>`<li>${s}</li>`).join('')}</ol></div>` : ''}
@@ -2078,7 +2172,7 @@ async function saveLog() {
   const notes = document.getElementById('log-notes').value;
   if (!date || !session) { alert('Please fill in date and workout type.'); return; }
 
-  const exercises = (getLogExercises(session) || []).map((ex, i) => {
+  const exercises = (getLogExerciseNames(session) || []).map((ex, i) => {
     const sets = document.getElementById(`ex-${i}-sets`)?.value || '';
     const numSets = parseInt(sets) || 0;
     const repsPerSet = Array.from({length: numSets}, (_, s) =>
@@ -2137,9 +2231,9 @@ async function saveLog() {
 }
 
 const SESSION_NAMES = {
-  'P1-TUE':'Ph.1 · Upper Push','P1-THU':'Ph.1 · Upper Pull','P1-FRI':'Ph.1 · Full Upper + Rehab',
-  'P2-TUE':'Ph.2 · Lower Body','P2-THU':'Ph.2 · Upper Push','P2-FRI':'Ph.2 · Upper Pull + Core',
-  'P3-TUE':'Ph.3 · Explosive Lower','P3-THU':'Ph.3 · Explosive Upper','P3-FRI':'Ph.3 · Full Body',
+  'P1-TUE':'Ph.1 · Upper Push (Mon)','P1-THU':'Ph.1 · Upper Pull (Wed)','P1-FRI':'Ph.1 · Full Upper + Rehab',
+  'P2-TUE':'Ph.2 · Lower Body (Mon)','P2-THU':'Ph.2 · Upper Push','P2-FRI':'Ph.2 · Upper Pull + Core',
+  'P3-TUE':'Ph.3 · Explosive Lower (Mon)','P3-THU':'Ph.3 · Explosive Upper (Wed)','P3-FRI':'Ph.3 · Full Body',
 };
 
 function renderHistory() {
@@ -2210,7 +2304,7 @@ function editLog(id) {
 
   // Wait a tick for exercise fields to render, then fill in the values
   setTimeout(() => {
-    const exercises = getLogExercises(log.session);
+    const exercises = getLogExerciseNames(log.session);
     exercises.forEach((ex, i) => {
       const saved = log.exercises?.find(e => e.name === ex);
       if (!saved) return;
@@ -2308,7 +2402,10 @@ function renderProgress() {
   const phases = [
     { name: 'Phase 1 — Recovery', start: new Date('2026-05-10'), end: new Date('2026-06-20'), dates: 'May 10 – Jun 20' },
     { name: 'Phase 2 — Build', start: new Date('2026-06-21'), end: new Date('2026-07-19'), dates: 'Jun 21 – Jul 19' },
-    { name: 'Phase 3 — Power', start: new Date('2026-07-20'), end: new Date('2026-08-10'), dates: 'Jul 20 – Aug 10' },
+    { name: 'Phase 3 — Power', start: new Date('2026-07-20'), end: new Date('2026-07-26'), dates: 'Jul 20 – Jul 26' },
+    { name: 'Taper Week', start: new Date('2026-07-27'), end: new Date('2026-07-27'), dates: 'Jul 27' },
+    { name: 'Tryout Week', start: new Date('2026-07-28'), end: new Date('2026-08-02'), dates: 'Jul 28 – Aug 2' },
+    { name: 'Phase 3 — Peak', start: new Date('2026-08-03'), end: new Date('2026-08-10'), dates: 'Aug 3 – Aug 10' },
   ];
   let phaseIdx = getActivePhase();
   if (phaseIdx === null) {
@@ -2587,8 +2684,8 @@ window.onload = async () => {
 function updateProgramTabHighlight() {
   const active = getActivePhase();
   if (active === null) return;
-  const tagLabels = ['Recovery','Build','Peak'];
-  for (let i = 0; i < 3; i++) {
+  const tagLabels = ['Recovery','Build','Peak','Taper','Tryouts'];
+  for (let i = 0; i < 5; i++) {
     const card = document.getElementById('prog-phase-' + i);
     const tag = document.getElementById('prog-tag-' + i);
     if (!card || !tag) continue;
