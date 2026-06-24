@@ -801,12 +801,17 @@
     if (SHEETS_URL) {
       setSync("pending", "Syncing to Google Sheets...");
       try {
-        var res = await fetch(SHEETS_URL, {method:"POST", body:JSON.stringify({sheet:SHEET_NAME, id:entry.id, date:entry.date, session:entry.type, effort:entry.effort, notes:entry.notes, exercises:"", golf_notes:entry.golf_notes, savedAt:entry.savedAt})});
+        var payload = JSON.stringify({sheet:SHEET_NAME, id:entry.id, date:entry.date, session:entry.type, effort:entry.effort, notes:entry.notes, exercises:"", golf_notes:entry.golf_notes, savedAt:entry.savedAt});
+        var res = await fetch(SHEETS_URL, {
+          method:"POST",
+          headers:{"Content-Type":"text/plain"},
+          body:payload
+        });
         var data = await res.json();
         if (data.status === "success") setSync("ok", "Saved to Google Sheets!");
-        else setSync("err", "Saved locally - Sheets sync failed");
+        else setSync("err", "Sheets error: " + (data.message || "unknown"));
       } catch(e) {
-        setSync("err", "Saved locally - check connection");
+        setSync("err", "Sync error: " + e.message);
       }
     }
   }
@@ -828,28 +833,60 @@
   function getLogs() { try { return JSON.parse(localStorage.getItem("isla_logs_v2") || "[]"); } catch(e) { return []; } }
   function saveLogs(logs) { localStorage.setItem("isla_logs_v2", JSON.stringify(logs)); }
 
-  function renderHistory() {
-    var logs = getLogs();
-    var el = document.getElementById("log-history");
+  function buildHistoryHTML(logs) {
     if (!logs.length) {
-      el.innerHTML = '<div class="no-logs"><div class="icon">&#128219;</div>No sessions logged yet!</div>';
-      return;
+      return '<div class="no-logs"><div class="icon">&#128219;</div>No sessions logged yet!</div>';
     }
     var html = '<div style="font-size:18px;font-weight:800;margin-bottom:10px;">&#128218; History</div>';
+    // Sort by date descending
+    logs = logs.slice().sort(function(a,b){ return (b.date||"").localeCompare(a.date||""); });
     for (var i=0; i<logs.length; i++) {
       var l = logs[i];
-      var isGolf = l.type.toLowerCase().indexOf("golf") >= 0;
-      var isTennis = l.type.toLowerCase().indexOf("tennis") >= 0;
+      var type = l.type || l.session || "";
+      var isGolf = type.toLowerCase().indexOf("golf") >= 0;
+      var isTennis = type.toLowerCase().indexOf("tennis") >= 0;
       var cls = isGolf ? " golf-log" : isTennis ? " tennis-log" : "";
       var icon = isGolf ? "&#9971;" : isTennis ? "&#127934;" : "&#128170;";
+      var effort = parseInt(l.effort) || 0;
       html += '<div class="log-entry' + cls + '">';
-      html += '<div class="log-entry-header"><div class="log-entry-date">' + formatDate(l.date) + '</div><div>' + "&#11088;".repeat(l.effort) + '</div></div>';
-      html += '<div class="log-entry-type">' + icon + ' ' + l.type + '</div>';
-      if (l.golf_notes) html += '<div class="log-entry-notes">&#9971; ' + l.golf_notes + '</div>';
+      html += '<div class="log-entry-header"><div class="log-entry-date">' + formatDate(l.date) + '</div><div>' + "&#11088;".repeat(effort) + '</div></div>';
+      html += '<div class="log-entry-type">' + icon + ' ' + type + '</div>';
+      var gn = l.golf_notes || l.golf_notes;
+      if (gn) html += '<div class="log-entry-notes">&#9971; ' + gn + '</div>';
       if (l.notes) html += '<div class="log-entry-notes">' + l.notes + '</div>';
       html += '</div>';
     }
-    el.innerHTML = html;
+    return html;
+  }
+
+  function renderHistory() {
+    var el = document.getElementById("log-history");
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:#999;font-weight:700;">&#128257; Loading from Google Sheets...</div>';
+    fetchFromSheets();
+  }
+
+  async function fetchFromSheets() {
+    var el = document.getElementById("log-history");
+    try {
+      var res = await fetch(SHEETS_URL + "?sheet=" + SHEET_NAME);
+      var data = await res.json();
+      if (data.status === "success" && data.data && data.data.length) {
+        // Merge with any local logs not yet in sheets (by id)
+        var sheetIds = {};
+        data.data.forEach(function(r){ if(r.id) sheetIds[r.id] = true; });
+        var local = getLogs().filter(function(l){ return !sheetIds[l.id]; });
+        var merged = data.data.concat(local);
+        el.innerHTML = buildHistoryHTML(merged);
+        // Update local cache with sheet data
+        saveLogs(merged);
+      } else {
+        // Fall back to local
+        el.innerHTML = buildHistoryHTML(getLogs());
+      }
+    } catch(e) {
+      // No internet - fall back to local
+      el.innerHTML = buildHistoryHTML(getLogs());
+    }
   }
 
   var tips = [
@@ -906,7 +943,6 @@
 
   // ---- INIT ----
   initPhase();
-  renderHistory();
   renderProgress();
 </script>
 </body>
