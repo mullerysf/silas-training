@@ -411,6 +411,13 @@
 
 <!-- LOG -->
 <div id="section-log" class="section content" style="display:none;">
+  <div id="bulk-sync-bar" style="margin-bottom:14px;background:linear-gradient(135deg,#4CAF50,#2E7D32);border-radius:18px;padding:16px;text-align:center;">
+    <div style="font-family:'Fredoka One',cursive;font-size:17px;color:white;margin-bottom:8px;">&#9729;&#65039; Sync to Google Sheets</div>
+    <div id="bulk-sync-status" style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.85);margin-bottom:10px;">Tap below to upload all local sessions</div>
+    <button onclick="bulkSyncToSheets()" style="width:100%;padding:12px;background:white;color:#2E7D32;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;">
+      Upload All Sessions &#11014;&#65039;
+    </button>
+  </div>
   <div class="card">
     <div class="card-title">&#128221; Log Today</div>
     <div class="form-row">
@@ -462,12 +469,6 @@
     </div>
     <button class="save-btn" onclick="saveLog()">Save Session! &#127881;</button>
     <div class="sync-status pending" id="sync-status"></div>
-  </div>
-  <div id="bulk-sync-bar" style="margin-bottom:14px;">
-    <button onclick="bulkSyncToSheets()" style="width:100%;padding:13px;background:linear-gradient(135deg,#4CAF50,#2E7D32);color:white;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:0.5px;">
-      &#9729;&#65039; Upload All Local Sessions to Google Sheets
-    </button>
-    <div id="bulk-sync-status" style="font-size:12px;text-align:center;margin-top:8px;font-weight:700;color:#999;min-height:18px;"></div>
   </div>
   <div id="log-history"></div>
 </div>
@@ -808,14 +809,8 @@
       setSync("pending", "Syncing to Google Sheets...");
       try {
         var payload = JSON.stringify({sheet:SHEET_NAME, id:entry.id, date:entry.date, session:entry.type, effort:entry.effort, notes:entry.notes, exercises:"", golf_notes:entry.golf_notes, savedAt:entry.savedAt});
-        var res = await fetch(SHEETS_URL, {
-          method:"POST",
-          headers:{"Content-Type":"text/plain"},
-          body:payload
-        });
-        var data = await res.json();
-        if (data.status === "success") setSync("ok", "Saved to Google Sheets!");
-        else setSync("err", "Sheets error: " + (data.message || "unknown"));
+        postToSheets(payload);
+        setSync("ok", "Saved to Google Sheets!");
       } catch(e) {
         setSync("err", "Sync error: " + e.message);
       }
@@ -968,6 +963,35 @@
   }
 
   // ---- BULK SYNC ----
+  function postToSheets(payload) {
+    return new Promise(function(resolve) {
+      var form = document.createElement("form");
+      form.method = "POST";
+      form.action = SHEETS_URL;
+      form.target = "sheets-iframe-" + Date.now();
+      var input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "payload";
+      input.value = payload;
+      form.appendChild(input);
+      var iframe = document.createElement("iframe");
+      iframe.name = form.target;
+      iframe.style.display = "none";
+      document.body.appendChild(iframe);
+      document.body.appendChild(form);
+      iframe.onload = function() {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+        resolve(true);
+      };
+      setTimeout(function() {
+        try { document.body.removeChild(form); document.body.removeChild(iframe); } catch(e) {}
+        resolve(false);
+      }, 8000);
+      form.submit();
+    });
+  }
+
   async function bulkSyncToSheets() {
     var logs = getLogs();
     if (!logs.length) {
@@ -975,44 +999,29 @@
       return;
     }
     var statusEl = document.getElementById("bulk-sync-status");
-    statusEl.style.color = "#999";
+    statusEl.style.color = "rgba(255,255,255,0.85)";
     statusEl.textContent = "Uploading " + logs.length + " sessions...";
     var success = 0;
-    var failed = 0;
     for (var i = 0; i < logs.length; i++) {
       var entry = logs[i];
-      try {
-        var payload = JSON.stringify({
-          sheet: SHEET_NAME,
-          id: entry.id,
-          date: entry.date,
-          session: entry.type || entry.session,
-          effort: entry.effort,
-          notes: entry.notes,
-          exercises: "",
-          golf_notes: entry.golf_notes || "",
-          savedAt: entry.savedAt || new Date().toISOString()
-        });
-        var res = await fetch(SHEETS_URL, {
-          method: "POST",
-          headers: {"Content-Type": "text/plain"},
-          body: payload
-        });
-        var data = await res.json();
-        if (data.status === "success") success++;
-        else failed++;
-      } catch(e) {
-        failed++;
-      }
-      statusEl.textContent = "Uploaded " + (success + failed) + " of " + logs.length + "...";
+      var payload = JSON.stringify({
+        sheet: SHEET_NAME,
+        id: entry.id,
+        date: entry.date,
+        session: entry.type || entry.session,
+        effort: entry.effort,
+        notes: entry.notes || "",
+        exercises: "",
+        golf_notes: entry.golf_notes || "",
+        savedAt: entry.savedAt || new Date().toISOString()
+      });
+      statusEl.textContent = "Uploading " + (i+1) + " of " + logs.length + "...";
+      var ok = await postToSheets(payload);
+      if (ok) success++;
+      await new Promise(function(r){ setTimeout(r, 500); });
     }
-    if (failed === 0) {
-      statusEl.style.color = "#0F9D8A";
-      statusEl.textContent = "&#10003; All " + success + " sessions uploaded to Google Sheets!";
-    } else {
-      statusEl.style.color = "#FF6B6B";
-      statusEl.textContent = success + " uploaded, " + failed + " failed. Check connection and try again.";
-    }
+    statusEl.style.color = "white";
+    statusEl.textContent = "Done! " + success + " of " + logs.length + " uploaded. Check your Google Sheet!";
   }
 
   // ---- INIT ----
