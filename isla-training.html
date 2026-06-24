@@ -463,7 +463,7 @@
     <button class="save-btn" onclick="saveLog()">Save Session! &#127881;</button>
     <div class="sync-status pending" id="sync-status"></div>
   </div>
-  <div id="bulk-sync-bar" style="margin-bottom:14px;display:none;">
+  <div id="bulk-sync-bar" style="margin-bottom:14px;">
     <button onclick="bulkSyncToSheets()" style="width:100%;padding:13px;background:linear-gradient(135deg,#4CAF50,#2E7D32);color:white;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:0.5px;">
       &#9729;&#65039; Upload All Local Sessions to Google Sheets
     </button>
@@ -867,7 +867,15 @@
 
   function renderHistory() {
     var el = document.getElementById("log-history");
+    var local = getLogs();
+    // Show local data immediately while Sheets loads
     el.innerHTML = '<div style="text-align:center;padding:20px;color:#999;font-weight:700;">&#128257; Loading from Google Sheets...</div>';
+    // Show upload button right away if there are local entries
+    var statusEl = document.getElementById("bulk-sync-status");
+    if (local.length > 0 && statusEl) {
+      statusEl.style.color = "#FF8E53";
+      statusEl.textContent = local.length + " local session(s) found - tap above to upload to Sheets!";
+    }
     fetchFromSheets();
   }
 
