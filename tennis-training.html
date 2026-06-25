@@ -1449,29 +1449,157 @@
   </div>
 
   <div class="section-label">Nutrition</div>
-  <div class="tip-card">
-    <h4>Protein Is the Priority</h4>
-    <p>Aim for 0.7–1g of protein per pound of bodyweight daily — so around 100–140g if you're 140 lbs. Best sources: chicken, eggs, Greek yogurt, cottage cheese, ground beef, tuna, and milk. A protein shake after lifting is an easy way to hit your numbers without overthinking it.</p>
+
+  <!-- WEIGHT INPUT -->
+  <div class="stat-card" style="margin-bottom:10px; text-align:left; padding:16px">
+    <div style="font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px">Your Current Weight</div>
+    <div style="font-size:12px; color:var(--muted); margin-bottom:12px; line-height:1.5">Update this every few weeks so your fuel targets stay accurate as you grow and gain muscle. This is about eating right for your body — not about the number itself.</div>
+    <div style="display:flex; align-items:center; gap:10px">
+      <input type="number" id="nutrition-weight" placeholder="132" min="80" max="300" style="width:90px; text-align:center; font-size:18px; font-weight:600; padding:10px" oninput="updateNutritionTargets()">
+      <span style="font-size:14px; color:var(--muted)">lbs</span>
+      <button onclick="saveNutritionWeight()" style="background:var(--green); color:#0d0f0e; border:none; border-radius:10px; padding:10px 16px; font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:1px; cursor:pointer">SAVE</button>
+    </div>
   </div>
+
+  <!-- CALORIE TARGETS -->
+  <div class="tip-card">
+    <h4>Your Daily Calorie Targets</h4>
+    <p id="cal-intro">At <span id="cal-weight">132</span> lbs with your activity level, here's what you need to actually build muscle:</p>
+    <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px">
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface2); border-radius:8px; padding:8px 12px">
+        <span style="font-size:13px; color:var(--muted)">Rest Day</span>
+        <span id="cal-rest" style="font-family:'DM Mono',monospace; font-size:13px; color:var(--green); font-weight:600">2,200–2,400 cal</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface2); border-radius:8px; padding:8px 12px">
+        <span style="font-size:13px; color:var(--muted)">Lift Day</span>
+        <span id="cal-lift" style="font-family:'DM Mono',monospace; font-size:13px; color:var(--green); font-weight:600">2,500–2,700 cal</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface2); border-radius:8px; padding:8px 12px">
+        <span style="font-size:13px; color:var(--muted)">Lift + Tennis/Golf</span>
+        <span id="cal-heavy" style="font-family:'DM Mono',monospace; font-size:13px; color:var(--green); font-weight:600">2,700–2,900 cal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROTEIN TARGET -->
+  <div class="tip-card">
+    <h4>Protein Target: <span id="protein-target">115–125g</span> Daily</h4>
+    <p>At <span id="protein-weight">132</span> lbs you need <span id="protein-target2">115–125g</span> of protein every day to build muscle. This is non-negotiable — without enough protein, lifting just makes you tired, not bigger. Best sources:</p>
+    <div style="margin-top:10px; display:flex; flex-direction:column; gap:5px">
+      <div style="display:flex; justify-content:space-between; background:var(--surface2); border-radius:8px; padding:7px 12px">
+        <span style="font-size:12px; color:var(--text)">Chicken breast (4oz)</span>
+        <span style="font-family:'DM Mono',monospace; font-size:12px; color:#a78bfa">35g</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; background:var(--surface2); border-radius:8px; padding:7px 12px">
+        <span style="font-size:12px; color:var(--text)">Greek yogurt (1 cup)</span>
+        <span style="font-family:'DM Mono',monospace; font-size:12px; color:#a78bfa">17–20g</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; background:var(--surface2); border-radius:8px; padding:7px 12px">
+        <span style="font-size:12px; color:var(--text)">Eggs (3 eggs)</span>
+        <span style="font-family:'DM Mono',monospace; font-size:12px; color:#a78bfa">18g</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; background:var(--surface2); border-radius:8px; padding:7px 12px">
+        <span style="font-size:12px; color:var(--text)">Ground beef/turkey (4oz)</span>
+        <span style="font-family:'DM Mono',monospace; font-size:12px; color:#a78bfa">25g</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; background:var(--surface2); border-radius:8px; padding:7px 12px">
+        <span style="font-size:12px; color:var(--text)">Protein shake with milk</span>
+        <span style="font-family:'DM Mono',monospace; font-size:12px; color:#a78bfa">30–35g</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; background:var(--surface2); border-radius:8px; padding:7px 12px">
+        <span style="font-size:12px; color:var(--text)">Cottage cheese (1 cup)</span>
+        <span style="font-family:'DM Mono',monospace; font-size:12px; color:#a78bfa">25g</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; background:var(--surface2); border-radius:8px; padding:7px 12px">
+        <span style="font-size:12px; color:var(--text)">Tuna packet</span>
+        <span style="font-family:'DM Mono',monospace; font-size:12px; color:#a78bfa">25g</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAMPLE DAY -->
+  <div class="tip-card">
+    <h4>What a Full Lift Day Looks Like</h4>
+    <p>Here's a sample day that hits both your calorie and protein targets:</p>
+    <div style="margin-top:10px; display:flex; flex-direction:column; gap:5px">
+      <div style="background:var(--surface2); border-radius:8px; padding:8px 12px">
+        <div style="display:flex; justify-content:space-between; margin-bottom:2px">
+          <span style="font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted)">Breakfast</span>
+          <span style="font-family:'DM Mono',monospace; font-size:11px; color:#a78bfa">28g · 520 cal</span>
+        </div>
+        <span style="font-size:12px; color:var(--text)">3 eggs + oatmeal + glass of milk</span>
+      </div>
+      <div style="background:var(--surface2); border-radius:8px; padding:8px 12px">
+        <div style="display:flex; justify-content:space-between; margin-bottom:2px">
+          <span style="font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted)">Mid-Morning</span>
+          <span style="font-family:'DM Mono',monospace; font-size:11px; color:#a78bfa">5g · 250 cal</span>
+        </div>
+        <span style="font-size:12px; color:var(--text)">Banana + granola bar</span>
+      </div>
+      <div style="background:var(--surface2); border-radius:8px; padding:8px 12px">
+        <div style="display:flex; justify-content:space-between; margin-bottom:2px">
+          <span style="font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted)">Lunch</span>
+          <span style="font-family:'DM Mono',monospace; font-size:11px; color:#a78bfa">32g · 700 cal</span>
+        </div>
+        <span style="font-size:12px; color:var(--text)">Chicken sandwich + rice or fries</span>
+      </div>
+      <div style="background:var(--surface2); border-radius:8px; padding:8px 12px">
+        <div style="display:flex; justify-content:space-between; margin-bottom:2px">
+          <span style="font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted)">Post-Workout</span>
+          <span style="font-family:'DM Mono',monospace; font-size:11px; color:var(--green)">30g · 300 cal</span>
+        </div>
+        <span style="font-size:12px; color:var(--text)">Protein shake with milk ← don't skip this</span>
+      </div>
+      <div style="background:var(--surface2); border-radius:8px; padding:8px 12px">
+        <div style="display:flex; justify-content:space-between; margin-bottom:2px">
+          <span style="font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted)">Afternoon Snack</span>
+          <span style="font-family:'DM Mono',monospace; font-size:11px; color:#a78bfa">8g · 200 cal</span>
+        </div>
+        <span style="font-size:12px; color:var(--text)">Apple + peanut butter</span>
+      </div>
+      <div style="background:var(--surface2); border-radius:8px; padding:8px 12px">
+        <div style="display:flex; justify-content:space-between; margin-bottom:2px">
+          <span style="font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted)">Dinner</span>
+          <span style="font-family:'DM Mono',monospace; font-size:11px; color:#a78bfa">40g · 650 cal</span>
+        </div>
+        <span style="font-size:12px; color:var(--text)">6oz chicken or beef + rice + vegetable</span>
+      </div>
+      <div style="background:var(--surface2); border-radius:8px; padding:8px 12px">
+        <div style="display:flex; justify-content:space-between; margin-bottom:2px">
+          <span style="font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted)">Evening Snack</span>
+          <span style="font-family:'DM Mono',monospace; font-size:11px; color:#a78bfa">15g · 200 cal</span>
+        </div>
+        <span style="font-size:12px; color:var(--text)">Greek yogurt or PB toast</span>
+      </div>
+      <div style="background:var(--green-dim); border:1px solid var(--green); border-radius:8px; padding:8px 12px; display:flex; justify-content:space-between">
+        <span style="font-size:13px; font-weight:700; color:var(--green)">TOTAL</span>
+        <span style="font-family:'DM Mono',monospace; font-size:13px; color:var(--green); font-weight:700">~158g · 2,820 cal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARBS -->
+  <div class="tip-card">
+    <h4>Carbs Are Your Fuel — Don't Skip Them</h4>
+    <p>The easiest way to hit your calorie target is simple: <strong style="color:var(--text)">add a starch to every single meal.</strong> Rice with lunch, oatmeal at breakfast, potato at dinner. Without enough carbs your body burns muscle for energy instead of building it — which defeats the whole point of lifting. You're not cutting weight, you're building it. Eat the carbs.</p>
+  </div>
+
+  <!-- POST WORKOUT -->
   <div class="tip-card">
     <h4>The Post-Workout Window</h4>
-    <p>Eat within 30–45 minutes of finishing a lift. Your muscles are primed to absorb nutrients right after training. A shake + banana, or chocolate milk + some chicken, works great. Don't wait until you're starving — that window matters.</p>
+    <p>Within 30–45 minutes of finishing a lift, eat protein and carbs. Your muscles are primed to absorb nutrients right after training and this is when most of the actual muscle building happens. A protein shake with milk is the easiest option. Don't skip this — it's one of the highest-leverage habits in the whole program.</p>
   </div>
-  <div class="tip-card">
-    <h4>Carbs Are Not the Enemy</h4>
-    <p>At your age and activity level, carbs are fuel — for lifting, for tennis, and for recovery. Rice, oats, potatoes, fruit, and bread are all fine. Eat more carbs on training days, especially before and after workouts. Don't try to cut carbs while also trying to build muscle — it doesn't work.</p>
-  </div>
+
+  <!-- PRE WORKOUT -->
   <div class="tip-card">
     <h4>Eat Before You Train</h4>
-    <p>Never lift or play tennis on an empty stomach. A meal 1.5–2 hours before, or a light snack 30–45 min before, gives you the energy to actually push hard. Banana + peanut butter, a bowl of oatmeal, or toast with eggs all work well.</p>
+    <p>Never lift, play tennis, or play golf on an empty stomach. A meal 1.5–2 hours before or a light snack 30–45 min before gives you the energy to actually perform. Banana + peanut butter, oatmeal, or eggs on toast all work well. If you're dragging through a workout, low fuel is usually the reason.</p>
   </div>
+
+  <!-- HYDRATION -->
   <div class="tip-card">
-    <h4>Hydration on Tennis Days</h4>
-    <p>You're training outside in Florida summer heat — dehydration will tank your performance fast. Drink water consistently all day, not just during training. On tennis days, aim for at least 16–20 oz in the hour before you start, and sip every changeover. Add electrolytes (Liquid IV, Gatorade, etc.) if you're sweating heavily.</p>
-  </div>
-  <div class="tip-card">
-    <h4>Calories: Eat Enough</h4>
-    <p>Building muscle requires a caloric surplus — you need to eat slightly more than you burn. At 14 with this activity level, that means eating big, consistent meals. If you're not gaining any weight over several weeks, you're not eating enough. Don't be afraid of food — this is the one time in your life where eating more is part of the program.</p>
+    <h4>Hydration in Florida Summer Heat</h4>
+    <p>You're doing tennis and golf outside in 90+ degree heat with high humidity — dehydration will kill your performance before you even notice it's happening. Drink water consistently all morning, not just when you're thirsty. On outdoor activity days aim for at least 16–20oz in the hour before you start and bring an electrolyte drink (Liquid IV, Gatorade) for anything over 60 minutes outside. Pure water alone isn't enough when you're sweating heavily for 2 hours.</p>
   </div>
 </div>
 
@@ -1505,6 +1633,7 @@ function showView(name) {
   if (name === 'log') renderHistory();
   if (name === 'progress') renderProgress();
   if (name === 'mobility') updateMobProgress();
+  if (name === 'tips') { initNutritionWeight(); }
 }
 
 // ===== WORKOUT DATA & RENDERER =====
@@ -2655,6 +2784,68 @@ function renderMobilityHistory() {
     try { await sheetsRequest({ action: 'deleteMobility', id }); } catch(e) {}
   }
 
+// ===== NUTRITION CALCULATOR =====
+function getNutritionWeight() {
+  return parseFloat(localStorage.getItem('nutrition-weight') || '132');
+}
+
+function saveNutritionWeight() {
+  const val = document.getElementById('nutrition-weight')?.value;
+  if (!val || isNaN(val)) return;
+  localStorage.setItem('nutrition-weight', val);
+  updateNutritionTargets();
+  showToast('✓ Weight saved!');
+}
+
+function updateNutritionTargets() {
+  const weightEl = document.getElementById('nutrition-weight');
+  const weight = parseFloat(weightEl?.value || getNutritionWeight());
+  if (!weight || isNaN(weight)) return;
+
+  // Protein: 0.85-1g per lb
+  const protLow = Math.round(weight * 0.85);
+  const protHigh = Math.round(weight * 1.0);
+  const protStr = `${protLow}–${protHigh}g`;
+
+  // Calories: BMR ~14-15 cal/lb for active teen, add activity
+  const base = Math.round(weight * 14.5);
+  const restLow = Math.round(base * 1.0 / 100) * 100;
+  const restHigh = restLow + 200;
+  const liftLow = restLow + 300;
+  const liftHigh = restHigh + 300;
+  const heavyLow = liftLow + 200;
+  const heavyHigh = liftHigh + 200;
+
+  const fmt = n => n.toLocaleString();
+
+  // Update calorie targets
+  const calWeightEl = document.getElementById('cal-weight');
+  if (calWeightEl) calWeightEl.textContent = weight;
+  const calRest = document.getElementById('cal-rest');
+  if (calRest) calRest.textContent = `${fmt(restLow)}–${fmt(restHigh)} cal`;
+  const calLift = document.getElementById('cal-lift');
+  if (calLift) calLift.textContent = `${fmt(liftLow)}–${fmt(liftHigh)} cal`;
+  const calHeavy = document.getElementById('cal-heavy');
+  if (calHeavy) calHeavy.textContent = `${fmt(heavyLow)}–${fmt(heavyHigh)} cal`;
+
+  // Update protein targets
+  const protTarget = document.getElementById('protein-target');
+  if (protTarget) protTarget.textContent = protStr;
+  const protTarget2 = document.getElementById('protein-target2');
+  if (protTarget2) protTarget2.textContent = protStr;
+  const protWeightEl = document.getElementById('protein-weight');
+  if (protWeightEl) protWeightEl.textContent = weight;
+  const protHeader = document.getElementById('protein-target');
+  if (protHeader) protHeader.textContent = protStr;
+}
+
+function initNutritionWeight() {
+  const saved = getNutritionWeight();
+  const el = document.getElementById('nutrition-weight');
+  if (el) el.value = saved;
+  updateNutritionTargets();
+}
+
 window.onload = async () => {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('log-date').value = today;
@@ -2675,6 +2866,7 @@ window.onload = async () => {
   if (histEl) histEl.innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><h3>Loading logs...</h3><p>Fetching your workout history from the cloud.</p></div>';
 
   updateProgramTabHighlight();
+  initNutritionWeight();
 
   await loadLogsFromSheets();
   renderHistory();
