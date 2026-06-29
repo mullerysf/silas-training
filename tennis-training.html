@@ -897,12 +897,12 @@
       </div>
       <span class="phase-tag tag-recovery" id="prog-tag-0">Recovery</span>
     </div>
-    <div class="phase-desc">Cleared by doctor — full program is active. Focus is upper body strength, core activation, shoulder stability, and hip rehab work. Build the habit and consistency before Phase 2 adds lower body loading next week.</div>
+    <div class="phase-desc">Hip re-injured June 26 — back to upper body only until doctor clears lower body and core work. Focus is chest, back, shoulders, and arms. No lower body, no core, no hip loading of any kind. Stay consistent with what you can do.</div>
     <div class="phase-goals">
-      <span class="goal-chip">🔼 Upper body strength</span>
-      <span class="goal-chip">🎯 Core activation</span>
-      <span class="goal-chip">🩹 Hip rehab</span>
-      <span class="goal-chip">💪 Build consistency</span>
+      <span class="goal-chip">🔼 Upper body only</span>
+      <span class="goal-chip">🚫 No core until cleared</span>
+      <span class="goal-chip">🚫 No lower body</span>
+      <span class="goal-chip">💪 Stay consistent</span>
     </div>
   </div>
 
@@ -1730,7 +1730,7 @@ function getHowTo(name) {
 
 const PHASES = [
   { // PHASE 1 — Recovery
-    alert: '✅ Cleared by doctor — full Phase 1 program is now active. If the hip flexor feels off on any movement, back off that exercise and let it settle. Otherwise go for it.',
+    alert: '⚠️ Hip re-injured June 26. Upper body only until cleared by doctor. No lower body, no core work, no hip loading of any kind. If anything causes hip discomfort, stop immediately.',
     days: [
       { badge:'TUE', badgeClass:'tuesday', name:'Upper Push', focus:'Chest · Shoulders · Triceps',
         gym:[
@@ -1739,8 +1739,8 @@ const PHASES = [
           ['Cable Chest Fly (dual cable)','With Lateral Raises (SS). Set cables to chest height, slight elbow bend.','3 × 12','SS'],
           ['Lateral Raises (DB)','With Cable Fly (SS). Light weight, slow up, squeeze at top.','3 × 15','SS'],
           ['Cable Tricep Pushdown','Rope or bar attachment. Full extension, elbows stay pinned.','3 × 12–15'],
-          ['Dead Bug','Lie on back, arms up, knees at 90 degrees. Lower opposite arm and leg slowly. 5 sec hold each rep.','3 × 8/side'],
-          ['Pallof Press (cable)','Set cable at chest height. Stand sideways, press handle out and hold. Anti-rotation core.','3 × 10/side'],
+          ['DB Incline Curl','Seated, arms hang back slightly. Full stretch at bottom. Builds bicep peak.','3 × 10–12'],
+          ['Cable Front Raise','Set cable low, raise one arm straight out to shoulder height. Front deltoid.','3 × 12'],
         ],
         home:[
           ['Incline Push-Up','Feet on couch, hands on floor — mimics incline press angle.','3 × max'],
@@ -1748,8 +1748,7 @@ const PHASES = [
           ['DB Chest Fly on Swiss Ball','With Lateral Raises (SS). Lie back on ball, slight elbow bend.','3 × 12','SS'],
           ['Lateral Raises (DB)','With Fly (SS). Light weight, slow up, squeeze at top.','3 × 15','SS'],
           ['Band Tricep Pushdown','Anchor band in door at top. Full extension each rep.','3 × 15'],
-          ['Dead Bug','Lie on back, arms up, knees at 90 degrees. Lower opposite arm and leg slowly. 5 sec hold each rep.','3 × 8/side'],
-          ['Pallof Press (band)','Band around door handle at chest height. Step out, press and hold. Anti-rotation.','3 × 10/side'],
+          ['DB Curl','Seated on chair. Alternate arms. Full range of motion.','3 × 10–12'],
         ]
       },
       { badge:'THU', badgeClass:'thursday', name:'Upper Pull', focus:'Back · Biceps · Rear Delts',
@@ -1770,25 +1769,23 @@ const PHASES = [
           ['Inverted Row (under table)','Lie under sturdy table, grip edge, pull chest up to it.','3 × max'],
         ]
       },
-      { badge:'SAT', badgeClass:'friday', name:'Upper Total', focus:'Chest · Back · Shoulders · Arms',
+      { badge:'FRI', badgeClass:'friday', name:'Full Upper', focus:'Chest · Back · Shoulders · Arms',
         gym:[
-          ['Seated Chest Press Machine','Go slightly heavier than Tuesday. Track the weight.','3 × 8–10'],
+          ['Seated Chest Press Machine','Go slightly heavier than Monday. Track the weight.','3 × 8–10'],
           ['Lat Pulldown Machine','Alternate grip — try neutral/close grip today.','3 × 8–10'],
           ['DB Shoulder Press','Seated on bench. Both arms. Heavy and controlled.','3 × 10'],
-          ['SportsArt Seated Row','Lighter than Thursday — focus on the squeeze, not the weight.','3 × 12'],
-          ['Cable Tricep Pushdown','Finish the triceps from Tuesday.','3 × 12'],
+          ['SportsArt Seated Row','Focus on the squeeze at the finish. Full range.','3 × 12'],
+          ['Cable Tricep Pushdown','Rope attachment. Full extension each rep.','3 × 12'],
           ['DB Hammer Curl','Neutral grip. Forearm + bicep together.','3 × 10–12'],
-          ['90/90 Hip Flexor Stretch','First real hip flexor loading — gentle hold, breathe into it. Note any discomfort.','2 min/side'],
-          ['Bird Dog','Extend opposite arm and leg, hold 2-3 sec. Back flat, hips level.','3 × 10/side'],
-          ['Side Plank','Hip abductor engagement. Stack feet or drop bottom knee.','3 × 30 sec/side'],
+          ['Cable Front Raise','One arm at a time, raise to shoulder height. Front deltoid.','3 × 12'],
         ],
         home:[
           ['Push-Up Variations','Standard → wide → close. Chest to floor. Quality over quantity.','3 × max'],
           ['Single-Arm DB Row','Brace on chair. Heavy as you can manage.','3 × 10/side'],
           ['DB Arnold Press','Seated on chair. Rotate palms through full movement.','3 × 10'],
-          ['90/90 Hip Flexor Stretch','First real hip flexor loading — gentle hold, breathe into it. Note any discomfort.','2 min/side'],
-          ['Bird Dog','Extend opposite arm and leg, hold 2-3 sec. Back flat, hips level.','3 × 10/side'],
-          ['Side Plank on Swiss Ball','Forearm on Swiss ball — harder version. Drop knee if needed.','3 × 30 sec/side'],
+          ['DB Chest Fly on Swiss Ball','Stretch at bottom, squeeze at top. Full range.','3 × 12'],
+          ['Band Tricep Pushdown','Full extension each rep. Elbows stay still.','3 × 15'],
+          ['DB Hammer Curl','Neutral grip. Slow and controlled.','3 × 10–12'],
         ]
       },
       { badge:'OPT', badgeClass:'opt', name:'Arms & Shoulders (Optional)', focus:'Biceps · Triceps · Shoulders · Pump',
@@ -2066,8 +2063,8 @@ function toggleHowTo(id, btn, event) {
 // ===== PHASE OVERRIDE =====
 // Scheduled phase advances — auto-flips on these dates unless manually overridden later
 const PHASE_SCHEDULE = [
-  { date: '2026-06-21', phase: 1 }, // Phase 2 starts June 21
-  { date: '2026-07-20', phase: 2 }, // Phase 3 starts July 20
+  // Phase 2 start date removed — hip re-injured June 26, doctor clearance required
+  // Taper and Tryout weeks preserved for when he recovers
   { date: '2026-07-27', phase: 3 }, // Taper Week starts July 27
   { date: '2026-07-28', phase: 4 }, // Tryout Week starts July 28
   { date: '2026-08-03', phase: 2 }, // Resume Phase 3 Aug 3
@@ -2865,6 +2862,8 @@ window.onload = async () => {
   const histEl = document.getElementById('log-history');
   if (histEl) histEl.innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><h3>Loading logs...</h3><p>Fetching your workout history from the cloud.</p></div>';
 
+  // Force back to Phase 1 due to re-injury June 26
+  setActivePhase(0);
   updateProgramTabHighlight();
   initNutritionWeight();
 
