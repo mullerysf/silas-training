@@ -870,19 +870,16 @@
 
   <div class="section-label">Weekly Schedule</div>
   <div class="week-grid">
-    <div class="day-cell lift tuesday"><div class="day-name">Mon</div><div class="day-icon">🏋️🎾</div><div class="day-label">Lift+Tennis</div></div>
-    <div class="day-cell match"><div class="day-name">Tue</div><div class="day-icon">🏃⛳</div><div class="day-label">Cond+Golf</div></div>
-    <div class="day-cell lift thursday"><div class="day-name">Wed</div><div class="day-icon">🏋️🎾</div><div class="day-label">Lift+Tennis</div></div>
-    <div class="day-cell match"><div class="day-name">Thu</div><div class="day-icon">🏃⛳</div><div class="day-label">Cond+Golf</div></div>
+    <div class="day-cell lift tuesday"><div class="day-name">Mon</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
+    <div class="day-cell rest"><div class="day-name">Tue</div><div class="day-icon">😴</div><div class="day-label">Rest</div></div>
+    <div class="day-cell lift thursday"><div class="day-name">Wed</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
+    <div class="day-cell rest"><div class="day-name">Thu</div><div class="day-icon">😴</div><div class="day-label">Rest</div></div>
     <div class="day-cell lift friday"><div class="day-name">Fri</div><div class="day-icon">🏋️</div><div class="day-label">Lift</div></div>
-    <div class="day-cell match"><div class="day-name">Sat</div><div class="day-icon">🏃</div><div class="day-label">Cond/Makeup</div></div>
+    <div class="day-cell rest"><div class="day-name">Sat</div><div class="day-icon">😴</div><div class="day-label">Rest</div></div>
     <div class="day-cell rest"><div class="day-name">Sun</div><div class="day-icon">😴</div><div class="day-label">Rest</div></div>
   </div>
   <div class="legend">
-    <div class="legend-item"><div class="legend-dot ld-green"></div> Lift (AM)</div>
-    <div class="legend-item"><div class="legend-dot ld-yellow"></div> Tennis (PM)</div>
-    <div class="legend-item"><div class="legend-dot ld-blue"></div> Conditioning (AM) + Golf (PM)</div>
-    <div class="legend-item"><div class="legend-dot ld-blue"></div> Conditioning / Makeup Lift</div>
+    <div class="legend-item"><div class="legend-dot ld-green"></div> Upper Body Lift</div>
     <div class="legend-item"><div class="legend-dot ld-gray"></div> Rest</div>
   </div>
 
@@ -897,11 +894,11 @@
       </div>
       <span class="phase-tag tag-recovery" id="prog-tag-0">Recovery</span>
     </div>
-    <div class="phase-desc">Hip re-injured June 26 — back to upper body only until doctor clears lower body and core work. Focus is chest, back, shoulders, and arms. No lower body, no core, no hip loading of any kind. Stay consistent with what you can do.</div>
+    <div class="phase-desc">Avulsion fracture confirmed June 30. Upper body lifting cleared by ortho with one key restriction: avoid anything that engages the hip flexor area. No lat pulldowns, no seated rows — replaced with chest-supported and face-pull alternatives. Focus on chest, shoulders, arms, and rear delts. Stay consistent with what you can do.</div>
     <div class="phase-goals">
       <span class="goal-chip">🔼 Upper body only</span>
-      <span class="goal-chip">🚫 No core until cleared</span>
-      <span class="goal-chip">🚫 No lower body</span>
+      <span class="goal-chip">🚫 No hip flexor engagement</span>
+      <span class="goal-chip">🚫 No pulldowns or seated rows</span>
       <span class="goal-chip">💪 Stay consistent</span>
     </div>
   </div>
@@ -1730,7 +1727,7 @@ function getHowTo(name) {
 
 const PHASES = [
   { // PHASE 1 — Recovery
-    alert: '⚠️ Hip re-injured June 26. Upper body only until cleared by doctor. No lower body, no core work, no hip loading of any kind. If anything causes hip discomfort, stop immediately.',
+    alert: '⚠️ Avulsion fracture confirmed June 30. Upper body only — NO exercises that engage the hip flexor area. Avoid lat pulldowns and seated rows (instinctive hip flexor bracing). Stick strictly to the exercises listed. When in doubt, skip it.',
     days: [
       { badge:'TUE', badgeClass:'tuesday', name:'Upper Push', focus:'Chest · Shoulders · Triceps',
         gym:[
@@ -1772,11 +1769,11 @@ const PHASES = [
       { badge:'FRI', badgeClass:'friday', name:'Full Upper', focus:'Chest · Back · Shoulders · Arms',
         gym:[
           ['Seated Chest Press Machine','Go slightly heavier than Monday. Track the weight.','3 × 8–10'],
-          ['Lat Pulldown Machine','Alternate grip — try neutral/close grip today.','3 × 8–10'],
+          ['DB Chest-Supported Row','Lie face DOWN on incline bench. Row DBs up. Zero hip flexor involvement.','3 × 10–12'],
           ['DB Shoulder Press','Seated on bench. Both arms. Heavy and controlled.','3 × 10'],
-          ['SportsArt Seated Row','Focus on the squeeze at the finish. Full range.','3 × 12'],
+          ['Cable Face Pull','Set cable at face height. Pull to ears. Keep it strict.','3 × 15'],
           ['Cable Tricep Pushdown','Rope attachment. Full extension each rep.','3 × 12'],
-          ['DB Hammer Curl','Neutral grip. Forearm + bicep together.','3 × 10–12'],
+          ['DB Hammer Curl','Seated. Neutral grip. Forearm + bicep together.','3 × 10–12'],
           ['Cable Front Raise','One arm at a time, raise to shoulder height. Front deltoid.','3 × 12'],
         ],
         home:[
