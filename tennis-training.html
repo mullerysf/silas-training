@@ -1376,8 +1376,36 @@
   </div>
 
   <div class="section-label">Workout History</div>
+  <div style="text-align:center; margin-bottom:10px">
+    <button onclick="diagnoseSheets()" style="background:var(--surface2); border:1px solid var(--border); color:var(--muted); font-size:11px; padding:6px 14px; border-radius:20px; cursor:pointer">🔧 Test Cloud Connection</button>
+  </div>
   <div id="log-history"></div>
 </div>
+
+<script>
+async function diagnoseSheets() {
+  const el = document.getElementById('log-history');
+  el.innerHTML = '<div style="padding:16px; font-family:monospace; font-size:11px; color:var(--muted); word-break:break-all">Testing connection...</div>';
+  const url = 'https://script.google.com/macros/s/AKfycbz5_mND4MnGqicFhDpcS1vNAhwSrXThRqemCxWmI7SAdsTpL_TzhMDT1g6WabHBP_PT2Q/exec?data=%7B%22action%22%3A%22getAll%22%7D&_t=' + Date.now();
+  let report = 'URL: ' + url.slice(0, 80) + '...\n\n';
+  try {
+    const res = await fetch(url, { method: 'GET', redirect: 'follow', cache: 'no-store' });
+    report += 'HTTP status: ' + res.status + '\n';
+    report += 'Response type: ' + res.type + '\n\n';
+    const text = await res.text();
+    report += 'Raw response (first 500 chars):\n' + text.slice(0, 500);
+    try {
+      const json = JSON.parse(text);
+      report += '\n\n✓ Parsed OK. Status: ' + json.status + '. Logs found: ' + (json.logs ? json.logs.length : 'none');
+    } catch(pe) {
+      report += '\n\n✗ Could not parse as JSON — this is the problem.';
+    }
+  } catch(e) {
+    report += '✗ FETCH FAILED: ' + e.message + '\n\nThis means the app cannot reach Google Apps Script (network/CORS/redirect issue).';
+  }
+  el.innerHTML = '<div style="padding:16px; font-family:monospace; font-size:11px; color:var(--text); word-break:break-all; white-space:pre-wrap; background:var(--surface2); border-radius:10px; line-height:1.5">' + report + '</div>';
+}
+</script>
 
 <!-- PROGRESS VIEW -->
 <div id="view-progress" class="view">
@@ -2948,32 +2976,40 @@ function initNutritionWeight() {
 }
 
 window.onload = async () => {
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('log-date').value = today;
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const dateEl = document.getElementById('log-date');
+    if (dateEl) dateEl.value = today;
 
-  // Default the Workouts tab to the active phase
-  const activePh = getActivePhase();
-  if (activePh !== null) {
-    currentPhaseIdx = activePh;
-    document.querySelectorAll('.phase-btn').forEach((b, i) => {
-      b.classList.toggle('active', i === activePh);
-    });
+    // Default the Workouts tab to the active phase
+    const activePh = getActivePhase();
+    if (activePh !== null) {
+      currentPhaseIdx = activePh;
+      document.querySelectorAll('.phase-btn').forEach((b, i) => {
+        b.classList.toggle('active', i === activePh);
+      });
+    }
+    renderWorkouts();
+    updateMobProgress();
+
+    // Force back to Phase 1 due to re-injury June 26
+    setActivePhase(0);
+    updateProgramTabHighlight();
+    initNutritionWeight();
+  } catch(e) {
+    console.error('Startup error (non-fatal):', e);
   }
-  renderWorkouts();
-  updateMobProgress();
 
-  // Show loading state while fetching logs from Sheets
-  const histEl = document.getElementById('log-history');
-  if (histEl) histEl.innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><h3>Loading logs...</h3><p>Fetching your workout history from the cloud.</p></div>';
-
-  // Force back to Phase 1 due to re-injury June 26
-  setActivePhase(0);
-  updateProgramTabHighlight();
-  initNutritionWeight();
-
-  await loadLogsFromSheets();
-  renderHistory();
-  renderProgress();
+  // Always attempt to load logs regardless of any earlier error
+  try {
+    await loadLogsFromSheets();
+    renderHistory();
+    renderProgress();
+  } catch(e) {
+    console.error('Log load error:', e);
+    const histEl = document.getElementById('log-history');
+    if (histEl) histEl.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><h3>Load error</h3><p>${e.message}</p><button class="btn btn-primary" onclick="loadLogsFromSheets()" style="margin-top:12px">Try Again</button></div>`;
+  }
 };
 
 function updateProgramTabHighlight() {
