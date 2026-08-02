@@ -2200,15 +2200,22 @@ async function sheetsRequest(payload) {
   const url = SHEET_URL + '?data=' + encodeURIComponent(JSON.stringify(payload)) + '&_t=' + Date.now();
   const res = await fetch(url, {
     method: 'GET',
-    mode: 'cors',
+    redirect: 'follow',
     cache: 'no-store',
   });
-  return res.json();
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch(e) {
+    console.error('Failed to parse Sheets response:', text.slice(0, 300));
+    throw new Error('Bad response from Sheets');
+  }
 }
 
 async function loadLogsFromSheets() {
   const histEl = document.getElementById('log-history');
   if (histEl) histEl.innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><h3>Loading workouts…</h3><p>Pulling your history from the cloud.</p></div>';
+  let loadError = null;
   try {
     // Load workout logs
     const data = await sheetsRequest({ action: 'getAll' });
@@ -2217,14 +2224,21 @@ async function loadLogsFromSheets() {
       sheetsReady = true;
       // Keep a local backup copy
       try { localStorage.setItem('tennis-logs', JSON.stringify(logsCache)); } catch(e) {}
+    } else {
+      loadError = data.message || 'Unknown error';
     }
   } catch(e) {
     console.warn('Could not load from Sheets, using localStorage fallback', e);
     logsCache = getLocalLogs();
     sheetsReady = false;
+    loadError = e.message;
   }
   // Always re-render history once the load finishes
-  renderHistory();
+  if (!logsCache.length && loadError && histEl) {
+    histEl.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><h3>Couldn't load from cloud</h3><p>${loadError}</p><button class="btn btn-primary" onclick="loadLogsFromSheets()" style="margin-top:12px">Try Again</button></div>`;
+  } else {
+    renderHistory();
+  }
   if (typeof renderProgress === 'function') renderProgress();
   try {
     // Load mobility logs
