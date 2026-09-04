@@ -936,24 +936,6 @@
     </div>
   </div>
 
-  <div class="phase-card" id="prog-phase-2" onclick="this.classList.toggle('open')">
-    <div class="phase-header">
-      <div class="phase-num">3</div>
-      <div class="phase-info">
-        <div class="phase-name">Power &amp; Performance</div>
-        <div class="phase-dates">Jul 20 – Jul 26 · Peak Power</div>
-      </div>
-      <span class="phase-tag tag-peak" id="prog-tag-2">Peak</span>
-    </div>
-    <div class="phase-desc">Shift from pure strength to explosive power — the kind that translates to faster serve speed and quicker court movement. Med ball throws, jump training, and sport-specific conditioning added. Volume drops slightly, intensity stays high.</div>
-    <div class="phase-goals">
-      <span class="goal-chip">⚡ Explosive power</span>
-      <span class="goal-chip">🏃 Court speed</span>
-      <span class="goal-chip">🎯 Golf-specific</span>
-      <span class="goal-chip">🔁 Med ball work</span>
-    </div>
-  </div>
-
   <div class="section-label">Program Rules</div>
   <div class="tip-card">
     <h4>Progressive Overload</h4>
@@ -1355,7 +1337,7 @@ async function diagnoseSheets() {
     </div>
     <div class="stat-card">
       <div class="stat-val" id="stat-days-left">74</div>
-      <div class="stat-label">Days Left</div>
+      <div class="stat-label">Days to Golf End</div>
     </div>
     <div class="stat-card">
       <div class="stat-val" id="stat-avg-effort">—</div>
@@ -1363,32 +1345,16 @@ async function diagnoseSheets() {
     </div>
   </div>
 
-  <div class="section-label">Summer Progress</div>
+  <div class="section-label">Season Progress</div>
   <div class="stat-card" style="margin-bottom:10px; text-align:left; padding:16px">
-    <div style="font-size:13px; color:var(--muted); margin-bottom:8px">Program completion</div>
+    <div style="font-size:13px; color:var(--muted); margin-bottom:8px">Training since return</div>
     <div class="progress-bar-wrap">
-      <div class="progress-bar" id="program-progress" style="width:0%"></div>
+      <div class="progress-bar" id="program-progress" style="width:100%"></div>
     </div>
     <div class="progress-label">
-      <span id="prog-start">May 10</span>
-      <span id="prog-pct">0%</span>
-      <span>Aug 10</span>
-    </div>
-  </div>
-
-  <div class="section-label">Phase Progress</div>
-  <div class="stat-card" style="margin-bottom:10px; text-align:left; padding:16px">
-    <div style="display:flex; justify-content:space-between; margin-bottom:8px">
-      <div style="font-size:13px; color:var(--text); font-weight:600" id="current-phase-name">Phase 1 — Recovery</div>
-      <div style="font-size:11px; color:var(--muted)" id="current-phase-dates">May 27 – Jun 10</div>
-    </div>
-    <div class="progress-bar-wrap">
-      <div class="progress-bar" id="phase-progress" style="width:0%; background: linear-gradient(90deg, #facc15, #f59e0b)"></div>
-    </div>
-    <div class="progress-label">
-      <span id="phase-prog-label">Phase 1</span>
-      <span id="phase-prog-pct">0%</span>
-      <span>Next phase</span>
+      <span id="prog-start">Sept 4</span>
+      <span id="prog-pct">Day 1</span>
+      <span>Golf ends 10/16</span>
     </div>
   </div>
 
@@ -2349,30 +2315,19 @@ function formatDate(d) {
 function renderProgress() {
   const logs = getLogs();
   const today = new Date();
-  const start = new Date('2026-05-10');
-  const end = new Date('2026-08-10');
-  const totalDays = Math.round((end - start) / 86400000);
-  const elapsed = Math.max(0, Math.round((today - start) / 86400000));
-  const daysLeft = Math.max(0, Math.round((end - today) / 86400000));
-  const progPct = Math.min(100, Math.round(elapsed / totalDays * 100));
+  const seasonStart = new Date('2026-09-04');
+  const golfEnds = new Date('2026-10-16');
+  const daysElapsed = Math.max(0, Math.round((today - seasonStart) / 86400000));
+  const daysToGolfEnd = Math.round((golfEnds - today) / 86400000);
 
   document.getElementById('stat-workouts').textContent = logs.length;
-  document.getElementById('stat-days-left').textContent = daysLeft;
-  document.getElementById('program-progress').style.width = progPct + '%';
-  document.getElementById('prog-pct').textContent = progPct + '%';
+  document.getElementById('stat-days-left').textContent = daysToGolfEnd > 0 ? daysToGolfEnd : 'In tennis season';
+  document.getElementById('program-progress').style.width = '100%';
+  document.getElementById('prog-pct').textContent = `Day ${daysElapsed + 1}`;
 
   const efforts = logs.map(l => +l.effort).filter(Boolean);
   document.getElementById('stat-avg-effort').textContent = efforts.length ? (efforts.reduce((a,b)=>a+b,0)/efforts.length).toFixed(1) : '—';
 
-  // Season progress — one ongoing program now (no more phase-by-phase summer calendar)
-  const seasonStart = new Date('2026-09-04');
-  const phaseIdx = 0;
-  const currentPhase = { name: 'Full Return & Rebuild', dates: 'Sept 4 – ongoing' };
-  document.getElementById('current-phase-name').textContent = currentPhase.name;
-  document.getElementById('current-phase-dates').textContent = currentPhase.dates;
-  const daysSinceStart = Math.max(0, Math.round((today - seasonStart) / 86400000));
-  document.getElementById('phase-progress').style.width = '100%';
-  document.getElementById('phase-prog-pct').textContent = `Day ${daysSinceStart + 1}`;
   document.getElementById('current-phase-badge').textContent = 'In Season';
   // Mobility history
   if (document.getElementById('mobility-log-history')) renderMobilityHistory();
