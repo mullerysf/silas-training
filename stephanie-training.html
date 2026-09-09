@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Stephanie's Training</title>
+<style>
+  :root{
+    --bg:#0d1912; --card:#16261c; --card2:#1c2e21; --line:#28402f;
+    --text:#dcecdf; --muted:#7fa389; --accent:#4ecb71; --accent2:#8fe3a8;
+    --warn:#e3b054; --danger:#e36a54;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Courier New', ui-monospace, monospace;
+    padding-bottom:70px;
+  }
+  header{
+    padding:18px 16px 12px; border-bottom:1px solid var(--line);
+    position:sticky; top:0; background:var(--bg); z-index:10;
+  }
+  header h1{ margin:0; font-size:1.15rem; letter-spacing:0.5px; }
+  header .sub{ color:var(--muted); font-size:0.75rem; margin-top:2px; }
+  nav{
+    display:flex; overflow-x:auto; border-bottom:1px solid var(--line);
+    background:var(--bg); position:sticky; top:56px; z-index:9;
+  }
+  nav button{
+    flex:1; min-width:70px; background:none; border:none; color:var(--muted);
+    font-family:inherit; font-size:0.72rem; padding:10px 4px; cursor:pointer;
+    border-bottom:2px solid transparent; letter-spacing:0.5px;
+  }
+  nav button.active{ color:var(--accent2); border-bottom:2px solid var(--accent); }
+  main{ padding:14px 14px 20px; max-width:640px; margin:0 auto; }
+  .tab{ display:none; } .tab.active{ display:block; }
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:8px;
+    padding:14px; margin-bottom:12px;
+  }
+  .card h2{ margin:0 0 8px; font-size:0.95rem; color:var(--accent2); }
+  .card h3{ margin:0 0 6px; font-size:0.85rem; color:var(--text); }
+  .muted{ color:var(--muted); font-size:0.78rem; }
+  .row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .pill{
+    background:var(--card2); border:1px solid var(--line); border-radius:20px;
+    padding:6px 12px; font-size:0.75rem; color:var(--muted); cursor:pointer;
+  }
+  .pill.active{ background:var(--accent); color:#04150a; border-color:var(--accent); font-weight:bold;}
+  select, input[type=text], input[type=number]{
+    background:var(--card2); border:1px solid var(--line); color:var(--text);
+    font-family:inherit; padding:8px; border-radius:6px; width:100%; font-size:0.85rem;
+  }
+  label{ font-size:0.72rem; color:var(--muted); display:block; margin-bottom:3px; margin-top:8px;}
+  .exercise{
+    border-top:1px solid var(--line); padding:10px 0;
+  }
+  .exercise:first-child{ border-top:none; }
+  .exercise .name{ font-size:0.88rem; font-weight:bold; }
+  .exercise .meta{ font-size:0.72rem; color:var(--muted); margin-bottom:6px;}
+  .inputs-row{ display:flex; gap:6px; }
+  .inputs-row input{ text-align:center; }
+  .btn{
+    background:var(--accent); color:#04150a; border:none; border-radius:6px;
+    padding:11px 16px; font-family:inherit; font-weight:bold; font-size:0.85rem;
+    cursor:pointer; width:100%;
+  }
+  .btn.secondary{ background:var(--card2); color:var(--accent2); border:1px solid var(--accent);}
+  .btn.small{ width:auto; padding:7px 12px; font-size:0.75rem; }
+  .effort-row{ display:flex; gap:6px; margin-top:6px; }
+  .effort-row .pill{ flex:1; text-align:center; }
+  .finisher{
+    margin-top:10px; padding:10px; background:var(--card2); border-radius:6px;
+    border-left:3px solid var(--warn);
+  }
+  .log-entry{
+    border-bottom:1px solid var(--line); padding:10px 0; font-size:0.8rem;
+  }
+  .log-entry .top{ display:flex; justify-content:space-between; color:var(--accent2); font-weight:bold;}
+  .badge{
+    display:inline-block; background:var(--card2); border:1px solid var(--line);
+    border-radius:4px; padding:2px 6px; font-size:0.68rem; color:var(--muted); margin-right:4px;
+  }
+  .sync-status{ font-size:0.7rem; color:var(--muted); text-align:center; margin-top:8px; }
+  canvas{ width:100%; background:var(--card2); border-radius:6px; }
+  .toast{
+    position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+    background:var(--accent); color:#04150a; padding:10px 18px; border-radius:20px;
+    font-size:0.8rem; font-weight:bold; opacity:0; transition:opacity 0.3s; z-index:99;
+  }
+  .toast.show{ opacity:1; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌿 Stephanie's Training</h1>
+  <div class="sub" id="today-line"></div>
+</header>
+
+<nav>
+  <button data-tab="program" class="active">Program</button>
+  <button data-tab="workouts">Workouts</button>
+  <button data-tab="nutrition">Nutrition</button>
+  <button data-tab="log">Log</button>
+  <button data-tab="progress">Progress</button>
+</nav>
+
+<main>
+
+  <!-- PROGRAM TAB -->
+  <div class="tab active" id="program-tab">
+    <div class="card">
+      <h2>The Plan</h2>
+      <p class="muted">4 days/week, home gym (dumbbells + bands). Built around progressive overload on the lifts, with a short metabolic finisher each session to help the fat-loss side without turning every day into pure cardio.</p>
+    </div>
+    <div class="card">
+      <h2>Weekly Split</h2>
+      <div class="exercise"><div class="name">Day 1 — Upper A (Push Focus)</div></div>
+      <div class="exercise"><div class="name">Day 2 — Lower A (Squat Focus)</div></div>
+      <div class="exercise"><div class="name">Day 3 — Rest or light walk</div></div>
+      <div class="exercise"><div class="name">Day 4 — Upper B (Pull Focus)</div></div>
+      <div class="exercise"><div class="name">Day 5 — Lower B (Hinge/Glute Focus)</div></div>
+      <div class="exercise"><div class="name">Day 6-7 — Rest / optional walk</div></div>
+    </div>
+    <div class="card">
+      <h2>How to progress</h2>
+      <p class="muted">Same weight feels easy for all reps two sessions in a row → go up one increment next time (2.5–5 lb dumbbells, or one band level). Track everything in the Workouts tab so you're not guessing week to week.</p>
+    </div>
+  </div>
+
+  <!-- WORKOUTS TAB -->
+  <div class="tab" id="workouts-tab">
+    <div class="card">
+      <div class="row" id="day-picker"></div>
+    </div>
+    <div class="card" id="workout-card">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- NUTRITION TAB -->
+  <div class="tab" id="nutrition-tab">
+    <div class="card">
+      <h2>Quick Targets</h2>
+      <label>Current weight (lb)</label>
+      <input type="number" id="weight-input" placeholder="e.g. 145">
+      <div id="nutrition-output" class="muted" style="margin-top:10px;"></div>
+    </div>
+    <div class="card">
+      <h2>Daily Anchors</h2>
+      <p class="muted">Protein at every meal (not just dinner) matters more than any single number. Aim for 3–4 protein-containing meals/snacks spread through the day.</p>
+      <div id="anchor-checklist"></div>
+    </div>
+    <div class="card">
+      <h2>The honest version</h2>
+      <p class="muted">Fat loss + muscle gain at the same time ("recomposition") works best with: a moderate calorie deficit (roughly 300–500 cal/day below maintenance — not more), protein high enough to protect muscle, and consistent progressive lifting. Big deficits or skipping meals tend to backfire — you lose muscle along with fat and it's harder to sustain. This app won't push you toward extreme numbers on purpose.</p>
+    </div>
+  </div>
+
+  <!-- LOG TAB -->
+  <div class="tab" id="log-tab">
+    <div class="card">
+      <h2>History</h2>
+      <div id="log-list" class="muted">No sessions logged yet.</div>
+    </div>
+    <div class="card">
+      <button class="btn secondary" id="sync-pull-btn">↓ Pull latest from Google Sheet</button>
+      <div class="sync-status" id="sync-status"></div>
+    </div>
+  </div>
+
+  <!-- PROGRESS TAB -->
+  <div class="tab" id="progress-tab">
+    <div class="card">
+      <h2>Weight Trend</h2>
+      <canvas id="weight-chart" height="160"></canvas>
+      <p class="muted" id="weight-chart-note">Log your weight on workout days (Workouts tab) to build this chart.</p>
+    </div>
+    <div class="card">
+      <h2>Consistency</h2>
+      <div id="streak-stats" class="muted">—</div>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz5_mND4MnGqicFhDpcS1vNAhwSrXThRqemCxWmI7SAdsTpL_TzhMDT1g6WabHBP_PT2Q/exec';
+const STORAGE_KEY = 'stephanie_workout_logs_v1';
+const WEIGHT_KEY_PREFIX = 'stephanie_last_weight_';
+
+// ---------- Program data ----------
+const PROGRAM = {
+  upperA: {
+    label: "Upper A", title: "Upper A — Push Focus",
+    exercises: [
+      {id:'ua1', name:'DB Bench Press (floor or bench)', sets:3, reps:'10-12'},
+      {id:'ua2', name:'DB Shoulder Press', sets:3, reps:'10-12'},
+      {id:'ua3', name:'DB Bent-Over Row', sets:3, reps:'10-12'},
+      {id:'ua4', name:'Band Face Pull / Pull-Apart', sets:3, reps:'15'},
+      {id:'ua5', name:'DB Lateral Raise', sets:3, reps:'12-15'},
+      {id:'ua6', name:'DB Bicep Curl', sets:2, reps:'12'},
+      {id:'ua7', name:'Band Tricep Pushdown', sets:2, reps:'12-15'},
+    ],
+    finisher: "3 min: 20 sec DB thrusters / 20 sec rest, repeat"
+  },
+  lowerA: {
+    label: "Lower A", title: "Lower A — Squat Focus",
+    exercises: [
+      {id:'la1', name:'DB Goblet Squat', sets:3, reps:'12'},
+      {id:'la2', name:'DB Romanian Deadlift', sets:3, reps:'12'},
+      {id:'la3', name:'DB Walking Lunge', sets:3, reps:'10/leg'},
+      {id:'la4', name:'Band Glute Bridge', sets:3, reps:'15'},
+      {id:'la5', name:'Band Lateral Walk', sets:3, reps:'15/side'},
+      {id:'la6', name:'Standing Calf Raise', sets:3, reps:'15'},
+    ],
+    finisher: "3 min: 20 sec squat jumps (or fast bodyweight squats) / 20 sec rest"
+  },
+  upperB: {
+    label: "Upper B", title: "Upper B — Pull Focus",
+    exercises: [
+      {id:'ub1', name:'DB Single-Arm Row', sets:3, reps:'10-12/side'},
+      {id:'ub2', name:'DB Incline Press', sets:3, reps:'10-12'},
+      {id:'ub3', name:'Band Lat Pulldown (anchor high)', sets:3, reps:'12'},
+      {id:'ub4', name:'DB Arnold Press', sets:3, reps:'10'},
+      {id:'ub5', name:'Band Face Pull', sets:3, reps:'15'},
+      {id:'ub6', name:'DB Hammer Curl', sets:2, reps:'12'},
+      {id:'ub7', name:'DB Tricep Kickback', sets:2, reps:'12'},
+    ],
+    finisher: "3 min: band woodchop 30 sec/side, no rest between sides"
+  },
+  lowerB: {
+    label: "Lower B", title: "Lower B — Hinge/Glute Focus",
+    exercises: [
+      {id:'lb1', name:'DB Deadlift', sets:3, reps:'10'},
+      {id:'lb2', name:'DB Step-Up', sets:3, reps:'10/leg'},
+      {id:'lb3', name:'Band Hip Thrust', sets:3, reps:'15'},
+      {id:'lb4', name:'DB Sumo Squat', sets:3, reps:'12'},
+      {id:'lb5', name:'Band Lateral Band Walk', sets:3, reps:'15'},
+      {id:'lb6', name:'Single-Leg Calf Raise', sets:3, reps:'12/side'},
+    ],
+    finisher: "3 min: high knees or jump rope, 30 sec on / 15 sec off"
+  }
+};
+
+let currentDay = 'upperA';
+let logs = [];
+
+// ---------- Init ----------
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('today-line').textContent = new Date().toLocaleDateString('en-US', {weekday:'long', month:'short', day:'numeric'});
+  loadLogsLocal();
+  renderDayPicker();
+  renderWorkout(currentDay);
+  renderAnchors();
+  renderLog();
+  renderProgress();
+  setupTabs();
+  document.getElementById('weight-input').addEventListener('input', renderNutrition);
+  document.getElementById('sync-pull-btn').addEventListener('click', pullFromSheet);
+});
+
+function setupTabs(){
+  document.querySelectorAll('nav button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab+'-tab').classList.add('active');
+    });
+  });
+}
+
+// ---------- Day picker / Workout render ----------
+function renderDayPicker(){
+  const el = document.getElementById('day-picker');
+  el.innerHTML = '';
+  Object.keys(PROGRAM).forEach(key=>{
+    const p = document.createElement('div');
+    p.className = 'pill' + (key===currentDay ? ' active' : '');
+    p.textContent = PROGRAM[key].label;
+    p.onclick = ()=>{ currentDay = key; renderDayPicker(); renderWorkout(key); };
+    el.appendChild(p);
+  });
+}
+
+function lastWeightFor(exId){
+  return localStorage.getItem(WEIGHT_KEY_PREFIX + exId) || '';
+}
+
+function renderWorkout(dayKey){
+  const day = PROGRAM[dayKey];
+  const card = document.getElementById('workout-card');
+  let html = `<h2>${day.title}</h2>`;
+  day.exercises.forEach(ex=>{
+    const last = lastWeightFor(ex.id);
+    html += `
+      <div class="exercise">
+        <div class="name">${ex.name}</div>
+        <div class="meta">${ex.sets} sets x ${ex.reps} reps ${last ? '· last: '+last+' lb' : ''}</div>
+        <div class="inputs-row">
+          <input type="number" placeholder="lb" id="w_${ex.id}" value="${last}">
+        </div>
+      </div>`;
+  });
+  html += `<div class="finisher"><strong>Finisher:</strong> ${day.finisher}</div>`;
+  html += `
+    <label style="margin-top:14px;">Effort (how it felt)</label>
+    <div class="effort-row" id="effort-row"></div>
+    <label>Today's weight (lb, optional)</label>
+    <input type="number" id="session-weight" placeholder="optional">
+    <label>Notes</label>
+    <input type="text" id="session-notes" placeholder="anything worth remembering">
+    <button class="btn" style="margin-top:14px;" id="save-session-btn">Save Session</button>
+  `;
+  card.innerHTML = html;
+
+  const effortRow = document.getElementById('effort-row');
+  const efforts = ['Easy','Solid','Tough','Brutal'];
+  let selectedEffort = 'Solid';
+  efforts.forEach(e=>{
+    const p = document.createElement('div');
+    p.className = 'pill' + (e===selectedEffort ? ' active' : '');
+    p.textContent = e;
+    p.onclick = ()=>{
+      document.querySelectorAll('#effort-row .pill').forEach(x=>x.classList.remove('active'));
+      p.classList.add('active');
+      selectedEffort = e;
+    };
+    effortRow.appendChild(p);
+  });
+
+  document.getElementById('save-session-btn').onclick = ()=>{
+    const exercises = day.exercises.map(ex=>{
+      const w = document.getElementById('w_'+ex.id).value;
+      if(w) localStorage.setItem(WEIGHT_KEY_PREFIX+ex.id, w);
+      return {name: ex.name, sets: ex.sets, reps: ex.reps, weight: w};
+    });
+    const activeEffort = document.querySelector('#effort-row .pill.active');
+    const log = {
+      id: 'sess_'+Date.now(),
+      date: new Date().toISOString().slice(0,10),
+      session: day.title,
+      effort: activeEffort ? activeEffort.textContent : 'Solid',
+      notes: document.getElementById('session-notes').value || '',
+      exercises: exercises,
+      weight: document.getElementById('session-weight').value || ''
+    };
+    logs.unshift(log);
+    saveLogsLocal();
+    renderLog();
+    renderProgress();
+    syncSave(log);
+    showToast('Session saved ✓');
+  };
+}
+
+// ---------- Nutrition ----------
+function renderNutrition(){
+  const w = parseFloat(document.getElementById('weight-input').value);
+  const out = document.getElementById('nutrition-output');
+  if(!w || w<=0){ out.textContent = 'Enter weight to see a protein target.'; return; }
+  const proteinLow = Math.round(w*0.7);
+  const proteinHigh = Math.round(w*1.0);
+  out.innerHTML = `Protein target: <strong>${proteinLow}–${proteinHigh}g/day</strong><br>Spread across 3–4 meals/snacks rather than loaded at dinner.`;
+}
+
+function renderAnchors(){
+  const anchors = [
+    'Protein at breakfast (not just dinner)',
+    'Water before/during workouts',
+    'Veggies or fiber at lunch + dinner',
+    '7+ hrs sleep on training days'
+  ];
+  const el = document.getElementById('anchor-checklist');
+  el.innerHTML = anchors.map((a,i)=>`
+    <label style="display:flex; align-items:center; gap:8px; margin-top:8px; font-size:0.8rem; color:var(--text);">
+      <input type="checkbox" id="anchor_${i}"> ${a}
+    </label>`).join('');
+}
+
+// ---------- Log ----------
+function loadLogsLocal(){
+  try{ logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }catch(e){ logs = []; }
+}
+function saveLogsLocal(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+}
+
+function renderLog(){
+  const el = document.getElementById('log-list');
+  if(!logs.length){ el.textContent = 'No sessions logged yet.'; return; }
+  el.innerHTML = logs.slice(0,30).map(l=>`
+    <div class="log-entry">
+      <div class="top"><span>${l.session}</span><span>${l.date}</span></div>
+      <div><span class="badge">${l.effort}</span>${l.weight ? '<span class="badge">'+l.weight+' lb</span>' : ''}</div>
+      ${l.notes ? '<div class="muted" style="margin-top:4px;">'+l.notes+'</div>' : ''}
+    </div>`).join('');
+}
+
+// ---------- Progress ----------
+function renderProgress(){
+  const withWeights = logs.filter(l=>l.weight).slice().reverse();
+  const canvas = document.getElementById('weight-chart');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.clientWidth;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(withWeights.length < 2){
+    document.getElementById('weight-chart-note').textContent = 'Log your weight on workout days to build this chart. (' + withWeights.length + ' entr' + (withWeights.length===1?'y':'ies') + ' so far)';
+  } else {
+    document.getElementById('weight-chart-note').textContent = withWeights.length + ' weigh-ins logged.';
+    const vals = withWeights.map(l=>parseFloat(l.weight));
+    const min = Math.min(...vals), max = Math.max(...vals);
+    const pad = 10, w = canvas.width, h = canvas.height;
+    ctx.strokeStyle = '#4ecb71'; ctx.lineWidth = 2; ctx.beginPath();
+    vals.forEach((v,i)=>{
+      const x = pad + (i/(vals.length-1))*(w-2*pad);
+      const y = h - pad - ((v-min)/((max-min)||1))*(h-2*pad);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  }
+
+  const streakEl = document.getElementById('streak-stats');
+  const totalSessions = logs.length;
+  const last7 = logs.filter(l=> (new Date() - new Date(l.date)) < 7*86400000).length;
+  streakEl.innerHTML = `Total sessions logged: <strong>${totalSessions}</strong><br>Sessions in the last 7 days: <strong>${last7}</strong>`;
+}
+
+// ---------- Google Sheets sync ----------
+async function syncSave(log){
+  const status = document.getElementById('sync-status');
+  try{
+    const payload = {action:'saveStephanie', log: log};
+    const url = APPS_SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(payload));
+    const res = await fetch(url, {redirect:'follow'});
+    const json = await res.json();
+    if(status) status.textContent = json.status === 'ok' ? 'Synced to sheet ✓' : 'Sync error: '+json.message;
+  }catch(err){
+    if(status) status.textContent = 'Saved locally — will sync when online.';
+  }
+}
+
+async function pullFromSheet(){
+  const status = document.getElementById('sync-status');
+  status.textContent = 'Pulling...';
+  try{
+    const payload = {action:'getAllStephanie'};
+    const url = APPS_SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(payload));
+    const res = await fetch(url, {redirect:'follow'});
+    const json = await res.json();
+    if(json.status === 'ok' && json.logs){
+      const existingIds = new Set(logs.map(l=>l.id));
+      json.logs.forEach(l=>{ if(!existingIds.has(l.id)){ logs.push(l); existingIds.add(l.id); } });
+      logs.sort((a,b)=> new Date(b.date) - new Date(a.date));
+      saveLogsLocal();
+      renderLog();
+      renderProgress();
+      status.textContent = 'Pulled ' + json.logs.length + ' sessions from sheet ✓';
+    } else {
+      status.textContent = 'No data returned.';
+    }
+  }catch(err){
+    status.textContent = 'Could not reach sheet — check connection.';
+  }
+}
+
+// ---------- Toast ----------
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 1800);
+}
+</script>
+</body>
+</html>
