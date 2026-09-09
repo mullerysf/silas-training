@@ -72,6 +72,13 @@
     color:var(--accent2); font-weight:bold; text-align:center; font-size:0.8rem;
   }
   .set-row input{ text-align:center; padding:7px 4px; font-size:0.8rem; }
+  .howto-toggle{
+    color:var(--accent); cursor:pointer; margin-left:6px; text-decoration:underline; font-size:0.72rem;
+  }
+  .howto-text{
+    font-size:0.76rem; color:var(--text); background:var(--card2); border-radius:6px;
+    padding:8px 10px; margin:6px 0 4px; line-height:1.4;
+  }
   .btn{
     background:var(--accent); color:#04150a; border:none; border-radius:6px;
     padding:11px 16px; font-family:inherit; font-weight:bold; font-size:0.85rem;
@@ -209,50 +216,50 @@ const PROGRAM = {
   upperA: {
     label: "Upper A", title: "Upper A — Push Focus",
     exercises: [
-      {id:'ua1', name:'DB Bench Press (floor or bench)', sets:3, reps:'10-12'},
-      {id:'ua2', name:'DB Shoulder Press', sets:3, reps:'10-12'},
-      {id:'ua3', name:'DB Bent-Over Row', sets:3, reps:'10-12'},
-      {id:'ua4', name:'Band Face Pull / Pull-Apart', sets:3, reps:'15'},
-      {id:'ua5', name:'DB Lateral Raise', sets:3, reps:'12-15'},
-      {id:'ua6', name:'DB Bicep Curl', sets:2, reps:'12'},
-      {id:'ua7', name:'Band Tricep Pushdown', sets:2, reps:'12-15'},
+      {id:'ua1', name:'DB Bench Press (floor or bench)', sets:3, reps:'10-12', how:'Lie back with a dumbbell in each hand at chest level. Press up until arms are extended, then lower slowly and under control back to chest level.'},
+      {id:'ua2', name:'DB Shoulder Press', sets:3, reps:'10-12', how:'Seated or standing, start with dumbbells at shoulder height. Press straight overhead until arms are extended, then lower slowly back to shoulders.'},
+      {id:'ua3', name:'DB Bent-Over Row', sets:3, reps:'10-12', how:'Hinge at the hips to about 45°, back flat, dumbbells hanging below shoulders. Pull them up to your ribs, squeezing shoulder blades together, then lower with control.'},
+      {id:'ua4', name:'Band Face Pull / Pull-Apart', sets:3, reps:'15', how:'Anchor the band at chest height. Pull it toward your face leading with your elbows, squeezing your shoulder blades together at the end.'},
+      {id:'ua5', name:'DB Lateral Raise', sets:3, reps:'12-15', how:'Slight bend in the elbows, dumbbells at your sides. Raise them out to shoulder height, lead with elbows not hands, then lower slowly. Avoid shrugging your shoulders up.'},
+      {id:'ua6', name:'DB Bicep Curl', sets:2, reps:'12', how:'Elbows pinned to your sides. Curl the dumbbells up without swinging your body, then lower slowly all the way down.'},
+      {id:'ua7', name:'Band Tricep Pushdown', sets:2, reps:'12-15', how:'Anchor the band overhead. Elbows pinned at your sides, push down until arms are fully straight, then control the return back up.'},
     ],
     finisher: "3 min: 20 sec DB thrusters / 20 sec rest, repeat"
   },
   lowerA: {
     label: "Lower A", title: "Lower A — Squat Focus",
     exercises: [
-      {id:'la1', name:'DB Goblet Squat', sets:3, reps:'12'},
-      {id:'la2', name:'DB Romanian Deadlift', sets:3, reps:'12'},
-      {id:'la3', name:'DB Walking Lunge', sets:3, reps:'10/leg'},
-      {id:'la4', name:'Band Glute Bridge', sets:3, reps:'15'},
-      {id:'la5', name:'Band Lateral Walk', sets:3, reps:'15/side'},
-      {id:'la6', name:'Standing Calf Raise', sets:3, reps:'15'},
+      {id:'la1', name:'DB Goblet Squat', sets:3, reps:'12', how:'Hold a dumbbell vertically against your chest. Feet shoulder-width, squat down until thighs are about parallel to the floor, then drive back up through your heels.'},
+      {id:'la2', name:'DB Romanian Deadlift', sets:3, reps:'12', how:'Soft bend in the knees, hinge at the hips pushing your hips back (not down). Let dumbbells slide down the front of your legs until you feel a hamstring stretch, then stand tall by driving hips forward.'},
+      {id:'la3', name:'DB Walking Lunge', sets:3, reps:'10/leg', how:'Step forward into a lunge, lowering the back knee toward the floor without touching it. Drive through the front heel to stand and step into the next lunge.'},
+      {id:'la4', name:'Band Glute Bridge', sets:3, reps:'15', how:'Lie on your back, band looped above the knees, feet flat on the floor. Drive your hips up toward the ceiling squeezing your glutes at the top, then lower slowly.'},
+      {id:'la5', name:'Band Lateral Walk', sets:3, reps:'15/side', how:'Band looped above your ankles, knees slightly bent in a mini-squat. Step sideways keeping tension on the band the whole time — don\'t let your feet drift together.'},
+      {id:'la6', name:'Standing Calf Raise', sets:3, reps:'15', how:'Rise up onto your toes as high as you can, pause briefly at the top, then lower slowly below neutral before repeating.'},
     ],
     finisher: "3 min: 20 sec squat jumps (or fast bodyweight squats) / 20 sec rest"
   },
   upperB: {
     label: "Upper B", title: "Upper B — Pull Focus",
     exercises: [
-      {id:'ub1', name:'DB Single-Arm Row', sets:3, reps:'10-12/side'},
-      {id:'ub2', name:'DB Incline Press', sets:3, reps:'10-12'},
-      {id:'ub3', name:'Band Lat Pulldown (anchor high)', sets:3, reps:'12'},
-      {id:'ub4', name:'DB Arnold Press', sets:3, reps:'10'},
-      {id:'ub5', name:'Band Face Pull', sets:3, reps:'15'},
-      {id:'ub6', name:'DB Hammer Curl', sets:2, reps:'12'},
-      {id:'ub7', name:'DB Tricep Kickback', sets:2, reps:'12'},
+      {id:'ub1', name:'DB Single-Arm Row', sets:3, reps:'10-12/side', how:'Hinge forward (knee on a bench or a staggered stance), one hand supporting you. Pull the dumbbell up to your hip, squeezing your shoulder blade, then lower with control.'},
+      {id:'ub2', name:'DB Incline Press', sets:3, reps:'10-12', how:'Prop your upper back on an incline (bench, pillow against a wall, etc). Press dumbbells up and slightly inward, then lower back to chest level.'},
+      {id:'ub3', name:'Band Lat Pulldown (anchor high)', sets:3, reps:'12', how:'Anchor the band up high (door, hook). Kneeling or standing, pull the band down toward your chest by driving your elbows down and back, then control the return up.'},
+      {id:'ub4', name:'DB Arnold Press', sets:3, reps:'10', how:'Start with palms facing you at shoulder height. Press up while rotating your palms to face forward at the top, then reverse the rotation on the way back down.'},
+      {id:'ub5', name:'Band Face Pull', sets:3, reps:'15', how:'Anchor the band at chest height. Pull it toward your face leading with your elbows, squeezing your shoulder blades together at the end.'},
+      {id:'ub6', name:'DB Hammer Curl', sets:2, reps:'12', how:'Palms facing each other (like holding hammers). Curl the dumbbells up without swinging your body, then lower slowly.'},
+      {id:'ub7', name:'DB Tricep Kickback', sets:2, reps:'12', how:'Hinge forward, upper arm parallel to the floor and pinned at your side. Extend your forearm straight back, squeeze the tricep, then control the return.'},
     ],
     finisher: "3 min: band woodchop 30 sec/side, no rest between sides"
   },
   lowerB: {
     label: "Lower B", title: "Lower B — Hinge/Glute Focus",
     exercises: [
-      {id:'lb1', name:'DB Deadlift', sets:3, reps:'10'},
-      {id:'lb2', name:'DB Step-Up', sets:3, reps:'10/leg'},
-      {id:'lb3', name:'Band Hip Thrust', sets:3, reps:'15'},
-      {id:'lb4', name:'DB Sumo Squat', sets:3, reps:'12'},
-      {id:'lb5', name:'Band Lateral Band Walk', sets:3, reps:'15'},
-      {id:'lb6', name:'Single-Leg Calf Raise', sets:3, reps:'12/side'},
+      {id:'lb1', name:'DB Deadlift', sets:3, reps:'10', how:'Dumbbells in front of your thighs. Hinge at the hips with a flat back, lowering until you feel a hamstring stretch, then drive your hips forward to stand tall.'},
+      {id:'lb2', name:'DB Step-Up', sets:3, reps:'10/leg', how:'Step fully onto a sturdy box or step, driving through the front heel to stand up tall. Step back down with control rather than dropping.'},
+      {id:'lb3', name:'Band Hip Thrust', sets:3, reps:'15', how:'Shoulders on the floor or a bench, band around your thighs, knees bent. Drive your hips up squeezing your glutes at the top, then lower slowly.'},
+      {id:'lb4', name:'DB Sumo Squat', sets:3, reps:'12', how:'Wide stance, toes turned out, holding a dumbbell between your legs. Squat down keeping your chest up, then drive back up through your heels.'},
+      {id:'lb5', name:'Band Lateral Band Walk', sets:3, reps:'15', how:'Band looped above your ankles, knees slightly bent in a mini-squat. Step sideways keeping tension on the band the whole time.'},
+      {id:'lb6', name:'Single-Leg Calf Raise', sets:3, reps:'12/side', how:'Balance on one foot (hold a wall for support if needed). Rise up onto your toes, lower slowly below neutral, then switch legs.'},
     ],
     finisher: "3 min: high knees or jump rope, 30 sec on / 15 sec off"
   }
@@ -299,6 +306,11 @@ function renderDayPicker(){
   });
 }
 
+function toggleHowTo(exId){
+  const el = document.getElementById('howto_'+exId);
+  el.style.display = (el.style.display === 'none') ? 'block' : 'none';
+}
+
 function lastWeightFor(exId, setNum){
   return localStorage.getItem(WEIGHT_KEY_PREFIX + exId + '_' + setNum) || '';
 }
@@ -311,7 +323,10 @@ function renderWorkout(dayKey){
     html += `
       <div class="exercise">
         <div class="name">${ex.name}</div>
-        <div class="meta">Target: ${ex.sets} sets x ${ex.reps} reps</div>
+        <div class="meta">Target: ${ex.sets} sets x ${ex.reps} reps
+          <span class="howto-toggle" onclick="toggleHowTo('${ex.id}')">How to ▾</span>
+        </div>
+        <div class="howto-text" id="howto_${ex.id}" style="display:none;">${ex.how}</div>
         <div class="set-rows">
           <div class="set-row-header"><span>Set</span><span>Weight (lb)</span><span>Reps done</span></div>`;
     for(let s=1; s<=ex.sets; s++){
