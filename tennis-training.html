@@ -844,6 +844,41 @@
     text-align: center;
   }
   .editing-badge.visible { display: block; }
+
+  /* SERVE TAB */
+  .serve-rules { list-style: none; counter-reset: sr; }
+  .serve-rules li { counter-increment: sr; display: flex; gap: 10px; font-size: 13px; color: var(--text); line-height: 1.45; padding: 5px 0; }
+  .serve-rules li::before { content: counter(sr); flex: none; width: 20px; height: 20px; border-radius: 50%; background: var(--green-dim); color: var(--green); font-family: 'DM Mono', monospace; font-size: 11px; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .serve-seg { display: flex; gap: 6px; margin-bottom: 14px; }
+  .serve-panel { display: none; }
+  .serve-panel.active { display: block; }
+  .serve-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+  .serve-card h4 { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; margin-bottom: 8px; }
+  .serve-check { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-top: 1px solid var(--border); cursor: pointer; }
+  .serve-check:first-of-type { border-top: none; }
+  .serve-box { flex: none; width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px; color: #0d0f0e; margin-top: 1px; }
+  .serve-check.done .serve-box { background: var(--green); border-color: var(--green); }
+  .serve-check.done .serve-check-title { text-decoration: line-through; color: var(--muted); }
+  .serve-check-title { font-size: 13px; font-weight: 600; }
+  .serve-check-sub { font-size: 12px; color: var(--muted); line-height: 1.4; margin-top: 2px; }
+  .serve-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .serve-hint { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.35; }
+  .serve-live { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--green); text-align: center; padding: 8px; background: var(--surface2); border-radius: 10px; margin-bottom: 12px; }
+  .serve-entry-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+  .serve-entry-actions { display: flex; gap: 14px; align-items: center; }
+  .serve-edit-btn { background: none; border: none; color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer; padding: 0; }
+  .serve-stats { display: flex; flex-wrap: wrap; gap: 6px; }
+  .serve-pill { font-family: 'DM Mono', monospace; font-size: 11px; background: var(--surface2); color: var(--text); padding: 3px 9px; border-radius: 20px; }
+  .serve-pill.warn { color: var(--yellow); }
+  .serve-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .serve-table th { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); font-weight: 600; text-align: center; padding: 6px 2px; border-bottom: 1px solid var(--border); }
+  .serve-table td { text-align: center; padding: 8px 2px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .serve-table td:first-child, .serve-table th:first-child { text-align: left; }
+  .serve-table tr.cur td { background: var(--green-dim); }
+  .serve-goal { display: block; font-size: 10px; color: var(--muted); }
+  .serve-ok { color: var(--green); font-weight: 600; }
+  .serve-miss { color: var(--red); font-weight: 600; }
+  .serve-chart { width: 100%; height: auto; display: block; }
 </style>
 </head>
 <body>
@@ -861,6 +896,7 @@
     <button class="nav-tab" onclick="showView('workouts')">Workouts</button>
     <button class="nav-tab" onclick="showView('mobility')">Mobility</button>
     <button class="nav-tab" onclick="showView('log')">Log</button>
+    <button class="nav-tab" onclick="showView('serve')">Serve</button>
     <button class="nav-tab" onclick="showView('progress')">Progress</button>
     <button class="nav-tab" onclick="showView('tips')">Tips</button>
   </div>
@@ -1376,6 +1412,140 @@ async function diagnoseSheets() {
 
 </div>
 
+<!-- SERVE VIEW -->
+<div id="view-serve" class="view">
+  <div class="tip-card">
+    <h4>Serve Rules</h4>
+    <ol class="serve-rules">
+      <li>Second serve is 70% effort. More spin, more margin.</li>
+      <li>Aim deep middle of the service box, never the lines.</li>
+      <li>Clear the net by 3-4 feet.</li>
+      <li>Same routine every serve: same bounces, one breath, same toss.</li>
+      <li>Think the cue, not the fear: "smooth up, brush the ball." Never "don't double fault."</li>
+    </ol>
+  </div>
+
+  <div class="serve-seg">
+    <button class="mob-toggle-btn active" id="serve-seg-practice" onclick="serveShowPanel('practice')">Practice</button>
+    <button class="mob-toggle-btn" id="serve-seg-matches" onclick="serveShowPanel('matches')">Matches</button>
+    <button class="mob-toggle-btn" id="serve-seg-progress" onclick="serveShowPanel('progress')">Progress</button>
+  </div>
+
+  <!-- PRACTICE -->
+  <div id="serve-panel-practice" class="serve-panel active">
+    <div class="serve-card">
+      <h4>Today's Session · 35 min</h4>
+      <div class="serve-hint" style="margin:-4px 0 6px">3x a week. Tap each block as you finish it.</div>
+      <div id="serve-checklist"></div>
+    </div>
+
+    <div class="log-form">
+      <h3 id="serve-p-title">Log Practice</h3>
+      <div class="form-row">
+        <label class="form-label">Date</label>
+        <input type="date" id="serve-p-date">
+      </div>
+      <div class="serve-grid2">
+        <div class="form-row">
+          <label class="form-label">Toss (0–10)</label>
+          <input type="number" id="serve-p-toss" min="0" max="10" inputmode="numeric" placeholder="8">
+          <div class="serve-hint">Toss-and-catches landing in the same spot. Goal 8/10</div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Service box (0–10)</label>
+          <input type="number" id="serve-p-box" min="0" max="10" inputmode="numeric" placeholder="8">
+          <div class="serve-hint">Serves in from the service line. Goal 8/10</div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">2nd serves in (0–20)</label>
+          <input type="number" id="serve-p-second" min="0" max="20" inputmode="numeric" placeholder="18">
+          <div class="serve-hint">At 70%, deep middle. Goal 18/20</div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Pressure game (0–10)</label>
+          <input type="number" id="serve-p-pressure" min="0" max="10" inputmode="numeric" placeholder="6">
+          <div class="serve-hint" id="serve-p-pressure-hint">Points won, one serve each</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Most common miss</label>
+        <div style="display:flex; gap:6px">
+          <button class="mob-toggle-btn" data-serve-miss="net" onclick="servePickType('p','net',this)">Net</button>
+          <button class="mob-toggle-btn" data-serve-miss="long" onclick="servePickType('p','long',this)">Long</button>
+          <button class="mob-toggle-btn" data-serve-miss="mixed" onclick="servePickType('p','mixed',this)">Mixed</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Notes</label>
+        <textarea id="serve-p-notes" placeholder="Toss feel? Spin? What worked?"></textarea>
+      </div>
+      <div class="editing-badge" id="serve-p-badge">✏️ Editing Previous Practice</div>
+      <button class="btn btn-primary" id="serve-p-save" onclick="serveSavePractice()">SAVE PRACTICE</button>
+      <button class="btn" id="serve-p-cancel" onclick="serveCancelPractice()" style="display:none; background:var(--surface2); color:var(--muted); border:1px solid var(--border); margin-top:8px; font-size:15px; padding:12px">CANCEL EDIT</button>
+    </div>
+
+    <div class="section-label" style="margin-top:20px">Practice History</div>
+    <div id="serve-p-list"></div>
+  </div>
+
+  <!-- MATCHES -->
+  <div id="serve-panel-matches" class="serve-panel">
+    <div class="log-form">
+      <h3 id="serve-m-title">Log Match</h3>
+      <div class="form-row">
+        <label class="form-label">Date</label>
+        <input type="date" id="serve-m-date">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Opponent</label>
+        <input type="text" id="serve-m-opp" placeholder="Name or school">
+      </div>
+      <div class="serve-grid2">
+        <div class="form-row">
+          <label class="form-label">1st serves in</label>
+          <input type="number" id="serve-m-first" min="0" inputmode="numeric" placeholder="22" oninput="serveMatchLive()">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Service points</label>
+          <input type="number" id="serve-m-total" min="0" inputmode="numeric" placeholder="38" oninput="serveMatchLive()">
+        </div>
+      </div>
+      <div class="serve-live" id="serve-m-live">1st serve %: –</div>
+      <div class="form-row">
+        <label class="form-label">Double faults</label>
+        <input type="number" id="serve-m-df" min="0" inputmode="numeric" placeholder="3" oninput="serveMatchLive()">
+      </div>
+      <div class="form-row">
+        <label class="form-label">DF type</label>
+        <div style="display:flex; gap:6px">
+          <button class="mob-toggle-btn" data-serve-df="net" onclick="servePickType('m','net',this)">Net</button>
+          <button class="mob-toggle-btn" data-serve-df="long" onclick="servePickType('m','long',this)">Long</button>
+          <button class="mob-toggle-btn" data-serve-df="mixed" onclick="servePickType('m','mixed',this)">Mixed</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Result</label>
+        <div style="display:flex; gap:6px; margin-bottom:8px">
+          <button class="mob-toggle-btn" data-serve-wl="W" onclick="servePickWL('W',this)">Win</button>
+          <button class="mob-toggle-btn" data-serve-wl="L" onclick="servePickWL('L',this)">Loss</button>
+        </div>
+        <input type="text" id="serve-m-score" placeholder="Score, e.g. 6-3, 4-6, 10-7">
+      </div>
+      <div class="editing-badge" id="serve-m-badge">✏️ Editing Previous Match</div>
+      <button class="btn btn-primary" id="serve-m-save" onclick="serveSaveMatch()">SAVE MATCH</button>
+      <button class="btn" id="serve-m-cancel" onclick="serveCancelMatch()" style="display:none; background:var(--surface2); color:var(--muted); border:1px solid var(--border); margin-top:8px; font-size:15px; padding:12px">CANCEL EDIT</button>
+    </div>
+
+    <div class="section-label" style="margin-top:20px">Match History</div>
+    <div id="serve-m-list"></div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div id="serve-panel-progress" class="serve-panel">
+    <div id="serve-progress"></div>
+  </div>
+</div>
+
 <!-- TIPS VIEW -->
 <div id="view-tips" class="view">
   <div class="section-label">Tips for Success</div>
@@ -1601,10 +1771,11 @@ function showView(name) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   const tabs = document.querySelectorAll('.nav-tab');
-  const idx = ['program','workouts','mobility','log','progress','tips'].indexOf(name);
+  const idx = ['program','workouts','mobility','log','serve','progress','tips'].indexOf(name);
   if (tabs[idx]) tabs[idx].classList.add('active');
   if (name === 'log') renderHistory();
   if (name === 'progress') renderProgress();
+  if (name === 'serve') serveRender();
   if (name === 'mobility') updateMobProgress();
   if (name === 'tips') { initNutritionWeight(); }
 }
@@ -2371,6 +2542,653 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
+// ===== SERVE TAB =====
+const SERVE_KEYS = { practice: 'silas-serve-practice', match: 'silas-serve-matches' };
+const SERVE_PENDING_KEY = 'silas-serve-pending';
+const SERVE_DELETED_KEY = 'silas-serve-deleted-pending';
+const SERVE_BLOCKS = [
+  ["Warm-up · 5 min", "Shadow serves, then 10 toss-and-catches. Goal: ball lands in the same spot 8/10."],
+  ["Service box · 10 min", "Serve from the service line. Step back to the baseline after 8/10 in."],
+  ["Second serve only · 10 min", "20 serves at 70%, deep middle. Goal 18/20."],
+  ["Pressure game · 10 min", "10 points, one serve per point. Beat your last score."]
+];
+const SERVE_TARGETS = [
+  { second: 15, df: 4, first: 55 },
+  { second: 16, df: 3, first: 58 },
+  { second: 17, df: 3, first: 60 },
+  { second: 18, df: 2, first: 62 }
+];
+let servePractice = [];
+let serveMatches = [];
+let serveEditingP = null;
+let serveEditingM = null;
+let serveMissP = '';
+let serveDfType = '';
+let serveWL = '';
+let serveChecks = [false, false, false, false];
+let serveReady = false;
+
+function serveEl(id) { return document.getElementById(id); }
+function serveEsc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function serveToday() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function serveNum(v) {
+  if (v === '' || v === null || v === undefined) return null;
+  const n = Number(v);
+  return isNaN(n) ? null : n;
+}
+function serveDateKey(v) {
+  const s = String(v || '');
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? m[0] : s;
+}
+function serveDayNum(dateStr) {
+  const m = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return NaN;
+  return Math.round(Date.UTC(+m[1], +m[2] - 1, +m[3]) / 86400000);
+}
+function serveFmt(dateStr) {
+  const m = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return String(dateStr);
+  const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return mo[+m[2] - 1] + ' ' + (+m[3]);
+}
+function serveSort(list) {
+  list.sort((a, b) => {
+    const d = serveDayNum(b.date) - serveDayNum(a.date);
+    return d !== 0 ? d : Number(b.id) - Number(a.id);
+  });
+}
+function serveReadLocal(kind) {
+  try { return JSON.parse(localStorage.getItem(SERVE_KEYS[kind]) || '[]'); } catch(e) { return []; }
+}
+function serveWriteLocal() {
+  try {
+    localStorage.setItem(SERVE_KEYS.practice, JSON.stringify(servePractice));
+    localStorage.setItem(SERVE_KEYS.match, JSON.stringify(serveMatches));
+  } catch(e) {}
+}
+function serveReadList(key) {
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { return []; }
+}
+function serveWriteList(key, list) {
+  try { localStorage.setItem(key, JSON.stringify(list)); } catch(e) {}
+}
+function serveMark(key, kind, id, on) {
+  const tag = kind + ':' + id;
+  let list = serveReadList(key).filter(t => t !== tag);
+  if (on) list.push(tag);
+  serveWriteList(key, list);
+}
+function serveIsPending(kind, id) {
+  return serveReadList(SERVE_PENDING_KEY).indexOf(kind + ':' + id) !== -1;
+}
+
+function serveNormPractice(e) {
+  return {
+    id: Number(e.id),
+    date: serveDateKey(e.date),
+    toss: serveNum(e.toss),
+    box: serveNum(e.box),
+    second: serveNum(e.second),
+    pressure: serveNum(e.pressure),
+    missType: e.missType || '',
+    notes: e.notes || ''
+  };
+}
+function serveNormMatch(e) {
+  return {
+    id: Number(e.id),
+    date: serveDateKey(e.date),
+    opponent: e.opponent || '',
+    firstIn: serveNum(e.firstIn),
+    totalPts: serveNum(e.totalPts),
+    dfs: serveNum(e.dfs),
+    dfType: e.dfType || '',
+    result: e.result || ''
+  };
+}
+
+// ----- init / load -----
+function serveInit() {
+  servePractice = serveReadLocal('practice').map(serveNormPractice);
+  serveMatches = serveReadLocal('match').map(serveNormMatch);
+  serveSort(servePractice);
+  serveSort(serveMatches);
+  const pd = serveEl('serve-p-date');
+  const md = serveEl('serve-m-date');
+  if (pd && !pd.value) pd.value = serveToday();
+  if (md && !md.value) md.value = serveToday();
+  serveRender();
+}
+
+async function serveLoad() {
+  serveInit();
+  try {
+    const data = await sheetsRequest({ action: 'getAllSilasServe' });
+    if (data.status !== 'ok') throw new Error(data.message || 'Serve load failed');
+    const pending = serveReadList(SERVE_PENDING_KEY);
+    const deleted = serveReadList(SERVE_DELETED_KEY);
+    const merge = (cloud, local, kind, norm) => {
+      const map = new Map();
+      (cloud || []).map(norm).forEach(e => {
+        if (deleted.indexOf(kind + ':' + e.id) === -1) map.set(e.id, e);
+      });
+      local.forEach(e => {
+        if (pending.indexOf(kind + ':' + e.id) !== -1) map.set(e.id, e);
+      });
+      return Array.from(map.values());
+    };
+    servePractice = merge(data.practice, servePractice, 'practice', serveNormPractice);
+    serveMatches = merge(data.matches, serveMatches, 'match', serveNormMatch);
+    serveSort(servePractice);
+    serveSort(serveMatches);
+    serveWriteLocal();
+    serveReady = true;
+    serveRender();
+    // retry anything that never reached the cloud
+    for (const tag of pending) {
+      const parts = tag.split(':');
+      const list = parts[0] === 'practice' ? servePractice : serveMatches;
+      const entry = list.find(e => String(e.id) === parts[1]);
+      if (entry) await servePush(parts[0], entry, true);
+      else serveMark(SERVE_PENDING_KEY, parts[0], parts[1], false);
+    }
+    for (const tag of deleted) {
+      const parts = tag.split(':');
+      await serveRemoteDelete(parts[0], parts[1], true);
+    }
+  } catch(e) {
+    console.warn('Could not load serve data from Sheets, using localStorage', e);
+  }
+}
+
+async function servePush(kind, entry, quiet) {
+  serveMark(SERVE_PENDING_KEY, kind, entry.id, true);
+  try {
+    const r = await sheetsRequest({ action: 'saveSilasServe', kind: kind, entry: entry });
+    if (r.status !== 'ok') throw new Error(r.message || 'Save failed');
+    serveMark(SERVE_PENDING_KEY, kind, entry.id, false);
+    if (!quiet) showToast('✓ Saved to cloud!');
+  } catch(e) {
+    console.warn('Serve save failed', e);
+    if (!quiet) showToast('⚠️ Saved locally only');
+  }
+  serveRender();
+}
+
+async function serveRemoteDelete(kind, id, quiet) {
+  serveMark(SERVE_DELETED_KEY, kind, id, true);
+  try {
+    const r = await sheetsRequest({ action: 'deleteSilasServe', kind: kind, id: Number(id) });
+    if (r.status !== 'ok') throw new Error(r.message || 'Delete failed');
+    serveMark(SERVE_DELETED_KEY, kind, id, false);
+    if (!quiet) showToast('✓ Deleted');
+  } catch(e) {
+    console.warn('Serve delete failed', e);
+    if (!quiet) showToast('⚠️ Deleted locally only');
+  }
+}
+
+// ----- panels / pickers -----
+function serveShowPanel(name) {
+  ['practice', 'matches', 'progress'].forEach(p => {
+    serveEl('serve-panel-' + p).classList.toggle('active', p === name);
+    serveEl('serve-seg-' + p).classList.toggle('active', p === name);
+  });
+  if (name === 'progress') serveRenderProgress();
+}
+
+function servePickType(which, val, btn) {
+  const cur = which === 'p' ? serveMissP : serveDfType;
+  const next = cur === val ? '' : val;
+  if (which === 'p') serveMissP = next; else serveDfType = next;
+  const attr = which === 'p' ? '[data-serve-miss]' : '[data-serve-df]';
+  const scope = which === 'p' ? serveEl('serve-panel-practice') : serveEl('serve-panel-matches');
+  scope.querySelectorAll(attr).forEach(b => {
+    b.classList.toggle('active', next !== '' && b === btn);
+  });
+}
+function serveSetType(which, val) {
+  if (which === 'p') serveMissP = val; else serveDfType = val;
+  const attr = which === 'p' ? 'data-serve-miss' : 'data-serve-df';
+  const scope = which === 'p' ? serveEl('serve-panel-practice') : serveEl('serve-panel-matches');
+  scope.querySelectorAll('[' + attr + ']').forEach(b => {
+    b.classList.toggle('active', val !== '' && b.getAttribute(attr) === val);
+  });
+}
+function servePickWL(val, btn) {
+  serveWL = serveWL === val ? '' : val;
+  serveSetWL(serveWL);
+}
+function serveSetWL(val) {
+  serveWL = val;
+  serveEl('serve-panel-matches').querySelectorAll('[data-serve-wl]').forEach(b => {
+    b.classList.toggle('active', val !== '' && b.getAttribute('data-serve-wl') === val);
+  });
+}
+
+function serveToggleCheck(i) {
+  serveChecks[i] = !serveChecks[i];
+  serveRenderChecklist();
+}
+
+function serveMatchLive() {
+  const f = serveNum(serveEl('serve-m-first').value);
+  const t = serveNum(serveEl('serve-m-total').value);
+  const el = serveEl('serve-m-live');
+  if (f !== null && t) {
+    el.textContent = '1st serve %: ' + Math.round((f / t) * 100) + '%  (' + f + ' of ' + t + ')';
+  } else {
+    el.textContent = '1st serve %: –';
+  }
+}
+
+// ----- practice save / edit / delete -----
+function serveSavePractice() {
+  const date = serveEl('serve-p-date').value;
+  if (!date) { showToast('Pick a date'); return; }
+  const fields = [
+    ['serve-p-toss', 10, 'Toss'],
+    ['serve-p-box', 10, 'Service box'],
+    ['serve-p-second', 20, '2nd serves'],
+    ['serve-p-pressure', 10, 'Pressure game']
+  ];
+  const vals = [];
+  for (const f of fields) {
+    const v = serveNum(serveEl(f[0]).value);
+    if (v !== null && (v < 0 || v > f[1])) { showToast(f[2] + ' must be 0–' + f[1]); return; }
+    vals.push(v);
+  }
+  if (vals.every(v => v === null)) { showToast('Enter at least one number'); return; }
+  const entry = {
+    id: serveEditingP || Date.now(),
+    date: date,
+    toss: vals[0], box: vals[1], second: vals[2], pressure: vals[3],
+    missType: serveMissP,
+    notes: serveEl('serve-p-notes').value.trim()
+  };
+  const idx = servePractice.findIndex(e => e.id === entry.id);
+  if (idx >= 0) servePractice[idx] = entry; else servePractice.push(entry);
+  serveSort(servePractice);
+  serveWriteLocal();
+  serveMark(SERVE_PENDING_KEY, 'practice', entry.id, true);
+  serveResetPractice();
+  serveRender();
+  showToast('⏳ Saving...');
+  servePush('practice', entry);
+}
+
+function serveResetPractice() {
+  serveEditingP = null;
+  ['serve-p-toss', 'serve-p-box', 'serve-p-second', 'serve-p-pressure', 'serve-p-notes'].forEach(id => { serveEl(id).value = ''; });
+  serveEl('serve-p-date').value = serveToday();
+  serveSetType('p', '');
+  serveChecks = [false, false, false, false];
+  serveEl('serve-p-title').textContent = 'Log Practice';
+  serveEl('serve-p-save').textContent = 'SAVE PRACTICE';
+  serveEl('serve-p-cancel').style.display = 'none';
+  serveEl('serve-p-badge').classList.remove('visible');
+}
+function serveCancelPractice() { serveResetPractice(); serveRender(); }
+
+function serveEditPractice(id) {
+  const e = servePractice.find(x => x.id === id);
+  if (!e) return;
+  serveEditingP = id;
+  serveEl('serve-p-date').value = e.date;
+  serveEl('serve-p-toss').value = e.toss === null ? '' : e.toss;
+  serveEl('serve-p-box').value = e.box === null ? '' : e.box;
+  serveEl('serve-p-second').value = e.second === null ? '' : e.second;
+  serveEl('serve-p-pressure').value = e.pressure === null ? '' : e.pressure;
+  serveEl('serve-p-notes').value = e.notes || '';
+  serveSetType('p', e.missType || '');
+  serveEl('serve-p-title').textContent = 'Edit Practice';
+  serveEl('serve-p-save').textContent = 'UPDATE PRACTICE';
+  serveEl('serve-p-cancel').style.display = 'block';
+  serveEl('serve-p-badge').classList.add('visible');
+  serveEl('serve-p-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ----- match save / edit / delete -----
+function serveSaveMatch() {
+  const date = serveEl('serve-m-date').value;
+  if (!date) { showToast('Pick a date'); return; }
+  const first = serveNum(serveEl('serve-m-first').value);
+  const total = serveNum(serveEl('serve-m-total').value);
+  const dfs = serveNum(serveEl('serve-m-df').value);
+  if (first === null || total === null || dfs === null) { showToast('Fill 1st serves in, service points and DFs'); return; }
+  if (first < 0 || total < 0 || dfs < 0) { showToast('Numbers cannot be negative'); return; }
+  if (first > total) { showToast('1st serves in cannot be more than service points'); return; }
+  if (dfs > total - first) { showToast('DFs cannot be more than missed 1st serves (' + (total - first) + ')'); return; }
+  const score = serveEl('serve-m-score').value.trim();
+  const entry = {
+    id: serveEditingM || Date.now(),
+    date: date,
+    opponent: serveEl('serve-m-opp').value.trim(),
+    firstIn: first, totalPts: total, dfs: dfs,
+    dfType: dfs > 0 ? serveDfType : '',
+    result: (serveWL + (score ? ' ' + score : '')).trim()
+  };
+  const idx = serveMatches.findIndex(e => e.id === entry.id);
+  if (idx >= 0) serveMatches[idx] = entry; else serveMatches.push(entry);
+  serveSort(serveMatches);
+  serveWriteLocal();
+  serveMark(SERVE_PENDING_KEY, 'match', entry.id, true);
+  serveResetMatch();
+  serveRender();
+  showToast('⏳ Saving...');
+  servePush('match', entry);
+}
+
+function serveResetMatch() {
+  serveEditingM = null;
+  ['serve-m-opp', 'serve-m-first', 'serve-m-total', 'serve-m-df', 'serve-m-score'].forEach(id => { serveEl(id).value = ''; });
+  serveEl('serve-m-date').value = serveToday();
+  serveSetType('m', '');
+  serveSetWL('');
+  serveMatchLive();
+  serveEl('serve-m-title').textContent = 'Log Match';
+  serveEl('serve-m-save').textContent = 'SAVE MATCH';
+  serveEl('serve-m-cancel').style.display = 'none';
+  serveEl('serve-m-badge').classList.remove('visible');
+}
+function serveCancelMatch() { serveResetMatch(); serveRender(); }
+
+function serveEditMatch(id) {
+  const e = serveMatches.find(x => x.id === id);
+  if (!e) return;
+  serveEditingM = id;
+  serveEl('serve-m-date').value = e.date;
+  serveEl('serve-m-opp').value = e.opponent || '';
+  serveEl('serve-m-first').value = e.firstIn === null ? '' : e.firstIn;
+  serveEl('serve-m-total').value = e.totalPts === null ? '' : e.totalPts;
+  serveEl('serve-m-df').value = e.dfs === null ? '' : e.dfs;
+  serveSetType('m', e.dfType || '');
+  const m = String(e.result || '').match(/^([WL])\b\s*(.*)$/i);
+  serveSetWL(m ? m[1].toUpperCase() : '');
+  serveEl('serve-m-score').value = m ? m[2] : (e.result || '');
+  serveMatchLive();
+  serveEl('serve-m-title').textContent = 'Edit Match';
+  serveEl('serve-m-save').textContent = 'UPDATE MATCH';
+  serveEl('serve-m-cancel').style.display = 'block';
+  serveEl('serve-m-badge').classList.add('visible');
+  serveEl('serve-m-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function serveDelete(kind, id) {
+  if (!confirm('Delete this entry?')) return;
+  if (kind === 'practice') {
+    servePractice = servePractice.filter(e => e.id !== id);
+    if (serveEditingP === id) serveResetPractice();
+  } else {
+    serveMatches = serveMatches.filter(e => e.id !== id);
+    if (serveEditingM === id) serveResetMatch();
+  }
+  serveMark(SERVE_PENDING_KEY, kind, id, false);
+  serveWriteLocal();
+  serveRender();
+  serveRemoteDelete(kind, id);
+}
+
+// ----- rendering -----
+function serveRender() {
+  if (!serveEl('view-serve')) return;
+  serveRenderChecklist();
+  serveRenderPracticeList();
+  serveRenderMatchList();
+  serveRenderPressureHint();
+  serveRenderProgress();
+}
+
+function serveRenderChecklist() {
+  const done = serveChecks.filter(Boolean).length;
+  let h = '';
+  SERVE_BLOCKS.forEach((b, i) => {
+    h += `<div class="serve-check ${serveChecks[i] ? 'done' : ''}" onclick="serveToggleCheck(${i})">
+      <div class="serve-box">${serveChecks[i] ? '✓' : ''}</div>
+      <div><div class="serve-check-title">${i + 1}. ${b[0]}</div><div class="serve-check-sub">${b[1]}</div></div>
+    </div>`;
+  });
+  h += `<div class="serve-hint" style="margin-top:6px; text-align:right">${done}/4 blocks done</div>`;
+  serveEl('serve-checklist').innerHTML = h;
+}
+
+function serveRenderPressureHint() {
+  const last = servePractice.find(e => e.pressure !== null && e.id !== serveEditingP);
+  serveEl('serve-p-pressure-hint').textContent = last ? 'Beat your last: ' + last.pressure : 'Points won, one serve each';
+}
+
+function serveSyncTag(kind, id) {
+  return serveIsPending(kind, id) ? '<span class="serve-pill warn">local only</span>' : '';
+}
+
+function serveRenderPracticeList() {
+  const el = serveEl('serve-p-list');
+  if (!servePractice.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎾</div><h3>No practices yet</h3><p>Finish a session and log it above.</p></div>';
+    return;
+  }
+  el.innerHTML = servePractice.map(e => {
+    const pills = [];
+    if (e.toss !== null) pills.push(`<span class="serve-pill">Toss ${e.toss}/10</span>`);
+    if (e.box !== null) pills.push(`<span class="serve-pill">Box ${e.box}/10</span>`);
+    if (e.second !== null) pills.push(`<span class="serve-pill" style="color:var(--green)">2nd ${e.second}/20</span>`);
+    if (e.pressure !== null) pills.push(`<span class="serve-pill">Pressure ${e.pressure}/10</span>`);
+    if (e.missType) pills.push(`<span class="serve-pill">Misses: ${e.missType}</span>`);
+    return `<div class="log-entry">
+      <div class="serve-entry-top">
+        <div><div class="log-entry-day">${serveFmt(e.date)}</div></div>
+        <div class="serve-entry-actions">${serveSyncTag('practice', e.id)}
+          <button class="serve-edit-btn" onclick="serveEditPractice(${e.id})">Edit</button>
+          <button class="delete-btn" onclick="serveDelete('practice', ${e.id})" aria-label="Delete">×</button>
+        </div>
+      </div>
+      <div class="serve-stats">${pills.join('')}</div>
+      ${e.notes ? `<div class="log-notes">${serveEsc(e.notes)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function serveRenderMatchList() {
+  const el = serveEl('serve-m-list');
+  if (!serveMatches.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div><h3>No matches yet</h3><p>Log a match to start tracking double faults.</p></div>';
+    return;
+  }
+  el.innerHTML = serveMatches.map(e => {
+    const pct = e.totalPts ? Math.round((e.firstIn / e.totalPts) * 100) : null;
+    const pills = [];
+    pills.push(`<span class="serve-pill">1st in ${e.firstIn}/${e.totalPts}${pct !== null ? ' · ' + pct + '%' : ''}</span>`);
+    pills.push(`<span class="serve-pill" style="color:${e.dfs > 0 ? 'var(--yellow)' : 'var(--green)'}">${e.dfs} DF${e.dfs === 1 ? '' : 's'}${e.dfType ? ' · ' + e.dfType : ''}</span>`);
+    const title = e.opponent ? 'vs ' + serveEsc(e.opponent) : 'Match';
+    return `<div class="log-entry">
+      <div class="serve-entry-top">
+        <div><div class="log-entry-day">${title}</div><div class="log-entry-date">${serveFmt(e.date)}${e.result ? ' · ' + serveEsc(e.result) : ''}</div></div>
+        <div class="serve-entry-actions">${serveSyncTag('match', e.id)}
+          <button class="serve-edit-btn" onclick="serveEditMatch(${e.id})">Edit</button>
+          <button class="delete-btn" onclick="serveDelete('match', ${e.id})" aria-label="Delete">×</button>
+        </div>
+      </div>
+      <div class="serve-stats">${pills.join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+// ----- progress -----
+function serveAvg(arr) {
+  return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+}
+function serveR1(n) { return Math.round(n * 10) / 10; }
+
+function serveChart(pts, opts) {
+  const W = 320, H = 170, L = 30, R = 12, T = 16, B = 28;
+  const iw = W - L - R, ih = H - T - B;
+  const max = opts.max;
+  const xs = i => pts.length === 1 ? L + iw / 2 : L + iw * i / (pts.length - 1);
+  const ys = v => T + ih - (v / max) * ih;
+  let s = `<svg class="serve-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${serveEsc(opts.label)}">`;
+  [0, Math.round(max / 2), max].forEach(t => {
+    s += `<line x1="${L}" x2="${W - R}" y1="${ys(t)}" y2="${ys(t)}" stroke="#2a3230" stroke-width="1"/>`;
+    s += `<text x="${L - 6}" y="${ys(t) + 3}" text-anchor="end" font-size="9" fill="#7a9080" font-family="DM Mono, monospace">${t}</text>`;
+  });
+  if (opts.target !== null && opts.target !== undefined) {
+    s += `<line x1="${L}" x2="${W - R}" y1="${ys(opts.target)}" y2="${ys(opts.target)}" stroke="#facc15" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+    s += `<text x="${W - R}" y="${ys(opts.target) - 4}" text-anchor="end" font-size="9" fill="#facc15" font-family="DM Mono, monospace">goal ${opts.target}</text>`;
+  }
+  if (pts.length > 1) {
+    s += `<polyline fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="${pts.map((p, i) => xs(i) + ',' + ys(p.v)).join(' ')}"/>`;
+  }
+  pts.forEach((p, i) => {
+    s += `<circle cx="${xs(i)}" cy="${ys(p.v)}" r="4" fill="#4ade80" stroke="#0d0f0e" stroke-width="1.5"/>`;
+    if (pts.length <= 12) s += `<text x="${xs(i)}" y="${ys(p.v) - 8}" text-anchor="middle" font-size="9" fill="#e8ede9" font-family="DM Mono, monospace">${p.v}</text>`;
+  });
+  const lab = (i, anchor) => `<text x="${xs(i)}" y="${H - 8}" text-anchor="${anchor}" font-size="9" fill="#7a9080" font-family="DM Mono, monospace">${serveFmt(pts[i].d)}</text>`;
+  if (pts.length === 1) s += lab(0, 'middle');
+  else {
+    s += lab(0, 'start');
+    s += lab(pts.length - 1, 'end');
+    if (pts.length >= 5) s += lab(Math.floor((pts.length - 1) / 2), 'middle');
+  }
+  return s + '</svg>';
+}
+
+function serveCurrentWeekIdx(start) {
+  const t = serveDayNum(serveToday());
+  return Math.floor((t - start) / 7);
+}
+
+function serveWeekStats(start, w) {
+  const lo = start + w * 7, hi = lo + 6;
+  const inWk = d => { const n = serveDayNum(d); return n >= lo && n <= hi; };
+  const pr = servePractice.filter(e => inWk(e.date) && e.second !== null);
+  const ma = serveMatches.filter(e => inWk(e.date));
+  const second = serveAvg(pr.map(e => e.second));
+  const df = serveAvg(ma.filter(e => e.dfs !== null).map(e => e.dfs));
+  const tot = ma.reduce((a, e) => a + (e.totalPts || 0), 0);
+  const fin = ma.reduce((a, e) => a + (e.firstIn || 0), 0);
+  const first = tot > 0 ? (fin / tot) * 100 : null;
+  return { second: second, df: df, first: first };
+}
+
+function serveRenderProgress() {
+  const el = serveEl('serve-progress');
+  if (!el) return;
+  const asc = (list) => list.slice().sort((a, b) => serveDayNum(a.date) - serveDayNum(b.date) || a.id - b.id);
+  const pAsc = asc(servePractice).filter(e => e.second !== null);
+  const mAsc = asc(serveMatches).filter(e => e.dfs !== null);
+
+  // current target (for chart goal lines)
+  let start = null;
+  if (servePractice.length) start = Math.min.apply(null, servePractice.map(e => serveDayNum(e.date)));
+  let curWeek = null;
+  if (start !== null) curWeek = Math.max(0, Math.min(3, serveCurrentWeekIdx(start)));
+  const tgt = curWeek !== null ? SERVE_TARGETS[curWeek] : null;
+
+  // summary cards
+  const lastM = serveMatches.slice(0, 3);
+  const prevM = serveMatches.slice(3);
+  const dfRecent = serveAvg(lastM.filter(e => e.dfs !== null).map(e => e.dfs));
+  const dfPrev = serveAvg(prevM.filter(e => e.dfs !== null).map(e => e.dfs));
+  let trend = '<div class="serve-hint" style="text-align:center">Log a few matches to see whether double faults are dropping.</div>';
+  if (dfRecent !== null && dfPrev !== null) {
+    const diff = serveR1(dfRecent - dfPrev);
+    if (diff < 0) trend = `<div class="serve-hint serve-ok" style="text-align:center">↓ Double faults are dropping: ${serveR1(dfRecent)} per match lately vs ${serveR1(dfPrev)} before.</div>`;
+    else if (diff > 0) trend = `<div class="serve-hint serve-miss" style="text-align:center">↑ Double faults are up: ${serveR1(dfRecent)} per match lately vs ${serveR1(dfPrev)} before.</div>`;
+    else trend = `<div class="serve-hint" style="text-align:center">Flat: ${serveR1(dfRecent)} double faults per match, same as before.</div>`;
+  }
+  const totM = lastM.reduce((a, e) => a + (e.totalPts || 0), 0);
+  const finM = lastM.reduce((a, e) => a + (e.firstIn || 0), 0);
+  const fsRecent = totM > 0 ? Math.round((finM / totM) * 100) : null;
+  const secRecent = serveAvg(servePractice.filter(e => e.second !== null).slice(0, 3).map(e => e.second));
+
+  let h = `<div class="stat-grid">
+    <div class="stat-card"><div class="stat-val">${dfRecent === null ? '–' : serveR1(dfRecent)}</div><div class="stat-label">DFs / match (last 3)</div></div>
+    <div class="stat-card"><div class="stat-val">${fsRecent === null ? '–' : fsRecent + '%'}</div><div class="stat-label">1st serve % (last 3)</div></div>
+    <div class="stat-card"><div class="stat-val">${secRecent === null ? '–' : serveR1(secRecent)}</div><div class="stat-label">2nd in /20 (last 3)</div></div>
+    <div class="stat-card"><div class="stat-val">${servePractice.length}</div><div class="stat-label">Practices logged</div></div>
+  </div>${trend}`;
+
+  // charts
+  h += '<div class="section-label" style="margin-top:18px">Double Faults Per Match</div><div class="serve-card">';
+  if (mAsc.length) {
+    const pts = mAsc.map(e => ({ v: e.dfs, d: e.date }));
+    const max = Math.max(4, Math.max.apply(null, pts.map(p => p.v)), tgt ? tgt.df : 0) + 1;
+    h += serveChart(pts, { max: max, target: tgt ? tgt.df : null, label: 'Double faults per match over time' });
+    h += '<div class="serve-hint" style="text-align:center">Lower is better</div>';
+  } else h += '<div class="serve-hint" style="text-align:center">No matches logged yet.</div>';
+  h += '</div>';
+
+  h += '<div class="section-label">Second Serves In (out of 20)</div><div class="serve-card">';
+  if (pAsc.length) {
+    const pts = pAsc.map(e => ({ v: e.second, d: e.date }));
+    h += serveChart(pts, { max: 20, target: tgt ? tgt.second : null, label: 'Second serves in per practice over time' });
+    h += '<div class="serve-hint" style="text-align:center">Higher is better</div>';
+  } else h += '<div class="serve-hint" style="text-align:center">No practices logged yet.</div>';
+  h += '</div>';
+
+  // targets
+  h += '<div class="section-label">4-Week Targets</div><div class="serve-card">';
+  if (start === null) {
+    h += '<div class="serve-hint" style="margin-bottom:8px">Weeks start from your first logged practice.</div>';
+  } else {
+    h += `<div class="serve-hint" style="margin-bottom:8px">Week 1 started ${serveFmt(new Date(start * 86400000).toISOString())}. Weekly averages vs goals.</div>`;
+  }
+  h += `<table class="serve-table"><thead><tr><th>Week</th><th>2nd in /20</th><th>DFs / match</th><th>1st %</th><th>Hit?</th></tr></thead><tbody>`;
+  SERVE_TARGETS.forEach((t, w) => {
+    let cells = ['<td>–</td>', '<td>–</td>', '<td>–</td>'];
+    let hitMark = '<span class="serve-hint">–</span>';
+    let label = 'Wk ' + (w + 1);
+    if (start !== null) {
+      const lo = start + w * 7;
+      const d1 = new Date(lo * 86400000), d2 = new Date((lo + 6) * 86400000);
+      label += `<span class="serve-goal">${serveFmt(d1.toISOString())}–${serveFmt(d2.toISOString()).replace(/^[A-Za-z]+ /, d1.getUTCMonth() === d2.getUTCMonth() ? '' : '$&')}</span>`;
+      const st = serveWeekStats(start, w);
+      const flags = [];
+      const cell = (val, goalTxt, ok, fmt) => {
+        if (val === null) { flags.push(null); return `<td>–<span class="serve-goal">${goalTxt}</span></td>`; }
+        flags.push(ok);
+        return `<td><span class="${ok ? 'serve-ok' : 'serve-miss'}">${fmt} ${ok ? '✓' : '✗'}</span><span class="serve-goal">${goalTxt}</span></td>`;
+      };
+      cells = [
+        cell(st.second === null ? null : serveR1(st.second), 'goal ' + t.second, st.second !== null && st.second >= t.second, st.second === null ? '' : serveR1(st.second)),
+        cell(st.df === null ? null : serveR1(st.df), 'goal ≤' + t.df, st.df !== null && st.df <= t.df, st.df === null ? '' : serveR1(st.df)),
+        cell(st.first === null ? null : Math.round(st.first), 'goal ' + t.first + '%', st.first !== null && st.first >= t.first, st.first === null ? '' : Math.round(st.first) + '%')
+      ];
+      if (flags.some(f => f === false)) hitMark = '<span class="serve-miss">✗</span>';
+      else if (flags.every(f => f === true)) hitMark = '<span class="serve-ok">✓</span>';
+    } else {
+      cells = [`<td><span class="serve-goal">goal ${t.second}</span></td>`, `<td><span class="serve-goal">goal ≤${t.df}</span></td>`, `<td><span class="serve-goal">goal ${t.first}%</span></td>`];
+    }
+    h += `<tr class="${curWeek === w ? 'cur' : ''}"><td>${label}</td>${cells.join('')}<td>${hitMark}</td></tr>`;
+  });
+  h += '</tbody></table>';
+  h += '<div class="serve-hint" style="margin-top:8px">Hit? turns ✓ when all three goals are met for the week, ✗ if any measured goal is missed.</div></div>';
+
+  // weekly check-in
+  h += '<div class="section-label">Weekly Check-In</div><div class="tip-card">';
+  const todayN = serveDayNum(serveToday());
+  const counts = { net: 0, long: 0, mixed: 0 };
+  servePractice.forEach(e => { if (e.missType && todayN - serveDayNum(e.date) <= 6 && counts[e.missType] !== undefined) counts[e.missType]++; });
+  serveMatches.forEach(e => { if (e.dfType && todayN - serveDayNum(e.date) <= 6 && counts[e.dfType] !== undefined) counts[e.dfType]++; });
+  const n = counts.net + counts.long + counts.mixed;
+  if (!n) {
+    h += '<h4>This week</h4><p>Log a practice or match with a miss type in the last 7 days to get your check-in.</p>';
+  } else if (counts.net / n > 0.5) {
+    h += `<h4>Mostly net misses</h4><p>The toss is too low or he is rushing. Go back to toss-and-catch and add spin. (${counts.net} of ${n} logged this week)</p>`;
+  } else if (counts.long / n > 0.5) {
+    h += `<h4>Mostly long misses</h4><p>Too flat or too hard. Drop to 70% and brush up the back of the ball. (${counts.long} of ${n} logged this week)</p>`;
+  } else {
+    h += `<h4>Mixed misses</h4><p>Fix the toss first. A repeatable toss cleans up both net and long. (${n} logged this week)</p>`;
+  }
+  h += '</div>';
+  el.innerHTML = h;
+}
+
 // ===== MOBILITY LOGGING =====
 function getMobilityLogs() {
   try { return JSON.parse(localStorage.getItem('mobility-logs') || '[]'); } catch(e) { return []; }
@@ -2642,6 +3460,7 @@ window.onload = async () => {
     setActivePhase(0);
     updateProgramTabHighlight();
     initNutritionWeight();
+    serveInit();
   } catch(e) {
     console.error('Startup error (non-fatal):', e);
   }
@@ -2656,6 +3475,7 @@ window.onload = async () => {
     const histEl = document.getElementById('log-history');
     if (histEl) histEl.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><h3>Load error</h3><p>${e.message}</p><button class="btn btn-primary" onclick="loadLogsFromSheets()" style="margin-top:12px">Try Again</button></div>`;
   }
+  try { await serveLoad(); } catch(e) { console.warn('Serve load error', e); }
 };
 
 function updateProgramTabHighlight() {
